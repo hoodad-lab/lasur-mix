@@ -28,6 +28,7 @@
             background: #0a0a0a; color: #fff;
             min-height: 100vh; overflow-x: hidden;
         }
+        html[dir="rtl"] body { direction: rtl; }
         input[type=number] { -moz-appearance: textfield; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
@@ -50,12 +51,44 @@
         }
         .header-title { font-size: 15px; font-weight: 800; color: rgba(255,255,255,0.9); letter-spacing: -0.02em; }
         .header-sub { font-size: 9px; color: rgba(255,255,255,0.25); letter-spacing: 0.18em; text-transform: uppercase; margin-top: 1px; }
+        .header-right { display: flex; align-items: center; gap: 8px; }
         .header-link {
             font-size: 10px; color: #2dd4bf; font-weight: 700;
             border: 1px solid rgba(45,212,191,0.25); border-radius: 999px; padding: 4px 14px;
             text-decoration: none; transition: all 0.2s;
         }
         .header-link:hover { background: rgba(45,212,191,0.1); border-color: rgba(45,212,191,0.4); }
+
+        /* Language picker */
+        .lang-wrap { position: relative; }
+        .lang-btn {
+            height: 34px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.03); cursor: pointer; display: flex; align-items: center;
+            gap: 6px; padding: 0 12px 0 8px;
+            font-size: 13px; transition: all 0.2s; color: #fff; font-family: inherit;
+        }
+        .lang-btn:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); }
+        .lang-flag-icon { font-size: 18px; line-height: 1; }
+        .lang-name-short { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); letter-spacing: 0.02em; }
+        .lang-dropdown {
+            display: none; position: absolute; top: 44px; right: 0; z-index: 50;
+            background: rgba(22,22,22,0.98); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px; padding: 6px; min-width: 200px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5); backdrop-filter: blur(20px);
+            max-height: 70vh; overflow-y: auto;
+        }
+        html[dir="rtl"] .lang-dropdown { right: auto; left: 0; }
+        .lang-dropdown.open { display: block; animation: popIn 0.2s ease; }
+        .lang-option {
+            display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+            border-radius: 10px; cursor: pointer; border: none; background: none;
+            color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600;
+            width: 100%; text-align: left; transition: all 0.1s; font-family: inherit;
+        }
+        html[dir="rtl"] .lang-option { text-align: right; }
+        .lang-option:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); }
+        .lang-option.active { background: rgba(20,184,166,0.1); color: #5eead4; }
+        .lang-flag { font-size: 20px; flex-shrink: 0; }
 
         .main { max-width: 460px; margin: 0 auto; padding: 0 16px 60px; position: relative; z-index: 1; }
 
@@ -89,8 +122,12 @@
         .ratio-btn.active { background: rgba(20,184,166,0.1); }
         .ratio-bar-track { width: 44px; height: 10px; border-radius: 999px; background: rgba(255,255,255,0.04); overflow: hidden; flex-shrink: 0; }
         .ratio-bar-fill { height: 100%; border-radius: 999px; transition: width 0.3s; }
-        .ratio-label { font-size: 15px; font-weight: 900; width: 58px; text-align: left; transition: color 0.15s; }
+        .ratio-pct { font-size: 10px; font-weight: 800; width: 34px; text-align: right; flex-shrink: 0; transition: color 0.15s; font-variant-numeric: tabular-nums; }
+        html[dir="rtl"] .ratio-pct { text-align: left; }
+        .ratio-label { font-size: 15px; font-weight: 900; width: 52px; text-align: left; transition: color 0.15s; }
+        html[dir="rtl"] .ratio-label { text-align: right; }
         .ratio-desc { font-size: 11px; flex: 1; text-align: left; transition: color 0.15s; }
+        html[dir="rtl"] .ratio-desc { text-align: right; }
 
         .glass-card {
             margin-top: 10px; border-radius: 16px; padding: 14px;
@@ -118,6 +155,7 @@
             font-size: 10px; color: rgba(255,255,255,0.2); font-weight: 700;
             text-transform: uppercase; letter-spacing: 0.12em; margin-left: 4px;
         }
+        html[dir="rtl"] .vol-category-label { margin-left: 0; margin-right: 4px; }
         .vol-grid-samples { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
         .vol-grid-buckets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 6px; }
         .vol-btn {
@@ -208,8 +246,10 @@
         .adj-row:last-of-type { margin-bottom: 0; }
         .adj-label { width: 50px; font-size: 10px; font-weight: 800; letter-spacing: 0.06em; flex-shrink: 0; }
         .adj-val { font-size: 16px; font-weight: 900; min-width: 46px; text-align: right; }
+        html[dir="rtl"] .adj-val { text-align: left; }
         .adj-unit { font-size: 10px; color: rgba(255,255,255,0.12); font-weight: 600; width: 18px; }
         .adj-delta { font-size: 9px; font-weight: 700; border-radius: 6px; padding: 2px 6px; margin-left: 2px; display: none; }
+        html[dir="rtl"] .adj-delta { margin-left: 0; margin-right: 2px; }
         .adj-delta.vis { display: inline-block; }
         .adj-delta.up { background: rgba(20,184,166,0.08); color: rgba(94,234,212,0.7); }
         .adj-delta.dn { background: rgba(248,113,113,0.08); color: rgba(248,113,113,0.7); }
@@ -258,6 +298,35 @@
 
         .footer { text-align: center; margin-top: 32px; font-size: 9px; color: rgba(255,255,255,0.06); }
 
+        /* Reference table */
+        .ref-card {
+            margin-top: 28px; border-radius: 20px; overflow: hidden;
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
+        }
+        .ref-header {
+            display: flex; align-items: center; gap: 10px; padding: 14px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.01);
+        }
+        .ref-header-text { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.3); }
+        .ref-table { width: 100%; border-collapse: collapse; }
+        .ref-table th {
+            padding: 10px 12px; font-size: 9px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.1em; color: rgba(255,255,255,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left;
+        }
+        html[dir="rtl"] .ref-table th { text-align: right; }
+        .ref-table td {
+            padding: 8px 12px; font-size: 13px; font-weight: 700;
+            border-bottom: 1px solid rgba(255,255,255,0.02); color: rgba(255,255,255,0.3);
+        }
+        .ref-table tr:last-child td { border-bottom: none; }
+        .ref-table tr:hover td { background: rgba(255,255,255,0.02); }
+        .ref-table .col-pct { color: #5eead4; font-weight: 900; font-size: 14px; }
+        .ref-table .col-ratio { color: rgba(255,255,255,0.45); font-weight: 800; }
+        .ref-table .col-desc { color: rgba(255,255,255,0.15); font-size: 11px; font-weight: 600; }
+        .ref-bar-cell { width: 60px; }
+        .ref-bar { height: 8px; border-radius: 999px; background: linear-gradient(90deg, #0d9488, #2dd4bf); opacity: 0.5; min-width: 3px; }
+
         .cup-tick { stroke: rgba(255,255,255,0.05); stroke-width: 1; }
         .cup-glass { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 1.5; }
         .cup-handle { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 2; }
@@ -270,9 +339,18 @@
         <div class="header-inner">
             <div>
                 <p class="header-title">KEIM Concretal-Lasur</p>
-                <p class="header-sub">Mixing Guide</p>
+                <p class="header-sub" id="headerSub">Mixing Guide</p>
             </div>
-            <a href="https://keim.com.au/products/concretal-lasur/" target="_blank" class="header-link">keim.com.au</a>
+            <div class="header-right">
+                <div class="lang-wrap">
+                    <button class="lang-btn" id="langToggle" onclick="toggleLang()" aria-label="Change language">
+                        <span class="lang-flag-icon" id="langFlag">EN</span>
+                        <span class="lang-name-short" id="langNameShort">English</span>
+                    </button>
+                    <div class="lang-dropdown" id="langDropdown"></div>
+                </div>
+                <a href="https://keim.com.au/products/concretal-lasur/" target="_blank" class="header-link">keim.com.au</a>
+            </div>
         </div>
     </div>
 
@@ -282,20 +360,20 @@
         <div style="margin-top:20px">
             <div class="step-row">
                 <div class="step-badge">1</div>
-                <p class="step-title">Pick your ratio</p>
+                <p class="step-title" id="step1Title">Pick your ratio</p>
             </div>
-            <div class="spectrum-label"><span>■ SOLID COLOUR</span><span>TRANSPARENT ■</span></div>
+            <div class="spectrum-label"><span id="specSolid">SOLID COLOUR</span><span id="specTrans">TRANSPARENT</span></div>
             <div id="ratioList" class="ratio-list"></div>
             <div class="glass-card">
-                <p class="glass-card-label">Or enter your own ratio</p>
+                <p class="glass-card-label" id="customRatioLabel">Or enter your own ratio</p>
                 <div class="custom-row">
                     <div class="custom-field">
-                        <label style="color:rgba(94,234,212,0.5)">Colour</label>
+                        <label style="color:rgba(94,234,212,0.5)" id="lblColour">Colour</label>
                         <input type="number" id="customP" placeholder="1" min="0" inputmode="decimal" class="input-pig">
                     </div>
                     <span class="colon">:</span>
                     <div class="custom-field">
-                        <label style="color:rgba(168,162,158,0.5)">Clear</label>
+                        <label style="color:rgba(168,162,158,0.5)" id="lblClear">Clear</label>
                         <input type="number" id="customD" placeholder="1" min="0" inputmode="decimal" class="input-dil">
                     </div>
                 </div>
@@ -306,14 +384,14 @@
         <div style="margin-top:28px">
             <div class="step-row">
                 <div class="step-badge">2</div>
-                <p class="step-title">How much?</p>
+                <p class="step-title" id="step2Title">How much?</p>
             </div>
-            <p class="vol-category-label">Sample Pots</p>
+            <p class="vol-category-label" id="lblSamples">Sample Pots</p>
             <div id="volSamples" class="vol-grid-samples"></div>
-            <p class="vol-category-label" style="margin-top:16px">Buckets &amp; Drums</p>
+            <p class="vol-category-label" style="margin-top:16px" id="lblBuckets">Buckets &amp; Drums</p>
             <div id="volGrid" class="vol-grid-buckets"></div>
             <div class="glass-card">
-                <p class="glass-card-label">Or enter your own amount</p>
+                <p class="glass-card-label" id="customVolLabel">Or enter your own amount</p>
                 <div style="display:flex;align-items:center;gap:10px">
                     <input type="number" id="customVol" placeholder="e.g. 35" min="0" inputmode="decimal" class="custom-vol-input">
                     <div class="unit-toggle">
@@ -327,8 +405,8 @@
         <!-- RESULT -->
         <div id="answer" class="result-wrap" style="display:none">
             <div class="step-row" style="margin-bottom:14px">
-                <div class="step-badge">✓</div>
-                <p class="step-title">Pour this</p>
+                <div class="step-badge">&#10003;</div>
+                <p class="step-title" id="step3Title">Pour this</p>
             </div>
             <div id="resultCard" class="result-card">
                 <div class="cups-row">
@@ -345,10 +423,10 @@
                             <rect x="12" y="10" width="66" height="105" rx="8" class="cup-glass"/>
                             <path d="M12 10 Q6 10 8 18" class="cup-glass"/><path d="M78 35 Q95 35 95 62 Q95 88 78 88" class="cup-handle"/>
                         </svg>
-                        <p class="cup-amount" style="color:#5eead4" id="resPig">—</p>
+                        <p class="cup-amount" style="color:#5eead4" id="resPig">&mdash;</p>
                         <p class="cup-unit" style="color:rgba(94,234,212,0.5)" id="unitPig">Litres</p>
                         <div class="cup-tag" style="background:rgba(13,148,136,0.15);border:1px solid rgba(13,148,136,0.25)">
-                            <p class="cup-tag-label" style="color:rgba(94,234,212,0.7)">COLOUR</p>
+                            <p class="cup-tag-label" style="color:rgba(94,234,212,0.7)" id="tagColour">COLOUR</p>
                             <p class="cup-tag-sub">Concretal-Lasur</p>
                         </div>
                     </div>
@@ -366,17 +444,17 @@
                             <rect x="12" y="10" width="66" height="105" rx="8" class="cup-glass"/>
                             <path d="M12 10 Q6 10 8 18" class="cup-glass"/><path d="M78 35 Q95 35 95 62 Q95 88 78 88" class="cup-handle"/>
                         </svg>
-                        <p class="cup-amount" style="color:#d6d3d1" id="resDil">—</p>
+                        <p class="cup-amount" style="color:#d6d3d1" id="resDil">&mdash;</p>
                         <p class="cup-unit" style="color:rgba(168,162,158,0.5)" id="unitDil">Litres</p>
                         <div class="cup-tag" style="background:rgba(120,113,108,0.1);border:1px solid rgba(120,113,108,0.18)">
-                            <p class="cup-tag-label" style="color:rgba(168,162,158,0.6)">CLEAR</p>
+                            <p class="cup-tag-label" style="color:rgba(168,162,158,0.6)" id="tagClear">CLEAR</p>
                             <p class="cup-tag-sub">Concretal-Fixativ</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Mixed result cup -->
-                <div class="mix-arrow">↓ mix into ↓</div>
+                <div class="mix-arrow" id="mixArrow">&darr; mix into &darr;</div>
                 <div class="mix-cup-wrap">
                     <div class="mix-cup-col">
                         <svg viewBox="0 0 120 150" style="width:100%;filter:drop-shadow(0 6px 16px rgba(0,0,0,0.35))">
@@ -400,15 +478,15 @@
                         <p class="mix-amount" id="resTotAmount">10</p>
                         <p class="mix-unit" id="resTotUnit">Litres</p>
                         <div class="mix-tag">
-                            <p class="mix-tag-label">MIXED</p>
-                            <p class="mix-tag-sub">Ready to apply</p>
+                            <p class="mix-tag-label" id="tagMixed">MIXED</p>
+                            <p class="mix-tag-sub" id="tagReady">Ready to apply</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="equals-row" style="margin-top:14px">
                     <div class="equals-line"></div>
-                    <p class="equals-text">= <span class="equals-total" id="resTot">10L</span> total</p>
+                    <p class="equals-text">= <span class="equals-total" id="resTot">10L</span> <span id="lblTotal">total</span></p>
                     <div class="equals-line"></div>
                 </div>
 
@@ -417,33 +495,33 @@
                     <div id="barDil" class="ratio-bar-dil" style="width:50%"></div>
                 </div>
                 <div class="ratio-bar-labels">
-                    <span>Colour</span>
+                    <span id="barLblColour">Colour</span>
                     <span class="ratio-bar-center" id="ratioLabel">1 : 1</span>
-                    <span>Clear</span>
+                    <span id="barLblClear">Clear</span>
                 </div>
 
                 <!-- Adjustment sliders -->
                 <div id="adjustWrap" class="adjust-section" style="display:none">
                     <div class="adjust-header">
-                        <span class="adjust-title">Adjust to round numbers</span>
+                        <span class="adjust-title" id="adjTitle">Adjust to round numbers</span>
                         <button id="resetBtn" class="adjust-reset" onclick="resetAdj()">Reset</button>
                     </div>
                     <div class="adj-row" id="adjRowP">
-                        <span class="adj-label" style="color:rgba(94,234,212,0.5)">Colour</span>
+                        <span class="adj-label" style="color:rgba(94,234,212,0.5)" id="adjLblP">Colour</span>
                         <input type="range" id="sldP" class="rng-p" oninput="onSldP(this.value)">
                         <span class="adj-val" style="color:#5eead4" id="avP">0</span>
                         <span class="adj-unit" id="auP">L</span>
                         <span class="adj-delta" id="adP"></span>
                     </div>
                     <div class="adj-row" id="adjRowD">
-                        <span class="adj-label" style="color:rgba(168,162,158,0.4)">Clear</span>
+                        <span class="adj-label" style="color:rgba(168,162,158,0.4)" id="adjLblD">Clear</span>
                         <input type="range" id="sldD" class="rng-d" oninput="onSldD(this.value)">
                         <span class="adj-val" style="color:#d6d3d1" id="avD">0</span>
                         <span class="adj-unit" id="auD">L</span>
                         <span class="adj-delta" id="adD"></span>
                     </div>
                     <div class="adj-total">
-                        <span>Adjusted total:</span>
+                        <span id="adjTotalLabel">Adjusted total:</span>
                         <span class="adj-total-val" id="adjTot">0</span>
                     </div>
                 </div>
@@ -451,49 +529,522 @@
         </div>
 
         <!-- RULES -->
-        <div class="rules-card">
-            <div class="rules-header">
-                <span style="font-size:15px">⚠️</span>
-                <p class="rules-header-text">Before you start</p>
+        <div class="rules-card" id="rulesCard">
+        </div>
+
+        <!-- REFERENCE TABLE -->
+        <div class="ref-card">
+            <div class="ref-header">
+                <span style="font-size:15px">📊</span>
+                <p class="ref-header-text" id="refTitle">Quick Reference</p>
             </div>
-            <div class="rules-body">
-                <div class="rule"><span class="rule-icon">🚫</span><span class="rule-danger">NO WATER — only dilute with Fixativ</span></div>
-                <div class="rule"><span class="rule-icon">🧪</span><span><strong>Test patch first</strong> — let it dry fully</span></div>
-                <div class="rule"><span class="rule-icon">🔄</span><span><strong>Stir before pouring</strong> — re-stir every 10–15 min</span></div>
-                <div class="rule"><span class="rule-icon">🔩</span><span><strong>Mix with a drill mixer only</strong> — do not mix by hand. Use a mechanical paddle/drill attachment for at least 2 minutes</span></div>
-                <div class="rule"><span class="rule-icon">🖌️</span><span><strong>Wet edge</strong> — don't stop mid-wall</span></div>
-                <div class="rule"><span class="rule-icon">📦</span><span><strong>Only mix what you need for the day</strong> — don't batch ahead</span></div>
-                <div class="rule"><span class="rule-icon">🧱</span><span><strong>Mineral substrates only</strong> — bare concrete, cement render, masonry. Not for plasterboard, timber, metal or painted surfaces</span></div>
-                <div class="rule"><span class="rule-icon">✂️</span><span><strong>Apply in cross-hatch pattern</strong> — work in alternating directions for even coverage</span></div>
-                <div class="rule"><span class="rule-icon">🌡️</span><span><strong>Temperature 5°C – 30°C</strong> — air and substrate. Do not apply in direct sunlight, frost, rain or strong wind</span></div>
-                <div class="rule"><span class="rule-icon">⏳</span><span><strong>Drying time ~12 hrs</strong> — wait at least 12 hours between coats. Allow longer in cold or humid conditions</span></div>
-                <div class="rule"><span class="rule-icon">💧</span><span><strong>Pre-dampen porous surfaces</strong> — lightly mist with water before applying to very absorbent concrete</span></div>
+            <div style="padding:6px 10px 10px;overflow-x:auto">
+                <table class="ref-table" id="refTable"></table>
             </div>
         </div>
 
-        <p class="footer">KEIM Australia · For full TDS visit keim.com.au</p>
+        <p class="footer" id="footerText">KEIM Australia &middot; For full TDS visit keim.com.au</p>
     </div>
 
     <script>
+    // ============ TRANSLATIONS ============
+    const T = {
+      en: {
+        flag: '🇬🇧', name: 'English',
+        headerSub: 'Mixing Guide',
+        step1: 'Pick your ratio', step2: 'How much?', step3: 'Pour this',
+        solid: 'SOLID COLOUR', transparent: 'TRANSPARENT',
+        customRatio: 'Or enter your own ratio', customVol: 'Or enter your own amount',
+        colour: 'Pigment', clear: 'Fixative',
+        samples: 'Sample Pots', buckets: 'Buckets & Drums',
+        litres: 'Litres', mixed: 'MIXED', ready: 'Ready to apply',
+        mixInto: '\u2193 mix into \u2193', total: 'total',
+        adjust: 'Adjust to round numbers', reset: 'Reset', adjTotal: 'Adjusted total:',
+        beforeStart: 'Before you start', refTitle: 'Quick Reference', thPct: 'Pigment %', thRatio: 'Ratio', thLook: 'Look',
+        footer: 'KEIM Australia \u00b7 For full TDS visit keim.com.au',
+        rules: [
+          {i:'🚫', t:'<span class="rule-danger">NO WATER \u2014 only dilute with Fixativ</span>'},
+          {i:'🧪', t:'<strong>Test patch first</strong> \u2014 let it dry fully'},
+          {i:'🔄', t:'<strong>Stir before pouring</strong> \u2014 re-stir every 10\u201315 min'},
+          {i:'🔩', t:'<strong>Mix with a drill mixer only</strong> \u2014 do not mix by hand. Use a mechanical paddle/drill attachment for at least 2 minutes'},
+          {i:'🖌\uFE0F', t:'<strong>Wet edge</strong> \u2014 don\u2019t stop mid-wall'},
+          {i:'📦', t:'<strong>Only mix what you need for the day</strong> \u2014 don\u2019t batch ahead'},
+          {i:'🧱', t:'<strong>Mineral substrates only</strong> \u2014 bare concrete, cement render, masonry. Not for plasterboard, timber, metal or painted surfaces'},
+          {i:'✂\uFE0F', t:'<strong>Apply in cross-hatch pattern</strong> \u2014 work in alternating directions for even coverage'},
+          {i:'🌡\uFE0F', t:'<strong>Temperature 5\u00b0C \u2013 30\u00b0C</strong> \u2014 air and substrate. Do not apply in direct sunlight, frost, rain or strong wind'},
+          {i:'⏳', t:'<strong>Drying time ~12 hrs</strong> \u2014 wait at least 12 hours between coats. Allow longer in cold or humid conditions'},
+          {i:'💧', t:'<strong>Pre-dampen porous surfaces</strong> \u2014 lightly mist with water before applying to very absorbent concrete'},
+        ],
+        descs: ['Solid colour','Almost solid','Very heavy','Heavy colour','Strong','Good coverage','Grain showing','Colour + texture','Balanced','Half-half','More clear','Light wash','Gentle tint','Soft veil','Very light','Hint of colour','Barely there','Ghost veil']
+      },
+      slang: {
+        flag: '🇦🇺', name: 'Aussie Slang',
+        headerSub: 'Mix Guide, Mate',
+        step1: 'Pick ya ratio', step2: 'How much ya need?', step3: 'Chuck this in',
+        solid: 'FULL SEND', transparent: 'SEE-THROUGH',
+        customRatio: 'Or bang in ya own ratio', customVol: 'Or punch in ya own amount',
+        colour: 'Pigment', clear: 'Fixative',
+        samples: 'Tinnies', buckets: 'Buckets & Drums',
+        litres: 'Litres', mixed: 'MIXED', ready: 'Good to slap on',
+        mixInto: '\u2193 chuck it together \u2193', total: 'total',
+        adjust: 'Tweak to round numbers', reset: 'Nah reset', adjTotal: 'Adjusted total:',
+        beforeStart: 'Oi, before ya start', refTitle: 'Cheat Sheet', thPct: 'Pigment %', thRatio: 'Ratio', thLook: 'Vibe',
+        footer: 'KEIM Australia \u00b7 Full TDS at keim.com.au',
+        rules: [
+          {i:'🚫', t:'<span class="rule-danger">NO WATER \u2014 only thin it with Fixativ, ya muppet</span>'},
+          {i:'🧪', t:'<strong>Test patch first</strong> \u2014 let it dry proper'},
+          {i:'🔄', t:'<strong>Give it a stir before pouring</strong> \u2014 stir again every 10\u201315 min'},
+          {i:'🔩', t:'<strong>Use a drill mixer</strong> \u2014 don\u2019t be a hero stirring by hand. 2 minutes minimum'},
+          {i:'🖌\uFE0F', t:'<strong>Keep a wet edge</strong> \u2014 don\u2019t stop halfway across the wall'},
+          {i:'📦', t:'<strong>Only mix what ya need today</strong> \u2014 no batching ahead'},
+          {i:'🧱', t:'<strong>Mineral substrates only</strong> \u2014 concrete, render, masonry. Not for gyprock, timber, metal or painted stuff'},
+          {i:'✂\uFE0F', t:'<strong>Cross-hatch it</strong> \u2014 go back and forth for even coverage'},
+          {i:'🌡\uFE0F', t:'<strong>5\u00b0C \u2013 30\u00b0C</strong> \u2014 don\u2019t paint in blazing sun, frost, rain or a howling gale'},
+          {i:'⏳', t:'<strong>12 hours between coats</strong> \u2014 longer if it\u2019s cold or humid'},
+          {i:'💧', t:'<strong>Dampen thirsty surfaces</strong> \u2014 give it a light mist before you start on super absorbent concrete'},
+        ],
+        descs: ['Full monty','Nearly full','Heaps thick','Solid as','Strong stuff','Good coverage','Grain peekin\u2019','Colour + grit','50-50 mate','Half-half','More clear','Light wash','Gentle tint','Soft touch','Barely there','Just a whisper','Ghost mode','Can\u2019t even tell']
+      },
+      zh: {
+        flag: '🇨🇳', name: '\u4e2d\u6587',
+        headerSub: '\u6df7\u5408\u6307\u5357',
+        step1: '\u9009\u62e9\u6bd4\u4f8b', step2: '\u9700\u8981\u591a\u5c11\uff1f', step3: '\u5012\u5165\u8fd9\u4e9b',
+        solid: '\u5b9e\u8272', transparent: '\u900f\u660e',
+        customRatio: '\u6216\u8f93\u5165\u81ea\u5b9a\u4e49\u6bd4\u4f8b', customVol: '\u6216\u8f93\u5165\u81ea\u5b9a\u4e49\u91cf',
+        colour: 'Pigment', clear: 'Fixativ',
+        samples: '\u5c0f\u6837\u7f50', buckets: '\u6876\u88c5',
+        litres: '\u5347', mixed: '\u6df7\u5408', ready: '\u53ef\u4ee5\u65bd\u5de5',
+        mixInto: '\u2193 \u6df7\u5408\u5230 \u2193', total: '\u603b\u8ba1',
+        adjust: '\u8c03\u6574\u4e3a\u6574\u6570', reset: '\u91cd\u7f6e', adjTotal: '\u8c03\u6574\u540e\u603b\u91cf\uff1a',
+        beforeStart: '\u5f00\u59cb\u524d\u6ce8\u610f', refTitle: '\u5feb\u901f\u53c2\u8003', thPct: 'Pigment %', thRatio: '\u6bd4\u4f8b', thLook: '\u6548\u679c',
+        footer: 'KEIM Australia \u00b7 \u5b8c\u6574\u6280\u672f\u8d44\u6599\u8bf7\u8bbf\u95ee keim.com.au',
+        rules: [
+          {i:'🚫', t:'<span class="rule-danger">\u7981\u6b62\u52a0\u6c34 \u2014 \u53ea\u80fd\u7528 Fixativ \u7a00\u91ca</span>'},
+          {i:'🧪', t:'<strong>\u5148\u505a\u8bd5\u6837</strong> \u2014 \u5b8c\u5168\u5e72\u900f\u540e\u518d\u5224\u65ad'},
+          {i:'🔄', t:'<strong>\u5012\u4e4b\u524d\u5148\u6405\u62cc</strong> \u2014 \u6bcf10\u201315\u5206\u949f\u518d\u6405'},
+          {i:'🔩', t:'<strong>\u53ea\u7528\u7535\u94bb\u6405\u62cc\u5668</strong> \u2014 \u4e0d\u8981\u624b\u52a8\u6405\u62cc\uff0c\u81f3\u5c112\u5206\u949f'},
+          {i:'🖌\uFE0F', t:'<strong>\u4fdd\u6301\u6e7f\u8fb9</strong> \u2014 \u4e0d\u8981\u5728\u5899\u9762\u4e2d\u95f4\u505c\u4e0b'},
+          {i:'📦', t:'<strong>\u53ea\u6df7\u5408\u5f53\u5929\u7528\u91cf</strong> \u2014 \u4e0d\u8981\u63d0\u524d\u6279\u91cf\u6df7\u5408'},
+          {i:'🧱', t:'<strong>\u4ec5\u9002\u7528\u4e8e\u77ff\u7269\u57fa\u5e95</strong> \u2014 \u88f8\u9732\u6df7\u51dd\u571f\u3001\u6c34\u6ce5\u6293\u7070\u3001\u7816\u77f3\u3002\u4e0d\u9002\u7528\u4e8e\u77f3\u818f\u677f\u3001\u6728\u6750\u3001\u91d1\u5c5e\u6216\u5df2\u6f06\u8868\u9762'},
+          {i:'✂\uFE0F', t:'<strong>\u4ea4\u53c9\u6d82\u5237</strong> \u2014 \u4ea4\u66ff\u65b9\u5411\u4ee5\u786e\u4fdd\u5747\u5300\u8986\u76d6'},
+          {i:'🌡\uFE0F', t:'<strong>\u6e29\u5ea6 5\u00b0C \u2013 30\u00b0C</strong> \u2014 \u7a7a\u6c14\u548c\u57fa\u5e95\u3002\u907f\u514d\u9633\u5149\u76f4\u5c04\u3001\u971c\u51bb\u3001\u96e8\u5929\u6216\u5f3a\u98ce'},
+          {i:'⏳', t:'<strong>\u5e72\u71e5\u65f6\u95f4\u7ea612\u5c0f\u65f6</strong> \u2014 \u6bcf\u5c42\u4e4b\u95f4\u81f3\u5c1112\u5c0f\u65f6\u3002\u5bd2\u51b7\u6216\u6f6e\u6e7f\u65f6\u66f4\u957f'},
+          {i:'💧', t:'<strong>\u9884\u6e7f\u591a\u5b54\u8868\u9762</strong> \u2014 \u5728\u9ad8\u5438\u6c34\u6027\u6df7\u51dd\u571f\u4e0a\u65bd\u5de5\u524d\u8f7b\u8f7b\u55b7\u6c34'},
+        ],
+        descs: ['\u5b9e\u8272','\u51e0\u4e4e\u5b9e\u8272','\u975e\u5e38\u6d53','\u6d53\u8272','\u6d53\u70c8','\u826f\u597d\u8986\u76d6','\u663e\u73b0\u7eb9\u7406','\u8272\u5f69+\u8d28\u611f','\u5e73\u8861','\u5bf9\u534a','\u504f\u900f\u660e','\u6de1\u5f69','\u67d4\u548c\u8272\u8c03','\u8584\u7eb1','\u975e\u5e38\u6de1','\u4e00\u62b9\u8272\u5f69','\u82e5\u6709\u82e5\u65e0','\u5e7d\u7075\u8584\u7eb1']
+      },
+      fa: {
+        flag: '🇮🇷', name: '\u0641\u0627\u0631\u0633\u06cc', rtl: true,
+        headerSub: '\u0631\u0627\u0647\u0646\u0645\u0627\u06cc \u0627\u062e\u062a\u0644\u0627\u0637',
+        step1: '\u0646\u0633\u0628\u062a \u0631\u0627 \u0627\u0646\u062a\u062e\u0627\u0628 \u06a9\u0646\u06cc\u062f', step2: '\u0686\u0642\u062f\u0631\u061f', step3: '\u0627\u06cc\u0646 \u0631\u0627 \u0628\u0631\u06cc\u0632\u06cc\u062f',
+        solid: '\u0631\u0646\u06af \u06a9\u0627\u0645\u0644', transparent: '\u0634\u0641\u0627\u0641',
+        customRatio: '\u06cc\u0627 \u0646\u0633\u0628\u062a \u062e\u0648\u062f \u0631\u0627 \u0648\u0627\u0631\u062f \u06a9\u0646\u06cc\u062f', customVol: '\u06cc\u0627 \u0645\u0642\u062f\u0627\u0631 \u062e\u0648\u062f \u0631\u0627 \u0648\u0627\u0631\u062f \u06a9\u0646\u06cc\u062f',
+        colour: 'Pigment', clear: 'Fixativ',
+        samples: '\u0646\u0645\u0648\u0646\u0647', buckets: '\u0633\u0637\u0644 \u0648 \u0628\u0634\u06a9\u0647',
+        litres: '\u0644\u06cc\u062a\u0631', mixed: '\u0645\u062e\u0644\u0648\u0637', ready: '\u0622\u0645\u0627\u062f\u0647 \u0627\u0633\u062a\u0641\u0627\u062f\u0647',
+        mixInto: '\u2193 \u0645\u062e\u0644\u0648\u0637 \u06a9\u0646\u06cc\u062f \u2193', total: '\u06a9\u0644',
+        adjust: '\u062a\u0646\u0638\u06cc\u0645 \u0628\u0647 \u0627\u0639\u062f\u0627\u062f \u0631\u0646\u062f', reset: '\u0628\u0627\u0632\u0646\u0634\u0627\u0646\u06cc', adjTotal: '\u0645\u062c\u0645\u0648\u0639 \u062a\u0646\u0638\u06cc\u0645 \u0634\u062f\u0647:',
+        beforeStart: '\u0642\u0628\u0644 \u0627\u0632 \u0634\u0631\u0648\u0639', refTitle: '\u0645\u0631\u062c\u0639 \u0633\u0631\u06cc\u0639', thPct: 'Pigment %', thRatio: '\u0646\u0633\u0628\u062a', thLook: '\u0638\u0627\u0647\u0631',
+        footer: 'KEIM Australia \u00b7 \u0628\u0631\u0627\u06cc \u0627\u0637\u0644\u0627\u0639\u0627\u062a \u06a9\u0627\u0645\u0644 \u0628\u0647 keim.com.au \u0645\u0631\u0627\u062c\u0639\u0647 \u06a9\u0646\u06cc\u062f',
+        rules: [
+          {i:'🚫', t:'<span class="rule-danger">\u0622\u0628 \u0645\u0645\u0646\u0648\u0639 \u2014 \u0641\u0642\u0637 \u0628\u0627 Fixativ \u0631\u0642\u06cc\u0642 \u06a9\u0646\u06cc\u062f</span>'},
+          {i:'🧪', t:'<strong>\u0627\u0628\u062a\u062f\u0627 \u062a\u0633\u062a \u06a9\u0646\u06cc\u062f</strong> \u2014 \u0628\u06af\u0630\u0627\u0631\u06cc\u062f \u06a9\u0627\u0645\u0644\u0627\u064b \u062e\u0634\u06a9 \u0634\u0648\u062f'},
+          {i:'🔄', t:'<strong>\u0642\u0628\u0644 \u0627\u0632 \u0631\u06cc\u062e\u062a\u0646 \u0647\u0645 \u0628\u0632\u0646\u06cc\u062f</strong> \u2014 \u0647\u0631 \u06f1\u06f0\u2013\u06f1\u06f5 \u062f\u0642\u06cc\u0642\u0647'},
+          {i:'🔩', t:'<strong>\u0641\u0642\u0637 \u0628\u0627 \u062f\u0631\u06cc\u0644 \u0645\u062e\u0644\u0648\u0637 \u06a9\u0646\u06cc\u062f</strong> \u2014 \u062f\u0633\u062a\u06cc \u0645\u062e\u0644\u0648\u0637 \u0646\u06a9\u0646\u06cc\u062f\u060c \u062d\u062f\u0627\u0642\u0644 \u06f2 \u062f\u0642\u06cc\u0642\u0647'},
+          {i:'🖌\uFE0F', t:'<strong>\u0644\u0628\u0647 \u0645\u0631\u0637\u0648\u0628</strong> \u2014 \u0648\u0633\u0637 \u062f\u06cc\u0648\u0627\u0631 \u0645\u062a\u0648\u0642\u0641 \u0646\u0634\u0648\u06cc\u062f'},
+          {i:'📦', t:'<strong>\u0641\u0642\u0637 \u0628\u0647 \u0627\u0646\u062f\u0627\u0632\u0647 \u0646\u06cc\u0627\u0632 \u0631\u0648\u0632 \u0645\u062e\u0644\u0648\u0637 \u06a9\u0646\u06cc\u062f</strong>'},
+          {i:'🧱', t:'<strong>\u0641\u0642\u0637 \u0628\u0631\u0627\u06cc \u0633\u0637\u0648\u062d \u0645\u0639\u062f\u0646\u06cc</strong> \u2014 \u0628\u062a\u0646\u060c \u06af\u0686\u060c \u0622\u062c\u0631'},
+          {i:'✂\uFE0F', t:'<strong>\u0628\u0647 \u0635\u0648\u0631\u062a \u0636\u0631\u0628\u062f\u0631\u06cc \u0627\u0639\u0645\u0627\u0644 \u06a9\u0646\u06cc\u062f</strong>'},
+          {i:'🌡\uFE0F', t:'<strong>\u062f\u0645\u0627 \u06f5\u2013\u06f3\u06f0 \u062f\u0631\u062c\u0647</strong> \u2014 \u0646\u0647 \u0622\u0641\u062a\u0627\u0628 \u0645\u0633\u062a\u0642\u06cc\u0645\u060c \u0646\u0647 \u06cc\u062e\u0628\u0646\u062f\u0627\u0646\u060c \u0646\u0647 \u0628\u0627\u0631\u0627\u0646'},
+          {i:'⏳', t:'<strong>\u0632\u0645\u0627\u0646 \u062e\u0634\u06a9 \u0634\u062f\u0646 ~\u06f1\u06f2 \u0633\u0627\u0639\u062a</strong> \u2014 \u0628\u06cc\u0646 \u0644\u0627\u06cc\u0647\u200c\u0647\u0627 \u0635\u0628\u0631 \u06a9\u0646\u06cc\u062f'},
+          {i:'💧', t:'<strong>\u0633\u0637\u0648\u062d \u062c\u0627\u0630\u0628 \u0631\u0627 \u0645\u0631\u0637\u0648\u0628 \u06a9\u0646\u06cc\u062f</strong>'},
+        ],
+        descs: ['\u0631\u0646\u06af \u06a9\u0627\u0645\u0644','\u062a\u0642\u0631\u06cc\u0628\u0627\u064b \u06a9\u0627\u0645\u0644','\u0628\u0633\u06cc\u0627\u0631 \u063a\u0644\u06cc\u0638','\u063a\u0644\u06cc\u0638','\u0642\u0648\u06cc','\u067e\u0648\u0634\u0634 \u062e\u0648\u0628','\u0628\u0627\u0641\u062a \u0646\u0645\u0627\u06cc\u0627\u0646','\u0631\u0646\u06af + \u0628\u0627\u0641\u062a','\u0645\u062a\u0639\u0627\u062f\u0644','\u0646\u06cc\u0645\u0647\u200c\u0646\u06cc\u0645\u0647','\u0634\u0641\u0627\u0641\u200c\u062a\u0631','\u0634\u0633\u062a\u0634\u0648\u06cc \u0645\u0644\u0627\u06cc\u0645','\u062a\u0647 \u0631\u0646\u06af \u0644\u0637\u06cc\u0641','\u062d\u062c\u0627\u0628 \u0646\u0631\u0645','\u0628\u0633\u06cc\u0627\u0631 \u06a9\u0645\u0631\u0646\u06af','\u0627\u0634\u0627\u0631\u0647\u200c\u0627\u06cc \u0627\u0632 \u0631\u0646\u06af','\u062a\u0642\u0631\u06cc\u0628\u0627\u064b \u0646\u0627\u0645\u0631\u0626\u06cc','\u062d\u062c\u0627\u0628 \u0634\u0628\u062d\u200c\u06af\u0648\u0646\u0647']
+      },
+      da: {
+        flag: '🇦🇫', name: '\u062f\u0631\u06cc', rtl: true,
+        headerSub: '\u0631\u0647\u0646\u0645\u0627\u06cc \u0645\u062e\u0644\u0648\u0637',
+        step1: '\u0646\u0633\u0628\u062a \u0631\u0627 \u0627\u0646\u062a\u062e\u0627\u0628 \u06a9\u0646\u06cc\u062f', step2: '\u0686\u0642\u062f\u0631 \u0636\u0631\u0648\u0631\u062a \u062f\u0627\u0631\u06cc\u062f\u061f', step3: '\u0627\u06cc \u0631\u0647 \u0628\u0631\u06cc\u0632\u06cc\u062f',
+        solid: '\u0631\u0646\u06af \u06a9\u0627\u0645\u0644', transparent: '\u0634\u0641\u0627\u0641',
+        customRatio: '\u06cc\u0627 \u0646\u0633\u0628\u062a \u062e\u0648\u062f\u0647 \u0631\u0647 \u062f\u0627\u062e\u0644 \u06a9\u0646\u06cc\u062f', customVol: '\u06cc\u0627 \u0645\u0642\u062f\u0627\u0631 \u062e\u0648\u062f\u0647 \u0631\u0647 \u062f\u0627\u062e\u0644 \u06a9\u0646\u06cc\u062f',
+        colour: 'Pigment', clear: 'Fixativ',
+        samples: '\u0646\u0645\u0648\u0646\u0647', buckets: '\u0633\u0637\u0644 \u0648 \u062f\u0631\u0645',
+        litres: '\u0644\u06cc\u062a\u0631', mixed: '\u0645\u062e\u0644\u0648\u0637', ready: '\u0622\u0645\u0627\u062f\u0647 \u0627\u0633\u062a\u0641\u0627\u062f\u0647',
+        mixInto: '\u2193 \u0645\u062e\u0644\u0648\u0637 \u06a9\u0646\u06cc\u062f \u2193', total: '\u0645\u062c\u0645\u0648\u0639',
+        adjust: '\u062a\u0646\u0638\u06cc\u0645 \u0628\u0647 \u0627\u0639\u062f\u0627\u062f \u0631\u0646\u062f', reset: '\u0628\u0627\u0632\u0646\u0634\u0627\u0646\u06cc', adjTotal: '\u0645\u062c\u0645\u0648\u0639 \u062a\u0646\u0638\u06cc\u0645:',
+        beforeStart: '\u0642\u0628\u0644 \u0627\u0632 \u0634\u0631\u0648\u0639', refTitle: '\u0645\u0631\u062c\u0639 \u0633\u0631\u06cc\u0639', thPct: 'Pigment %', thRatio: '\u0646\u0633\u0628\u062a', thLook: '\u0638\u0627\u0647\u0631',
+        footer: 'KEIM Australia \u00b7 \u0628\u0631\u0627\u06cc \u0645\u0639\u0644\u0648\u0645\u0627\u062a \u06a9\u0627\u0645\u0644 keim.com.au',
+        rules: [
+          {i:'🚫', t:'<span class="rule-danger">\u0622\u0628 \u0646\u06cc \u2014 \u0641\u0642\u0637 \u0628\u0627 Fixativ</span>'},
+          {i:'🧪', t:'<strong>\u0627\u0648\u0644 \u062a\u0633\u062a \u06a9\u0646\u06cc\u062f</strong> \u2014 \u0628\u06af\u0630\u0627\u0631\u06cc\u062f \u062e\u0634\u06a9 \u0634\u0648\u062f'},
+          {i:'🔄', t:'<strong>\u0642\u0628\u0644 \u0627\u0632 \u0631\u06cc\u062e\u062a\u0646 \u0647\u0645 \u0628\u0632\u0646\u06cc\u062f</strong>'},
+          {i:'🔩', t:'<strong>\u0628\u0627 \u062f\u0631\u06cc\u0644 \u0645\u062e\u0644\u0648\u0637 \u06a9\u0646\u06cc\u062f</strong> \u2014 \u062f\u0633\u062a\u06cc \u0646\u06cc'},
+          {i:'🖌\uFE0F', t:'<strong>\u0644\u0628\u0647 \u062a\u0631 \u0646\u06af\u0647\u062f\u0627\u0631\u06cc\u062f</strong>'},
+          {i:'📦', t:'<strong>\u0641\u0642\u0637 \u0628\u0647 \u0627\u0646\u062f\u0627\u0632\u0647 \u0631\u0648\u0632 \u0645\u062e\u0644\u0648\u0637 \u06a9\u0646\u06cc\u062f</strong>'},
+          {i:'🧱', t:'<strong>\u0641\u0642\u0637 \u0633\u0637\u0648\u062d \u0645\u0639\u062f\u0646\u06cc</strong> \u2014 \u06a9\u0627\u0646\u06a9\u0631\u06cc\u062a\u060c \u06af\u0686\u060c \u0622\u062c\u0631'},
+          {i:'✂\uFE0F', t:'<strong>\u0636\u0631\u0628\u062f\u0631\u06cc \u0628\u06a9\u0634\u06cc\u062f</strong>'},
+          {i:'🌡\uFE0F', t:'<strong>\u062f\u0645\u0627 \u06f5\u2013\u06f3\u06f0 \u062f\u0631\u062c\u0647</strong>'},
+          {i:'⏳', t:'<strong>\u06f1\u06f2 \u0633\u0627\u0639\u062a \u0628\u06cc\u0646 \u0644\u0627\u06cc\u0647\u200c\u0647\u0627</strong>'},
+          {i:'💧', t:'<strong>\u0633\u0637\u0648\u062d \u062c\u0627\u0630\u0628 \u0631\u0647 \u062a\u0631 \u06a9\u0646\u06cc\u062f</strong>'},
+        ],
+        descs: ['\u0631\u0646\u06af \u06a9\u0627\u0645\u0644','\u062a\u0642\u0631\u06cc\u0628\u0627\u064b \u06a9\u0627\u0645\u0644','\u0628\u0633\u06cc\u0627\u0631 \u063a\u0644\u06cc\u0638','\u063a\u0644\u06cc\u0638','\u0642\u0648\u06cc','\u067e\u0648\u0634\u0634 \u062e\u0648\u0628','\u0628\u0627\u0641\u062a \u0646\u0645\u0627\u06cc\u0627\u0646','\u0631\u0646\u06af + \u0628\u0627\u0641\u062a','\u0645\u062a\u0639\u0627\u062f\u0644','\u0646\u06cc\u0645\u0647\u200c\u0646\u06cc\u0645\u0647','\u0634\u0641\u0627\u0641\u200c\u062a\u0631','\u0634\u0633\u062a\u0634\u0648\u06cc \u0645\u0644\u0627\u06cc\u0645','\u062a\u0647 \u0631\u0646\u06af \u0644\u0637\u06cc\u0641','\u062d\u062c\u0627\u0628 \u0646\u0631\u0645','\u0628\u0633\u06cc\u0627\u0631 \u06a9\u0645','\u0627\u0634\u0627\u0631\u0647 \u0627\u0632 \u0631\u0646\u06af','\u062a\u0642\u0631\u06cc\u0628\u0627\u064b \u0647\u06cc\u0686','\u0634\u0628\u062d\u200c\u06af\u0648\u0646\u0647']
+      },
+      hr: {
+        flag: '🇭🇷', name: 'Hrvatski',
+        headerSub: 'Vodi\u010d za mije\u0161anje',
+        step1: 'Odaberite omjer', step2: 'Koliko?', step3: 'Ulijte ovo',
+        solid: 'PUNA BOJA', transparent: 'PROZIRNO',
+        customRatio: 'Ili unesite vlastiti omjer', customVol: 'Ili unesite vlastitu koli\u010dinu',
+        colour: 'Pigment', clear: 'Fixativ',
+        samples: 'Uzorci', buckets: 'Kante i ba\u010dve',
+        litres: 'Litara', mixed: 'MIJE\u0160ANO', ready: 'Spremno za nano\u0161enje',
+        mixInto: '\u2193 pomije\u0161ajte \u2193', total: 'ukupno',
+        adjust: 'Prilagodite na okrugle brojeve', reset: 'Resetiraj', adjTotal: 'Prilago\u0111eni ukupno:',
+        beforeStart: 'Prije po\u010detka', refTitle: 'Brza referenca', thPct: 'Pigment %', thRatio: 'Omjer', thLook: 'Izgled',
+        footer: 'KEIM Australia \u00b7 Za potpunu tehni\u010dku dokumentaciju posjetite keim.com.au',
+        rules: [
+          {i:'🚫', t:'<span class="rule-danger">BEZ VODE \u2014 razrje\u0111ujte samo Fixativom</span>'},
+          {i:'🧪', t:'<strong>Prvo probni nanos</strong> \u2014 pustite da se potpuno osu\u0161i'},
+          {i:'🔄', t:'<strong>Promije\u0161ajte prije ulijevanja</strong> \u2014 svako 10\u201315 minuta'},
+          {i:'🔩', t:'<strong>Mije\u0161ajte samo bu\u0161ilicom</strong> \u2014 ne ru\u010dno, minimalno 2 minute'},
+          {i:'🖌\uFE0F', t:'<strong>Mokri rub</strong> \u2014 ne zaustavljajte se na sredini zida'},
+          {i:'📦', t:'<strong>Mije\u0161ajte samo za taj dan</strong>'},
+          {i:'🧱', t:'<strong>Samo mineralne podloge</strong> \u2014 beton, \u017ebuka, zidovi'},
+          {i:'✂\uFE0F', t:'<strong>Nano\u0161enje unakrsnim uzorkom</strong>'},
+          {i:'🌡\uFE0F', t:'<strong>Temperatura 5\u00b0C \u2013 30\u00b0C</strong>'},
+          {i:'⏳', t:'<strong>Su\u0161enje ~12 sati</strong> \u2014 izme\u0111u slojeva'},
+          {i:'💧', t:'<strong>Navla\u017eite upojne povr\u0161ine</strong>'},
+        ],
+        descs: ['Puna boja','Gotovo puna','Vrlo gusto','Gusto','Jako','Dobra pokrivenost','Vidi se zrno','Boja + tekstura','Uravnote\u017eeno','Pola-pola','Vi\u0161e bistrog','Lagani premaz','Ne\u017eni ton','Meki veo','Vrlo lagano','Nagovje\u0161taj boje','Jedva vidljivo','Prozirni veo']
+      },
+      ar: {
+        flag: '🇸🇦', name: '\u0627\u0644\u0639\u0631\u0628\u064a\u0629', rtl: true,
+        headerSub: '\u062f\u0644\u064a\u0644 \u0627\u0644\u062e\u0644\u0637',
+        step1: '\u0627\u062e\u062a\u0631 \u0627\u0644\u0646\u0633\u0628\u0629', step2: '\u0643\u0645 \u062a\u062d\u062a\u0627\u062c\u061f', step3: '\u0627\u0633\u0643\u0628 \u0647\u0630\u0627',
+        solid: '\u0644\u0648\u0646 \u0643\u0627\u0645\u0644', transparent: '\u0634\u0641\u0627\u0641',
+        customRatio: '\u0623\u0648 \u0623\u062f\u062e\u0644 \u0646\u0633\u0628\u062a\u0643', customVol: '\u0623\u0648 \u0623\u062f\u062e\u0644 \u0627\u0644\u0643\u0645\u064a\u0629',
+        colour: 'Pigment', clear: 'Fixativ',
+        samples: '\u0639\u064a\u0646\u0627\u062a', buckets: '\u062f\u0644\u0627\u0621 \u0648 \u0628\u0631\u0627\u0645\u064a\u0644',
+        litres: '\u0644\u062a\u0631', mixed: '\u0645\u062e\u0644\u0648\u0637', ready: '\u062c\u0627\u0647\u0632 \u0644\u0644\u062a\u0637\u0628\u064a\u0642',
+        mixInto: '\u2193 \u0627\u062e\u0644\u0637 \u2193', total: '\u0627\u0644\u0645\u062c\u0645\u0648\u0639',
+        adjust: '\u0639\u062f\u0644 \u0625\u0644\u0649 \u0623\u0631\u0642\u0627\u0645 \u0635\u062d\u064a\u062d\u0629', reset: '\u0625\u0639\u0627\u062f\u0629', adjTotal: '\u0627\u0644\u0645\u062c\u0645\u0648\u0639 \u0627\u0644\u0645\u0639\u062f\u0644:',
+        beforeStart: '\u0642\u0628\u0644 \u0627\u0644\u0628\u062f\u0621', refTitle: '\u0645\u0631\u062c\u0639 \u0633\u0631\u064a\u0639', thPct: 'Pigment %', thRatio: '\u0627\u0644\u0646\u0633\u0628\u0629', thLook: '\u0627\u0644\u0645\u0638\u0647\u0631',
+        footer: 'KEIM Australia \u00b7 \u0644\u0644\u0645\u0639\u0644\u0648\u0645\u0627\u062a \u0627\u0644\u0643\u0627\u0645\u0644\u0629 keim.com.au',
+        rules: [
+          {i:'🚫', t:'<span class="rule-danger">\u0645\u0645\u0646\u0648\u0639 \u0627\u0644\u0645\u0627\u0621 \u2014 \u0627\u0633\u062a\u062e\u062f\u0645 Fixativ \u0641\u0642\u0637</span>'},
+          {i:'🧪', t:'<strong>\u0627\u062e\u062a\u0628\u0631 \u0623\u0648\u0644\u0627\u064b</strong> \u2014 \u0627\u062a\u0631\u0643\u0647 \u064a\u062c\u0641 \u062a\u0645\u0627\u0645\u0627\u064b'},
+          {i:'🔄', t:'<strong>\u062d\u0631\u0643 \u0642\u0628\u0644 \u0627\u0644\u0633\u0643\u0628</strong> \u2014 \u0643\u0644 \u0661\u0660\u2013\u0661\u0665 \u062f\u0642\u064a\u0642\u0629'},
+          {i:'🔩', t:'<strong>\u0627\u062e\u0644\u0637 \u0628\u0627\u0644\u062f\u0631\u064a\u0644 \u0641\u0642\u0637</strong> \u2014 \u0644\u0627 \u062a\u062e\u0644\u0637 \u064a\u062f\u0648\u064a\u0627\u064b'},
+          {i:'🖌\uFE0F', t:'<strong>\u062d\u0627\u0641\u0629 \u0631\u0637\u0628\u0629</strong> \u2014 \u0644\u0627 \u062a\u062a\u0648\u0642\u0641 \u0641\u064a \u0645\u0646\u062a\u0635\u0641 \u0627\u0644\u062c\u062f\u0627\u0631'},
+          {i:'📦', t:'<strong>\u0627\u062e\u0644\u0637 \u0644\u0644\u064a\u0648\u0645 \u0641\u0642\u0637</strong>'},
+          {i:'🧱', t:'<strong>\u0623\u0633\u0637\u062d \u0645\u0639\u062f\u0646\u064a\u0629 \u0641\u0642\u0637</strong> \u2014 \u062e\u0631\u0633\u0627\u0646\u0629\u060c \u0644\u064a\u0627\u0633\u0629\u060c \u0637\u0648\u0628'},
+          {i:'✂\uFE0F', t:'<strong>\u0637\u0628\u0642 \u0628\u0646\u0645\u0637 \u0645\u062a\u0642\u0627\u0637\u0639</strong>'},
+          {i:'🌡\uFE0F', t:'<strong>\u0627\u0644\u062d\u0631\u0627\u0631\u0629 \u0665\u2013\u0663\u0660 \u062f\u0631\u062c\u0629</strong>'},
+          {i:'⏳', t:'<strong>\u0627\u0644\u062a\u062c\u0641\u064a\u0641 ~\u0661\u0662 \u0633\u0627\u0639\u0629</strong> \u2014 \u0628\u064a\u0646 \u0627\u0644\u0637\u0628\u0642\u0627\u062a'},
+          {i:'💧', t:'<strong>\u0628\u0644\u0644 \u0627\u0644\u0623\u0633\u0637\u062d \u0627\u0644\u0645\u0633\u0627\u0645\u064a\u0629</strong>'},
+        ],
+        descs: ['\u0644\u0648\u0646 \u0643\u0627\u0645\u0644','\u062a\u0642\u0631\u064a\u0628\u0627\u064b \u0643\u0627\u0645\u0644','\u063a\u0644\u064a\u0638 \u062c\u062f\u0627\u064b','\u063a\u0644\u064a\u0638','\u0642\u0648\u064a','\u062a\u063a\u0637\u064a\u0629 \u062c\u064a\u062f\u0629','\u0627\u0644\u062d\u0628\u064a\u0628\u0627\u062a \u0638\u0627\u0647\u0631\u0629','\u0644\u0648\u0646 + \u0645\u0644\u0645\u0633','\u0645\u062a\u0648\u0627\u0632\u0646','\u0646\u0635\u0641-\u0646\u0635\u0641','\u0634\u0641\u0627\u0641 \u0623\u0643\u062b\u0631','\u063a\u0633\u064a\u0644 \u062e\u0641\u064a\u0641','\u0644\u0645\u0633\u0629 \u0644\u0637\u064a\u0641\u0629','\u062d\u062c\u0627\u0628 \u0646\u0627\u0639\u0645','\u062e\u0641\u064a\u0641 \u062c\u062f\u0627\u064b','\u0625\u0634\u0627\u0631\u0629 \u0644\u0648\u0646','\u0628\u0627\u0644\u0643\u0627\u062f \u0645\u0631\u0626\u064a','\u062d\u062c\u0627\u0628 \u0634\u0628\u062d\u064a']
+      },
+      pl: {
+        flag: '🇵🇱', name: 'Polski',
+        headerSub: 'Poradnik mieszania',
+        step1: 'Wybierz proporcj\u0119', step2: 'Ile?', step3: 'Wlej to',
+        solid: 'PE\u0141NY KOLOR', transparent: 'PRZEZROCZYSTY',
+        customRatio: 'Lub wpisz w\u0142asn\u0105 proporcj\u0119', customVol: 'Lub wpisz w\u0142asn\u0105 ilo\u015b\u0107',
+        colour: 'Pigment', clear: 'Fixativ',
+        samples: 'Pr\u00f3bki', buckets: 'Wiadra i beczki',
+        litres: 'Litr\u00f3w', mixed: 'MIESZANKA', ready: 'Gotowe do aplikacji',
+        mixInto: '\u2193 wymiesza\u0107 \u2193', total: '\u0142\u0105cznie',
+        adjust: 'Dostosuj do okr\u0105g\u0142ych liczb', reset: 'Resetuj', adjTotal: 'Suma po korekcie:',
+        beforeStart: 'Zanim zaczniesz', refTitle: 'Szybka referencja', thPct: 'Pigment %', thRatio: 'Proporcja', thLook: 'Wygląd',
+        footer: 'KEIM Australia \u00b7 Pe\u0142na dokumentacja na keim.com.au',
+        rules: [
+          {i:'🚫', t:'<span class="rule-danger">BEZ WODY \u2014 rozcie\u0144czaj tylko Fixativem</span>'},
+          {i:'🧪', t:'<strong>Najpierw pr\u00f3bka</strong> \u2014 poczekaj a\u017c wyschnie'},
+          {i:'🔄', t:'<strong>Mieszaj przed wylaniem</strong> \u2014 co 10\u201315 minut'},
+          {i:'🔩', t:'<strong>Mieszaj tylko wiertark\u0105</strong> \u2014 nie r\u0119cznie, min. 2 minuty'},
+          {i:'🖌\uFE0F', t:'<strong>Mokra kraw\u0119d\u017a</strong> \u2014 nie przerywaj w po\u0142owie \u015bciany'},
+          {i:'📦', t:'<strong>Mieszaj tylko na dany dzie\u0144</strong>'},
+          {i:'🧱', t:'<strong>Tylko pod\u0142o\u017ca mineralne</strong> \u2014 beton, tynk, mur'},
+          {i:'✂\uFE0F', t:'<strong>Nak\u0142adaj krzy\u017cowo</strong>'},
+          {i:'🌡\uFE0F', t:'<strong>Temperatura 5\u00b0C \u2013 30\u00b0C</strong>'},
+          {i:'⏳', t:'<strong>Schni\u0119cie ~12 godz.</strong> \u2014 mi\u0119dzy warstwami'},
+          {i:'💧', t:'<strong>Zwil\u017c ch\u0142onne powierzchnie</strong>'},
+        ],
+        descs: ['Pe\u0142ny kolor','Prawie pe\u0142ny','Bardzo g\u0119sty','G\u0119sty kolor','Mocny','Dobre krycie','Wida\u0107 ziarno','Kolor + tekstura','Zr\u00f3wnowa\u017cony','P\u00f3\u0142 na p\u00f3\u0142','Wi\u0119cej bezbarwnego','Lekki mycie','Delikatny odcie\u0144','Mi\u0119kki welon','Bardzo lekki','Odrobin\u0105 koloru','Ledwo widoczny','Welon duchowy']
+      },
+      de: {
+        flag: '🇩🇪', name: 'Deutsch',
+        headerSub: 'Mischanleitung',
+        step1: 'Mischverh\u00e4ltnis w\u00e4hlen', step2: 'Wie viel?', step3: 'Dies einf\u00fcllen',
+        solid: 'DECKEND', transparent: 'TRANSPARENT',
+        customRatio: 'Oder eigenes Verh\u00e4ltnis eingeben', customVol: 'Oder eigene Menge eingeben',
+        colour: 'Pigment', clear: 'Fixativ',
+        samples: 'Probedosen', buckets: 'Eimer & F\u00e4sser',
+        litres: 'Liter', mixed: 'GEMISCHT', ready: 'Auftragfertig',
+        mixInto: '\u2193 mischen \u2193', total: 'gesamt',
+        adjust: 'Auf runde Zahlen anpassen', reset: 'Zur\u00fccksetzen', adjTotal: 'Angepasste Summe:',
+        beforeStart: 'Bevor Sie beginnen', refTitle: 'Kurzreferenz', thPct: 'Pigment %', thRatio: 'Verhältnis', thLook: 'Aussehen',
+        footer: 'KEIM Australia \u00b7 Vollst\u00e4ndiges TDB auf keim.com.au',
+        rules: [
+          {i:'🚫', t:'<span class="rule-danger">KEIN WASSER \u2014 nur mit Fixativ verd\u00fcnnen</span>'},
+          {i:'🧪', t:'<strong>Erst Probeanstrich</strong> \u2014 vollst\u00e4ndig trocknen lassen'},
+          {i:'🔄', t:'<strong>Vor dem Gie\u00dfen umr\u00fchren</strong> \u2014 alle 10\u201315 Min. nachf\u00fchren'},
+          {i:'🔩', t:'<strong>Nur mit Bohrmaschine mischen</strong> \u2014 nicht per Hand, mindestens 2 Minuten'},
+          {i:'🖌\uFE0F', t:'<strong>Nass-in-Nass</strong> \u2014 nicht mitten in der Wand aufh\u00f6ren'},
+          {i:'📦', t:'<strong>Nur den Tagesbedarf mischen</strong>'},
+          {i:'🧱', t:'<strong>Nur mineralische Untergr\u00fcnde</strong> \u2014 Beton, Putz, Mauerwerk'},
+          {i:'✂\uFE0F', t:'<strong>Kreuzweise auftragen</strong>'},
+          {i:'🌡\uFE0F', t:'<strong>Temperatur 5\u00b0C \u2013 30\u00b0C</strong>'},
+          {i:'⏳', t:'<strong>Trocknungszeit ~12 Std.</strong> \u2014 zwischen den Anstrichen'},
+          {i:'💧', t:'<strong>Saugende Fl\u00e4chen vorn\u00e4ssen</strong>'},
+        ],
+        descs: ['Vollton','Fast deckend','Sehr stark','Stark','Kr\u00e4ftig','Gute Deckung','Korn sichtbar','Farbe + Struktur','Ausgewogen','Halb und halb','Mehr klar','Leichte Lasur','Sanfter Ton','Weicher Schleier','Sehr leicht','Hauch von Farbe','Kaum sichtbar','Geisterschleier']
+      },
+      fr: {
+        flag: '🇫🇷', name: 'Fran\u00e7ais',
+        headerSub: 'Guide de m\u00e9lange',
+        step1: 'Choisir le ratio', step2: 'Quelle quantit\u00e9 ?', step3: 'Versez ceci',
+        solid: 'COULEUR PLEINE', transparent: 'TRANSPARENT',
+        customRatio: 'Ou entrez votre propre ratio', customVol: 'Ou entrez votre quantit\u00e9',
+        colour: 'Pigment', clear: 'Fixativ',
+        samples: '\u00c9chantillons', buckets: 'Seaux et f\u00fbts',
+        litres: 'Litres', mixed: 'M\u00c9LANG\u00c9', ready: 'Pr\u00eat \u00e0 appliquer',
+        mixInto: '\u2193 m\u00e9langer \u2193', total: 'total',
+        adjust: 'Ajuster aux nombres ronds', reset: 'R\u00e9init.', adjTotal: 'Total ajust\u00e9 :',
+        beforeStart: 'Avant de commencer', refTitle: 'Référence rapide', thPct: 'Pigment %', thRatio: 'Ratio', thLook: 'Aspect',
+        footer: 'KEIM Australia \u00b7 Fiche technique compl\u00e8te sur keim.com.au',
+        rules: [
+          {i:'🚫', t:'<span class="rule-danger">PAS D\u2019EAU \u2014 diluez uniquement avec Fixativ</span>'},
+          {i:'🧪', t:'<strong>Essai pr\u00e9alable</strong> \u2014 laissez s\u00e9cher compl\u00e8tement'},
+          {i:'🔄', t:'<strong>Remuez avant de verser</strong> \u2014 toutes les 10\u201315 min'},
+          {i:'🔩', t:'<strong>M\u00e9langez au malaxeur uniquement</strong> \u2014 pas \u00e0 la main, 2 min minimum'},
+          {i:'🖌\uFE0F', t:'<strong>Bord mouill\u00e9</strong> \u2014 ne vous arr\u00eatez pas en plein mur'},
+          {i:'📦', t:'<strong>Ne m\u00e9langez que pour la journ\u00e9e</strong>'},
+          {i:'🧱', t:'<strong>Supports min\u00e9raux uniquement</strong> \u2014 b\u00e9ton, enduit, ma\u00e7onnerie'},
+          {i:'✂\uFE0F', t:'<strong>Appliquez en crois\u00e9</strong>'},
+          {i:'🌡\uFE0F', t:'<strong>Temp\u00e9rature 5\u00b0C \u2013 30\u00b0C</strong>'},
+          {i:'⏳', t:'<strong>S\u00e9chage ~12 h</strong> \u2014 entre les couches'},
+          {i:'💧', t:'<strong>Humidifiez les surfaces poreuses</strong>'},
+        ],
+        descs: ['Couleur pleine','Presque plein','Tr\u00e8s \u00e9pais','Couleur forte','\u00c9nergique','Bonne couverture','Grain visible','Couleur + texture','\u00c9quilibr\u00e9','Moiti\u00e9-moiti\u00e9','Plus transparent','Lavis l\u00e9ger','Teinte douce','Voile doux','Tr\u00e8s l\u00e9ger','Soupcon de couleur','\u00c0 peine visible','Voile fant\u00f4me']
+      },
+      it: {
+        flag: '🇮🇹', name: 'Italiano',
+        headerSub: 'Guida alla miscelazione',
+        step1: 'Scegli il rapporto', step2: 'Quanto?', step3: 'Versa questo',
+        solid: 'COLORE PIENO', transparent: 'TRASPARENTE',
+        customRatio: 'Oppure inserisci il tuo rapporto', customVol: 'Oppure inserisci la quantit\u00e0',
+        colour: 'Pigment', clear: 'Fixativ',
+        samples: 'Campioni', buckets: 'Secchi e fusti',
+        litres: 'Litri', mixed: 'MISCELATO', ready: 'Pronto per applicare',
+        mixInto: '\u2193 miscelare \u2193', total: 'totale',
+        adjust: 'Regola a numeri tondi', reset: 'Reset', adjTotal: 'Totale regolato:',
+        beforeStart: 'Prima di iniziare', refTitle: 'Riferimento rapido', thPct: 'Pigment %', thRatio: 'Rapporto', thLook: 'Aspetto',
+        footer: 'KEIM Australia \u00b7 Scheda tecnica completa su keim.com.au',
+        rules: [
+          {i:'🚫', t:'<span class="rule-danger">NIENTE ACQUA \u2014 diluire solo con Fixativ</span>'},
+          {i:'🧪', t:'<strong>Prova prima</strong> \u2014 lascia asciugare completamente'},
+          {i:'🔄', t:'<strong>Mescola prima di versare</strong> \u2014 ogni 10\u201315 minuti'},
+          {i:'🔩', t:'<strong>Miscela solo con trapano</strong> \u2014 non a mano, almeno 2 minuti'},
+          {i:'🖌\uFE0F', t:'<strong>Bordo bagnato</strong> \u2014 non fermarti a met\u00e0 parete'},
+          {i:'📦', t:'<strong>Miscela solo per la giornata</strong>'},
+          {i:'🧱', t:'<strong>Solo supporti minerali</strong> \u2014 calcestruzzo, intonaco, muratura'},
+          {i:'✂\uFE0F', t:'<strong>Applica a croce</strong>'},
+          {i:'🌡\uFE0F', t:'<strong>Temperatura 5\u00b0C \u2013 30\u00b0C</strong>'},
+          {i:'⏳', t:'<strong>Asciugatura ~12 ore</strong> \u2014 tra le mani'},
+          {i:'💧', t:'<strong>Bagna le superfici assorbenti</strong>'},
+        ],
+        descs: ['Colore pieno','Quasi pieno','Molto denso','Denso','Forte','Buona copertura','Grana visibile','Colore + texture','Equilibrato','Met\u00e0 e met\u00e0','Pi\u00f9 trasparente','Lavaggio leggero','Tinta delicata','Velo morbido','Molto leggero','Accenno di colore','Appena visibile','Velo fantasma']
+      },
+      es: {
+        flag: '🇪🇸', name: 'Espa\u00f1ol',
+        headerSub: 'Gu\u00eda de mezcla',
+        step1: 'Elige la proporci\u00f3n', step2: '\u00bfCu\u00e1nto?', step3: 'Vierte esto',
+        solid: 'COLOR S\u00d3LIDO', transparent: 'TRANSPARENTE',
+        customRatio: 'O ingresa tu propia proporci\u00f3n', customVol: 'O ingresa tu propia cantidad',
+        colour: 'Pigment', clear: 'Fixativ',
+        samples: 'Muestras', buckets: 'Cubetas y tambores',
+        litres: 'Litros', mixed: 'MEZCLADO', ready: 'Listo para aplicar',
+        mixInto: '\u2193 mezclar \u2193', total: 'total',
+        adjust: 'Ajustar a n\u00fameros redondos', reset: 'Reiniciar', adjTotal: 'Total ajustado:',
+        beforeStart: 'Antes de empezar', refTitle: 'Referencia rápida', thPct: 'Pigment %', thRatio: 'Proporción', thLook: 'Aspecto',
+        footer: 'KEIM Australia \u00b7 Ficha t\u00e9cnica completa en keim.com.au',
+        rules: [
+          {i:'🚫', t:'<span class="rule-danger">SIN AGUA \u2014 solo diluir con Fixativ</span>'},
+          {i:'🧪', t:'<strong>Prueba primero</strong> \u2014 deja secar completamente'},
+          {i:'🔄', t:'<strong>Revuelve antes de verter</strong> \u2014 cada 10\u201315 min'},
+          {i:'🔩', t:'<strong>Mezcla solo con taladro</strong> \u2014 no a mano, m\u00edn. 2 minutos'},
+          {i:'🖌\uFE0F', t:'<strong>Borde h\u00famedo</strong> \u2014 no pares a mitad de pared'},
+          {i:'📦', t:'<strong>Mezcla solo para el d\u00eda</strong>'},
+          {i:'🧱', t:'<strong>Solo sustratos minerales</strong> \u2014 hormig\u00f3n, revoque, mamposter\u00eda'},
+          {i:'✂\uFE0F', t:'<strong>Aplica en patr\u00f3n cruzado</strong>'},
+          {i:'🌡\uFE0F', t:'<strong>Temperatura 5\u00b0C \u2013 30\u00b0C</strong>'},
+          {i:'⏳', t:'<strong>Secado ~12 horas</strong> \u2014 entre capas'},
+          {i:'💧', t:'<strong>Humedece superficies porosas</strong>'},
+        ],
+        descs: ['Color s\u00f3lido','Casi s\u00f3lido','Muy denso','Denso','Fuerte','Buena cobertura','Se ve el grano','Color + textura','Equilibrado','Mitad y mitad','M\u00e1s transparente','Lavado ligero','Tinte suave','Velo suave','Muy ligero','Toque de color','Apenas visible','Velo fantasma']
+      }
+    };
+
+    // ============ LANGUAGE SYSTEM ============
+    let curLang = localStorage.getItem('lasur-lang') || 'en';
+    const langOrder = ['en','slang','zh','fa','da','hr','ar','pl','de','fr','it','es'];
+
+    // Numeral maps: Persian/Dari use ۰-۹, Arabic uses ٠-٩
+    const numeralMaps = {
+        fa: '\u06f0\u06f1\u06f2\u06f3\u06f4\u06f5\u06f6\u06f7\u06f8\u06f9',
+        da: '\u06f0\u06f1\u06f2\u06f3\u06f4\u06f5\u06f6\u06f7\u06f8\u06f9',
+        ar: '\u0660\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669',
+    };
+    function localNum(str) {
+        const map = numeralMaps[curLang];
+        if (!map) return String(str);
+        return String(str).replace(/[0-9]/g, d => map[parseInt(d)]);
+    }
+
+    function t(key) { return (T[curLang] && T[curLang][key]) || T.en[key]; }
+    function desc(i) { return (T[curLang] && T[curLang].descs && T[curLang].descs[i]) || T.en.descs[i]; }
+
+    function setLang(lang) {
+        curLang = lang;
+        try { localStorage.setItem('lasur-lang', lang); } catch(e) {}
+        const isRtl = T[lang] && T[lang].rtl;
+        document.documentElement.setAttribute('dir', isRtl ? 'rtl' : 'ltr');
+        document.documentElement.setAttribute('lang', lang === 'slang' ? 'en-AU' : lang);
+        applyTranslations();
+        buildLangDropdown();
+        buildR(); buildV();
+        document.getElementById('langDropdown').classList.remove('open');
+        document.getElementById('langFlag').textContent = T[lang].flag || 'EN';
+        document.getElementById('langNameShort').textContent = T[lang].name;
+    }
+
+    function applyTranslations() {
+        document.getElementById('headerSub').textContent = t('headerSub');
+        document.getElementById('step1Title').textContent = t('step1');
+        document.getElementById('step2Title').textContent = t('step2');
+        document.getElementById('step3Title').textContent = t('step3');
+        document.getElementById('specSolid').textContent = '\u25a0 ' + t('solid');
+        document.getElementById('specTrans').textContent = t('transparent') + ' \u25a0';
+        document.getElementById('customRatioLabel').textContent = t('customRatio');
+        document.getElementById('customVolLabel').textContent = t('customVol');
+        document.getElementById('lblColour').textContent = t('colour');
+        document.getElementById('lblClear').textContent = t('clear');
+        document.getElementById('lblSamples').textContent = t('samples');
+        document.getElementById('lblBuckets').textContent = t('buckets');
+        document.getElementById('tagColour').textContent = t('colour').toUpperCase();
+        document.getElementById('tagClear').textContent = t('clear').toUpperCase();
+        document.getElementById('tagMixed').textContent = t('mixed');
+        document.getElementById('tagReady').textContent = t('ready');
+        document.getElementById('mixArrow').textContent = t('mixInto');
+        document.getElementById('lblTotal').textContent = t('total');
+        document.getElementById('barLblColour').textContent = t('colour');
+        document.getElementById('barLblClear').textContent = t('clear');
+        document.getElementById('adjTitle').textContent = t('adjust');
+        document.getElementById('resetBtn').textContent = t('reset');
+        document.getElementById('adjTotalLabel').textContent = t('adjTotal');
+        document.getElementById('adjLblP').textContent = t('colour');
+        document.getElementById('adjLblD').textContent = t('clear');
+        document.getElementById('footerText').textContent = t('footer');
+        // Rules & Reference table
+        buildRules();
+        buildRefTable();
+    }
+
+    function buildRules() {
+        const rules = t('rules');
+        const card = document.getElementById('rulesCard');
+        card.innerHTML = `
+            <div class="rules-header">
+                <span style="font-size:15px">\u26a0\ufe0f</span>
+                <p class="rules-header-text">${t('beforeStart')}</p>
+            </div>
+            <div class="rules-body">
+                ${rules.map(r => `<div class="rule"><span class="rule-icon">${r.i}</span><span>${r.t}</span></div>`).join('')}
+            </div>
+        `;
+    }
+
+    // Reference table data: colour%, ratio, description key index
+    const refData = [
+        { pct: 100, ratio: '1 : 0', di: 0 },
+        { pct: 90,  ratio: '9 : 1', di: 1 },
+        { pct: 80,  ratio: '4 : 1', di: 5 },
+        { pct: 70,  ratio: '7 : 3', di: 6 },
+        { pct: 60,  ratio: '3 : 2', di: 8 },
+        { pct: 50,  ratio: '1 : 1', di: 9 },
+        { pct: 40,  ratio: '2 : 3', di: 10 },
+        { pct: 30,  ratio: '1 : 2.3', di: 11 },
+        { pct: 20,  ratio: '1 : 4', di: 13 },
+        { pct: 10,  ratio: '1 : 9', di: 16 },
+        { pct: 5,   ratio: '1 : 19', di: 17 },
+    ];
+
+    function buildRefTable() {
+        document.getElementById('refTitle').textContent = t('refTitle');
+        const tbl = document.getElementById('refTable');
+        tbl.innerHTML = `
+            <thead><tr>
+                <th></th>
+                <th>${t('thPct')}</th>
+                <th>${t('thRatio')}</th>
+                <th>${t('thLook')}</th>
+            </tr></thead>
+            <tbody>
+                ${refData.map(r => `<tr>
+                    <td class="ref-bar-cell"><div class="ref-bar" style="width:${Math.max(r.pct * 0.6, 3)}px"></div></td>
+                    <td class="col-pct">${localNum(r.pct + '%')}</td>
+                    <td class="col-ratio">${localNum(r.ratio)}</td>
+                    <td class="col-desc">${desc(r.di)}</td>
+                </tr>`).join('')}
+            </tbody>
+        `;
+    }
+
+    function buildLangDropdown() {
+        const dd = document.getElementById('langDropdown');
+        dd.innerHTML = '';
+        langOrder.forEach(code => {
+            const lang = T[code];
+            const btn = document.createElement('button');
+            btn.className = 'lang-option' + (code === curLang ? ' active' : '');
+            btn.innerHTML = `<span class="lang-flag">${lang.flag}</span> ${lang.name}`;
+            btn.onclick = (e) => { e.stopPropagation(); setLang(code); };
+            dd.appendChild(btn);
+        });
+    }
+
+    function toggleLang() {
+        const dd = document.getElementById('langDropdown');
+        dd.classList.toggle('open');
+    }
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.lang-wrap')) {
+            document.getElementById('langDropdown').classList.remove('open');
+        }
+    });
+
+    // ============ DATA ============
     const ratios = [
-        { p:1,  d:0,  label:'1 : 0',  desc:'Solid colour',    pct:100 },
-        { p:10, d:1,  label:'10 : 1', desc:'Almost solid',     pct:91  },
-        { p:8,  d:1,  label:'8 : 1',  desc:'Very heavy',       pct:89  },
-        { p:6,  d:1,  label:'6 : 1',  desc:'Heavy colour',     pct:86  },
-        { p:5,  d:1,  label:'5 : 1',  desc:'Strong',           pct:83  },
-        { p:4,  d:1,  label:'4 : 1',  desc:'Good coverage',    pct:80  },
-        { p:3,  d:1,  label:'3 : 1',  desc:'Grain showing',    pct:75  },
-        { p:2,  d:1,  label:'2 : 1',  desc:'Colour + texture', pct:67  },
-        { p:3,  d:2,  label:'3 : 2',  desc:'Balanced',         pct:60  },
-        { p:1,  d:1,  label:'1 : 1',  desc:'Half-half',        pct:50  },
-        { p:2,  d:3,  label:'2 : 3',  desc:'More clear',       pct:40  },
-        { p:1,  d:2,  label:'1 : 2',  desc:'Light wash',       pct:33  },
-        { p:1,  d:3,  label:'1 : 3',  desc:'Gentle tint',      pct:25  },
-        { p:1,  d:4,  label:'1 : 4',  desc:'Soft veil',        pct:20  },
-        { p:1,  d:5,  label:'1 : 5',  desc:'Very light',       pct:17  },
-        { p:1,  d:6,  label:'1 : 6',  desc:'Hint of colour',   pct:14  },
-        { p:1,  d:8,  label:'1 : 8',  desc:'Barely there',     pct:11  },
-        { p:1,  d:10, label:'1 : 10', desc:'Ghost veil',       pct:9   },
+        { p:1,  d:0,  label:'1 : 0',  pct:100 },
+        { p:10, d:1,  label:'10 : 1', pct:91  },
+        { p:8,  d:1,  label:'8 : 1',  pct:89  },
+        { p:6,  d:1,  label:'6 : 1',  pct:86  },
+        { p:5,  d:1,  label:'5 : 1',  pct:83  },
+        { p:4,  d:1,  label:'4 : 1',  pct:80  },
+        { p:3,  d:1,  label:'3 : 1',  pct:75  },
+        { p:2,  d:1,  label:'2 : 1',  pct:67  },
+        { p:3,  d:2,  label:'3 : 2',  pct:60  },
+        { p:1,  d:1,  label:'1 : 1',  pct:50  },
+        { p:2,  d:3,  label:'2 : 3',  pct:40  },
+        { p:1,  d:2,  label:'1 : 2',  pct:33  },
+        { p:1,  d:3,  label:'1 : 3',  pct:25  },
+        { p:1,  d:4,  label:'1 : 4',  pct:20  },
+        { p:1,  d:5,  label:'1 : 5',  pct:17  },
+        { p:1,  d:6,  label:'1 : 6',  pct:14  },
+        { p:1,  d:8,  label:'1 : 8',  pct:11  },
+        { p:1,  d:10, label:'1 : 10', pct:9   },
     ];
 
     const volumes = [
@@ -543,7 +1094,7 @@
 
     function buildR() {
         const el = document.getElementById('ratioList'); el.innerHTML = '';
-        ratios.forEach(r => {
+        ratios.forEach((r, idx) => {
             const on = selR && selR.label === r.label && selR.desc !== 'Custom';
             const btn = document.createElement('button');
             btn.className = 'ratio-btn' + (on ? ' active' : '');
@@ -551,8 +1102,9 @@
                 <div class="ratio-bar-track">
                     <div class="ratio-bar-fill" style="width:${Math.max(r.pct,6)}%;background:${r.pct > 50 ? 'linear-gradient(90deg,#0d9488,#2dd4bf)' : 'linear-gradient(90deg,rgba(45,212,191,0.3),rgba(45,212,191,0.6))'}"></div>
                 </div>
-                <span class="ratio-label" style="color:${on ? '#5eead4' : 'rgba(255,255,255,0.35)'}">${r.label}</span>
-                <span class="ratio-desc" style="color:${on ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.1)'}">${r.desc}</span>
+                <span class="ratio-pct" style="color:${on ? '#5eead4' : 'rgba(255,255,255,0.12)'}">${localNum(r.pct + '%')}</span>
+                <span class="ratio-label" style="color:${on ? '#5eead4' : 'rgba(255,255,255,0.35)'}">${localNum(r.label)}</span>
+                <span class="ratio-desc" style="color:${on ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.1)'}">${desc(idx)}</span>
             `;
             btn.onclick = () => { selR = r; customP.value = ''; customD.value = ''; refresh(); };
             el.appendChild(btn);
@@ -567,7 +1119,7 @@
             const on = selV === v.val && customVolInput.value === '';
             const btn = document.createElement('button');
             btn.className = 'vol-btn ' + (v.sample ? 'sample' : 'bucket') + (on ? ' active' : '');
-            btn.textContent = v.label;
+            btn.textContent = localNum(v.label);
             btn.onclick = () => { selV = v.val; customVolInput.value = ''; refresh(); };
             (v.sample ? sEl : gEl).appendChild(btn);
         });
@@ -589,30 +1141,26 @@
     }
 
     function showResult(pig, dil, tot, useML) {
-        document.getElementById('resPig').textContent = useML ? Math.round(pig * 1000) : pig.toFixed(1);
-        document.getElementById('resDil').textContent = useML ? Math.round(dil * 1000) : dil.toFixed(1);
-        const u = useML ? 'ml' : 'Litres';
+        const litresWord = t('litres');
+        document.getElementById('resPig').textContent = localNum(useML ? Math.round(pig * 1000) : pig.toFixed(1));
+        document.getElementById('resDil').textContent = localNum(useML ? Math.round(dil * 1000) : dil.toFixed(1));
+        const u = useML ? localNum('ml') : litresWord;
         document.getElementById('unitPig').textContent = u;
         document.getElementById('unitDil').textContent = u;
-        const totStr = useML ? Math.round(tot * 1000) + 'ml' : tot + 'L';
+        const totStr = localNum(useML ? Math.round(tot * 1000) + 'ml' : tot.toFixed(1) + 'L');
         document.getElementById('resTot').textContent = totStr;
-        document.getElementById('resTotAmount').textContent = useML ? Math.round(tot * 1000) : tot.toFixed(1);
+        document.getElementById('resTotAmount').textContent = localNum(useML ? Math.round(tot * 1000) : tot.toFixed(1));
         document.getElementById('resTotUnit').textContent = u;
 
         const mx = Math.max(pig, dil, 0.001);
         setCup('cupFillP', 'cupShineP', Math.max((pig / mx) * 100, pig > 0 ? 8 : 0));
         setCup('cupFillD', 'cupShineD', Math.max((dil / mx) * 100, dil > 0 ? 8 : 0));
-
-        // Mixed cup — always full
         setCupM(95);
 
-        // Blend the gradient based on ratio
         const pigPct = tot > 0 ? pig / tot : 0.5;
-        // Interpolate between teal (#2dd4bf) and stone (#a8a29e) for the top stop
         const r1 = Math.round(45 + (168-45) * (1-pigPct));
         const g1 = Math.round(212 + (162-212) * (1-pigPct));
         const b1 = Math.round(191 + (158-191) * (1-pigPct));
-        // Bottom stop: darker version
         const r2 = Math.round(13 + (120-13) * (1-pigPct));
         const g2 = Math.round(148 + (113-148) * (1-pigPct));
         const b2 = Math.round(136 + (108-136) * (1-pigPct));
@@ -636,7 +1184,7 @@
 
         document.getElementById('barPig').style.width = Math.max(selR.pct, 3) + '%';
         document.getElementById('barDil').style.width = Math.max(100 - selR.pct, 3) + '%';
-        document.getElementById('ratioLabel').textContent = selR.label;
+        document.getElementById('ratioLabel').textContent = localNum(selR.label);
 
         const card = document.getElementById('resultCard');
         card.style.animation = 'none'; void card.offsetWidth;
@@ -687,11 +1235,11 @@
 
     function updSliderUI(useML) {
         const u = useML ? 'ml' : 'L';
-        document.getElementById('avP').textContent = useML ? Math.round(adjPig*1000) : adjPig.toFixed(1);
-        document.getElementById('avD').textContent = useML ? Math.round(adjDil*1000) : adjDil.toFixed(1);
+        document.getElementById('avP').textContent = localNum(useML ? Math.round(adjPig*1000) : adjPig.toFixed(1));
+        document.getElementById('avD').textContent = localNum(useML ? Math.round(adjDil*1000) : adjDil.toFixed(1));
         document.getElementById('auP').textContent = u;
         document.getElementById('auD').textContent = u;
-        document.getElementById('adjTot').textContent = useML ? Math.round((adjPig+adjDil)*1000)+'ml' : (adjPig+adjDil).toFixed(1)+'L';
+        document.getElementById('adjTot').textContent = localNum(useML ? Math.round((adjPig+adjDil)*1000)+'ml' : (adjPig+adjDil).toFixed(1)+'L');
         delta('adP', adjPig - basePig, useML);
         delta('adD', adjDil - baseDil, useML);
         document.getElementById('resetBtn').classList.toggle('vis', Math.abs(adjPig-basePig) > 0.01 || Math.abs(adjDil-baseDil) > 0.01);
@@ -702,7 +1250,7 @@
         if (Math.abs(diff) < 0.01) { el.classList.remove('vis'); return; }
         el.classList.add('vis');
         const v = useML ? Math.round(diff*1000) : diff.toFixed(1);
-        el.textContent = (diff > 0 ? '+' : '') + v + (useML ? 'ml' : 'L');
+        el.textContent = localNum((diff > 0 ? '+' : '') + v + (useML ? 'ml' : 'L'));
         el.classList.toggle('up', diff > 0); el.classList.toggle('dn', diff < 0);
     }
 
@@ -714,6 +1262,8 @@
         updSliderUI(useML); showResult(basePig, baseDil, basePig + baseDil, useML);
     }
 
+    // ============ INIT ============
+    setLang(curLang);
     buildR(); buildV();
 
     // Register service worker for offline / PWA
