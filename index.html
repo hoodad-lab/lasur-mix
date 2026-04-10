@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>KEIM Lasur — Mix Guide</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d9488">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Lasur Mix">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <!-- SEO / Open Graph -->
+    <meta name="description" content="Quick mixing calculator for KEIM Concretal-Lasur. Pick your ratio, choose your volume, get exact amounts of colour and clear to pour.">
+    <meta property="og:title" content="KEIM Concretal-Lasur Mixing Guide">
+    <meta property="og:description" content="Quick mixing calculator for KEIM Concretal-Lasur and Concretal-Fixativ ratios.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://keim.com.au/lasur-calculator/">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            background: #0a0a0a; color: #fff;
+            min-height: 100vh; overflow-x: hidden;
+        }
+        input[type=number] { -moz-appearance: textfield; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        .bg-glow {
+            position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(ellipse at 30% 20%, rgba(20,184,166,0.06) 0%, transparent 50%),
+                        radial-gradient(ellipse at 70% 80%, rgba(13,148,136,0.04) 0%, transparent 50%);
+            pointer-events: none; z-index: 0;
+        }
+
+        .header {
+            position: sticky; top: 0; z-index: 30;
+            background: rgba(10,10,10,0.85);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .header-inner {
+            max-width: 460px; margin: 0 auto; padding: 14px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .header-title { font-size: 15px; font-weight: 800; color: rgba(255,255,255,0.9); letter-spacing: -0.02em; }
+        .header-sub { font-size: 9px; color: rgba(255,255,255,0.25); letter-spacing: 0.18em; text-transform: uppercase; margin-top: 1px; }
+        .header-link {
+            font-size: 10px; color: #2dd4bf; font-weight: 700;
+            border: 1px solid rgba(45,212,191,0.25); border-radius: 999px; padding: 4px 14px;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .header-link:hover { background: rgba(45,212,191,0.1); border-color: rgba(45,212,191,0.4); }
+
+        .main { max-width: 460px; margin: 0 auto; padding: 0 16px 60px; position: relative; z-index: 1; }
+
+        .step-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .step-badge {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: linear-gradient(135deg, #14b8a6, #0d9488);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 900; color: #fff; flex-shrink: 0;
+            box-shadow: 0 4px 16px rgba(20,184,166,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        .step-title { font-size: 17px; font-weight: 800; letter-spacing: -0.02em; }
+
+        .spectrum-label {
+            display: flex; justify-content: space-between; padding: 0 4px; margin-bottom: 4px;
+            font-size: 9px; color: rgba(255,255,255,0.12); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600;
+        }
+
+        .ratio-list {
+            border-radius: 20px; overflow: hidden;
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
+        }
+        .ratio-btn {
+            width: 100%; display: flex; align-items: center; gap: 12px;
+            padding: 9px 14px; border: none; cursor: pointer;
+            transition: all 0.15s ease; color: #fff; background: transparent;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+        .ratio-btn:last-child { border-bottom: none; }
+        .ratio-btn:hover { background: rgba(255,255,255,0.03); }
+        .ratio-btn.active { background: rgba(20,184,166,0.1); }
+        .ratio-bar-track { width: 44px; height: 10px; border-radius: 999px; background: rgba(255,255,255,0.04); overflow: hidden; flex-shrink: 0; }
+        .ratio-bar-fill { height: 100%; border-radius: 999px; transition: width 0.3s; }
+        .ratio-label { font-size: 15px; font-weight: 900; width: 58px; text-align: left; transition: color 0.15s; }
+        .ratio-desc { font-size: 11px; flex: 1; text-align: left; transition: color 0.15s; }
+
+        .glass-card {
+            margin-top: 10px; border-radius: 16px; padding: 14px;
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+        }
+        .glass-card-label {
+            font-size: 10px; color: rgba(255,255,255,0.2); font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px;
+        }
+        .custom-row { display: flex; align-items: center; gap: 10px; }
+        .custom-field { flex: 1; }
+        .custom-field label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+        .custom-field input {
+            width: 100%; border-radius: 10px; padding: 10px 12px;
+            font-size: 20px; font-weight: 900; text-align: center; outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-pig { background: rgba(20,184,166,0.06); border: 1.5px solid rgba(20,184,166,0.15); color: #5eead4; }
+        .input-pig:focus { border-color: rgba(20,184,166,0.4); box-shadow: 0 0 0 3px rgba(20,184,166,0.08); }
+        .input-dil { background: rgba(255,255,255,0.02); border: 1.5px solid rgba(255,255,255,0.06); color: #d6d3d1; }
+        .input-dil:focus { border-color: rgba(255,255,255,0.15); box-shadow: 0 0 0 3px rgba(255,255,255,0.03); }
+        .colon { font-size: 26px; font-weight: 900; color: rgba(255,255,255,0.1); padding-top: 16px; }
+
+        .vol-category-label {
+            font-size: 10px; color: rgba(255,255,255,0.2); font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.12em; margin-left: 4px;
+        }
+        .vol-grid-samples { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+        .vol-grid-buckets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 6px; }
+        .vol-btn {
+            border-radius: 14px; text-align: center; font-weight: 800; cursor: pointer;
+            transition: all 0.15s ease;
+            border: 2px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.015); color: rgba(255,255,255,0.2);
+        }
+        .vol-btn.sample { padding: 14px 0; font-size: 16px; }
+        .vol-btn.bucket { padding: 11px 0; font-size: 13px; }
+        .vol-btn:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+        .vol-btn.active {
+            background: rgba(20,184,166,0.12); border-color: rgba(45,212,191,0.4);
+            color: #5eead4; box-shadow: 0 0 16px rgba(20,184,166,0.08);
+        }
+
+        .unit-toggle { display: flex; border-radius: 10px; overflow: hidden; border: 1.5px solid rgba(255,255,255,0.06); flex-shrink: 0; }
+        .unit-btn {
+            padding: 10px 16px; font-size: 14px; font-weight: 700; cursor: pointer;
+            border: none; transition: all 0.15s; text-align: center;
+            background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.2);
+        }
+        .unit-btn + .unit-btn { border-left: 1px solid rgba(255,255,255,0.06); }
+        .unit-btn.active { background: rgba(20,184,166,0.12); color: #5eead4; }
+        .custom-vol-input {
+            flex: 1; min-width: 0; border-radius: 10px; padding: 10px 14px; font-size: 20px; font-weight: 900; outline: none;
+            background: rgba(255,255,255,0.02); border: 1.5px solid rgba(255,255,255,0.06); color: #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .custom-vol-input:focus { border-color: rgba(255,255,255,0.15); box-shadow: 0 0 0 3px rgba(255,255,255,0.03); }
+
+        .result-wrap { margin-top: 24px; }
+        .result-card {
+            border-radius: 28px; padding: 28px 22px 22px;
+            background: linear-gradient(180deg, rgba(26,26,26,1) 0%, rgba(20,20,20,1) 100%);
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+            animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes popIn { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        .cups-row { display: flex; align-items: flex-end; justify-content: center; gap: 4px; }
+        .cup-col { width: 44%; display: flex; flex-direction: column; align-items: center; }
+        .cup-plus { padding-bottom: 80px; font-size: 22px; font-weight: 900; color: rgba(255,255,255,0.06); }
+        .cup-amount { font-size: 34px; font-weight: 900; margin-top: 6px; line-height: 1; }
+        .cup-unit { font-size: 11px; font-weight: 700; margin-top: 3px; }
+        .cup-tag { margin-top: 10px; border-radius: 10px; padding: 5px 14px; text-align: center; }
+        .cup-tag-label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; }
+        .cup-tag-sub { font-size: 8px; color: rgba(255,255,255,0.15); margin-top: 1px; }
+
+        /* Mixed cup */
+        .mix-arrow { text-align: center; margin-top: 14px; font-size: 18px; color: rgba(255,255,255,0.08); font-weight: 900; }
+        .mix-cup-wrap { display: flex; justify-content: center; margin-top: 8px; }
+        .mix-cup-col { width: 50%; max-width: 180px; display: flex; flex-direction: column; align-items: center; }
+        .mix-amount { font-size: 30px; font-weight: 900; margin-top: 6px; line-height: 1; color: rgba(255,255,255,0.7); }
+        .mix-unit { font-size: 11px; font-weight: 700; margin-top: 3px; color: rgba(255,255,255,0.25); }
+        .mix-tag {
+            margin-top: 10px; border-radius: 10px; padding: 5px 14px; text-align: center;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+        }
+        .mix-tag-label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: rgba(255,255,255,0.35); }
+        .mix-tag-sub { font-size: 8px; color: rgba(255,255,255,0.12); margin-top: 1px; }
+
+        .equals-row { display: flex; align-items: center; gap: 14px; margin-top: 18px; }
+        .equals-line { flex: 1; height: 1px; background: rgba(255,255,255,0.05); }
+        .equals-text { font-size: 12px; font-weight: 800; color: rgba(255,255,255,0.2); white-space: nowrap; }
+        .equals-total { color: rgba(255,255,255,0.5); }
+
+        .ratio-bar-container { display: flex; border-radius: 999px; overflow: hidden; margin-top: 14px; height: 10px; }
+        .ratio-bar-pig { background: linear-gradient(90deg, #0d9488, #2dd4bf); transition: width 0.5s ease; }
+        .ratio-bar-dil { background: linear-gradient(90deg, #78716c, #a8a29e); transition: width 0.5s ease; }
+        .ratio-bar-labels { display: flex; justify-content: space-between; margin-top: 4px; padding: 0 2px; font-size: 8px; color: rgba(255,255,255,0.12); }
+        .ratio-bar-center { font-weight: 700; color: rgba(255,255,255,0.25); }
+
+        /* Adjustment sliders */
+        .adjust-section {
+            margin-top: 18px; padding: 16px 14px 14px; border-radius: 16px;
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+        }
+        .adjust-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .adjust-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.18); }
+        .adjust-reset {
+            font-size: 10px; font-weight: 700; color: rgba(20,184,166,0.5);
+            background: none; border: 1px solid rgba(20,184,166,0.12); border-radius: 999px;
+            padding: 3px 12px; cursor: pointer; display: none;
+        }
+        .adjust-reset.vis { display: inline-block; }
+        .adj-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .adj-row:last-of-type { margin-bottom: 0; }
+        .adj-label { width: 50px; font-size: 10px; font-weight: 800; letter-spacing: 0.06em; flex-shrink: 0; }
+        .adj-val { font-size: 16px; font-weight: 900; min-width: 46px; text-align: right; }
+        .adj-unit { font-size: 10px; color: rgba(255,255,255,0.12); font-weight: 600; width: 18px; }
+        .adj-delta { font-size: 9px; font-weight: 700; border-radius: 6px; padding: 2px 6px; margin-left: 2px; display: none; }
+        .adj-delta.vis { display: inline-block; }
+        .adj-delta.up { background: rgba(20,184,166,0.08); color: rgba(94,234,212,0.7); }
+        .adj-delta.dn { background: rgba(248,113,113,0.08); color: rgba(248,113,113,0.7); }
+        .adj-total {
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.03);
+            font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.12);
+        }
+        .adj-total-val { font-size: 13px; font-weight: 900; color: rgba(255,255,255,0.35); }
+
+        input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 999px; outline: none; cursor: pointer; }
+        input[type=range].rng-p { background: linear-gradient(90deg, rgba(13,148,136,0.12), rgba(45,212,191,0.2)); }
+        input[type=range].rng-d { background: linear-gradient(90deg, rgba(120,113,108,0.12), rgba(168,162,158,0.2)); }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.12); box-shadow: 0 2px 8px rgba(0,0,0,0.3); cursor: pointer;
+        }
+        input[type=range]::-moz-range-thumb {
+            width: 24px; height: 24px; border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.12); box-shadow: 0 2px 8px rgba(0,0,0,0.3); cursor: pointer;
+        }
+        input[type=range].rng-p::-webkit-slider-thumb { background: linear-gradient(135deg, #2dd4bf, #0d9488); }
+        input[type=range].rng-p::-moz-range-thumb { background: linear-gradient(135deg, #2dd4bf, #0d9488); }
+        input[type=range].rng-d::-webkit-slider-thumb { background: linear-gradient(135deg, #d6d3d1, #78716c); }
+        input[type=range].rng-d::-moz-range-thumb { background: linear-gradient(135deg, #d6d3d1, #78716c); }
+
+        .rules-card {
+            margin-top: 28px; border-radius: 20px; overflow: hidden;
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
+        }
+        .rules-header {
+            display: flex; align-items: center; gap: 10px; padding: 14px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.01);
+        }
+        .rules-header-text { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.3); }
+        .rules-body { padding: 16px 18px; }
+        .rule {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 8px 0; font-size: 12px; color: rgba(255,255,255,0.28); line-height: 1.5;
+        }
+        .rule:first-child { padding-top: 0; }
+        .rule:last-child { padding-bottom: 0; }
+        .rule-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+        .rule strong { color: rgba(255,255,255,0.5); font-weight: 600; }
+        .rule-danger { color: #f87171; font-weight: 700; }
+
+        .footer { text-align: center; margin-top: 32px; font-size: 9px; color: rgba(255,255,255,0.06); }
+
+        .cup-tick { stroke: rgba(255,255,255,0.05); stroke-width: 1; }
+        .cup-glass { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 1.5; }
+        .cup-handle { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 2; }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+
+    <div class="header">
+        <div class="header-inner">
+            <div>
+                <p class="header-title">KEIM Concretal-Lasur</p>
+                <p class="header-sub">Mixing Guide</p>
+            </div>
+            <a href="https://keim.com.au/products/concretal-lasur/" target="_blank" class="header-link">keim.com.au</a>
+        </div>
+    </div>
+
+    <div class="main">
+
+        <!-- STEP 1 -->
+        <div style="margin-top:20px">
+            <div class="step-row">
+                <div class="step-badge">1</div>
+                <p class="step-title">Pick your ratio</p>
+            </div>
+            <div class="spectrum-label"><span>■ SOLID COLOUR</span><span>TRANSPARENT ■</span></div>
+            <div id="ratioList" class="ratio-list"></div>
+            <div class="glass-card">
+                <p class="glass-card-label">Or enter your own ratio</p>
+                <div class="custom-row">
+                    <div class="custom-field">
+                        <label style="color:rgba(94,234,212,0.5)">Colour</label>
+                        <input type="number" id="customP" placeholder="1" min="0" inputmode="decimal" class="input-pig">
+                    </div>
+                    <span class="colon">:</span>
+                    <div class="custom-field">
+                        <label style="color:rgba(168,162,158,0.5)">Clear</label>
+                        <input type="number" id="customD" placeholder="1" min="0" inputmode="decimal" class="input-dil">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div style="margin-top:28px">
+            <div class="step-row">
+                <div class="step-badge">2</div>
+                <p class="step-title">How much?</p>
+            </div>
+            <p class="vol-category-label">Sample Pots</p>
+            <div id="volSamples" class="vol-grid-samples"></div>
+            <p class="vol-category-label" style="margin-top:16px">Buckets &amp; Drums</p>
+            <div id="volGrid" class="vol-grid-buckets"></div>
+            <div class="glass-card">
+                <p class="glass-card-label">Or enter your own amount</p>
+                <div style="display:flex;align-items:center;gap:10px">
+                    <input type="number" id="customVol" placeholder="e.g. 35" min="0" inputmode="decimal" class="custom-vol-input">
+                    <div class="unit-toggle">
+                        <button id="unitML" onclick="setCustomUnit('ml')" class="unit-btn">ml</button>
+                        <button id="unitL" onclick="setCustomUnit('L')" class="unit-btn active">L</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULT -->
+        <div id="answer" class="result-wrap" style="display:none">
+            <div class="step-row" style="margin-bottom:14px">
+                <div class="step-badge">✓</div>
+                <p class="step-title">Pour this</p>
+            </div>
+            <div id="resultCard" class="result-card">
+                <div class="cups-row">
+                    <div class="cup-col">
+                        <svg viewBox="0 0 100 130" style="width:100%;filter:drop-shadow(0 6px 16px rgba(0,0,0,0.35))">
+                            <defs>
+                                <clipPath id="cpP"><rect x="12" y="10" width="66" height="105" rx="6"/></clipPath>
+                                <linearGradient id="gradP" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5eead4"/><stop offset="100%" stop-color="#0d9488"/></linearGradient>
+                            </defs>
+                            <rect id="cupFillP" x="12" y="115" width="66" height="0" clip-path="url(#cpP)" fill="url(#gradP)" opacity="0.85"/>
+                            <rect id="cupShineP" x="14" y="115" width="62" height="3" rx="1.5" clip-path="url(#cpP)" fill="white" opacity="0.18"/>
+                            <line x1="16" y1="35" x2="30" y2="35" class="cup-tick"/><line x1="16" y1="58" x2="30" y2="58" class="cup-tick"/>
+                            <line x1="16" y1="81" x2="30" y2="81" class="cup-tick"/><line x1="16" y1="104" x2="30" y2="104" class="cup-tick"/>
+                            <rect x="12" y="10" width="66" height="105" rx="8" class="cup-glass"/>
+                            <path d="M12 10 Q6 10 8 18" class="cup-glass"/><path d="M78 35 Q95 35 95 62 Q95 88 78 88" class="cup-handle"/>
+                        </svg>
+                        <p class="cup-amount" style="color:#5eead4" id="resPig">—</p>
+                        <p class="cup-unit" style="color:rgba(94,234,212,0.5)" id="unitPig">Litres</p>
+                        <div class="cup-tag" style="background:rgba(13,148,136,0.15);border:1px solid rgba(13,148,136,0.25)">
+                            <p class="cup-tag-label" style="color:rgba(94,234,212,0.7)">COLOUR</p>
+                            <p class="cup-tag-sub">Concretal-Lasur</p>
+                        </div>
+                    </div>
+                    <div class="cup-plus">+</div>
+                    <div class="cup-col">
+                        <svg viewBox="0 0 100 130" style="width:100%;filter:drop-shadow(0 6px 16px rgba(0,0,0,0.35))">
+                            <defs>
+                                <clipPath id="cpD"><rect x="12" y="10" width="66" height="105" rx="6"/></clipPath>
+                                <linearGradient id="gradD" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d6d3d1"/><stop offset="100%" stop-color="#78716c"/></linearGradient>
+                            </defs>
+                            <rect id="cupFillD" x="12" y="115" width="66" height="0" clip-path="url(#cpD)" fill="url(#gradD)" opacity="0.75"/>
+                            <rect id="cupShineD" x="14" y="115" width="62" height="3" rx="1.5" clip-path="url(#cpD)" fill="white" opacity="0.12"/>
+                            <line x1="16" y1="35" x2="30" y2="35" class="cup-tick"/><line x1="16" y1="58" x2="30" y2="58" class="cup-tick"/>
+                            <line x1="16" y1="81" x2="30" y2="81" class="cup-tick"/><line x1="16" y1="104" x2="30" y2="104" class="cup-tick"/>
+                            <rect x="12" y="10" width="66" height="105" rx="8" class="cup-glass"/>
+                            <path d="M12 10 Q6 10 8 18" class="cup-glass"/><path d="M78 35 Q95 35 95 62 Q95 88 78 88" class="cup-handle"/>
+                        </svg>
+                        <p class="cup-amount" style="color:#d6d3d1" id="resDil">—</p>
+                        <p class="cup-unit" style="color:rgba(168,162,158,0.5)" id="unitDil">Litres</p>
+                        <div class="cup-tag" style="background:rgba(120,113,108,0.1);border:1px solid rgba(120,113,108,0.18)">
+                            <p class="cup-tag-label" style="color:rgba(168,162,158,0.6)">CLEAR</p>
+                            <p class="cup-tag-sub">Concretal-Fixativ</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mixed result cup -->
+                <div class="mix-arrow">↓ mix into ↓</div>
+                <div class="mix-cup-wrap">
+                    <div class="mix-cup-col">
+                        <svg viewBox="0 0 120 150" style="width:100%;filter:drop-shadow(0 6px 16px rgba(0,0,0,0.35))">
+                            <defs>
+                                <clipPath id="cpM"><rect x="14" y="10" width="80" height="120" rx="8"/></clipPath>
+                                <linearGradient id="gradM" x1="0" y1="0" x2="0" y2="1">
+                                    <stop id="gradMStop1" offset="0%" stop-color="#5eead4"/>
+                                    <stop id="gradMStop2" offset="100%" stop-color="#78716c"/>
+                                </linearGradient>
+                            </defs>
+                            <rect id="cupFillM" x="14" y="130" width="80" height="0" clip-path="url(#cpM)" fill="url(#gradM)" opacity="0.8"/>
+                            <rect id="cupShineM" x="16" y="130" width="76" height="3" rx="1.5" clip-path="url(#cpM)" fill="white" opacity="0.15"/>
+                            <line x1="18" y1="38" x2="34" y2="38" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                            <line x1="18" y1="65" x2="34" y2="65" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                            <line x1="18" y1="92" x2="34" y2="92" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                            <line x1="18" y1="119" x2="34" y2="119" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                            <rect x="14" y="10" width="80" height="120" rx="10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+                            <path d="M14 10 Q7 10 9 20" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+                            <path d="M94 40 Q114 40 114 72 Q114 104 94 104" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
+                        </svg>
+                        <p class="mix-amount" id="resTotAmount">10</p>
+                        <p class="mix-unit" id="resTotUnit">Litres</p>
+                        <div class="mix-tag">
+                            <p class="mix-tag-label">MIXED</p>
+                            <p class="mix-tag-sub">Ready to apply</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="equals-row" style="margin-top:14px">
+                    <div class="equals-line"></div>
+                    <p class="equals-text">= <span class="equals-total" id="resTot">10L</span> total</p>
+                    <div class="equals-line"></div>
+                </div>
+
+                <div class="ratio-bar-container">
+                    <div id="barPig" class="ratio-bar-pig" style="width:50%"></div>
+                    <div id="barDil" class="ratio-bar-dil" style="width:50%"></div>
+                </div>
+                <div class="ratio-bar-labels">
+                    <span>Colour</span>
+                    <span class="ratio-bar-center" id="ratioLabel">1 : 1</span>
+                    <span>Clear</span>
+                </div>
+
+                <!-- Adjustment sliders -->
+                <div id="adjustWrap" class="adjust-section" style="display:none">
+                    <div class="adjust-header">
+                        <span class="adjust-title">Adjust to round numbers</span>
+                        <button id="resetBtn" class="adjust-reset" onclick="resetAdj()">Reset</button>
+                    </div>
+                    <div class="adj-row" id="adjRowP">
+                        <span class="adj-label" style="color:rgba(94,234,212,0.5)">Colour</span>
+                        <input type="range" id="sldP" class="rng-p" oninput="onSldP(this.value)">
+                        <span class="adj-val" style="color:#5eead4" id="avP">0</span>
+                        <span class="adj-unit" id="auP">L</span>
+                        <span class="adj-delta" id="adP"></span>
+                    </div>
+                    <div class="adj-row" id="adjRowD">
+                        <span class="adj-label" style="color:rgba(168,162,158,0.4)">Clear</span>
+                        <input type="range" id="sldD" class="rng-d" oninput="onSldD(this.value)">
+                        <span class="adj-val" style="color:#d6d3d1" id="avD">0</span>
+                        <span class="adj-unit" id="auD">L</span>
+                        <span class="adj-delta" id="adD"></span>
+                    </div>
+                    <div class="adj-total">
+                        <span>Adjusted total:</span>
+                        <span class="adj-total-val" id="adjTot">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RULES -->
+        <div class="rules-card">
+            <div class="rules-header">
+                <span style="font-size:15px">⚠️</span>
+                <p class="rules-header-text">Before you start</p>
+            </div>
+            <div class="rules-body">
+                <div class="rule"><span class="rule-icon">🚫</span><span class="rule-danger">NO WATER — only dilute with Fixativ</span></div>
+                <div class="rule"><span class="rule-icon">🧪</span><span><strong>Test patch first</strong> — let it dry fully</span></div>
+                <div class="rule"><span class="rule-icon">🔄</span><span><strong>Stir before pouring</strong> — re-stir every 10–15 min</span></div>
+                <div class="rule"><span class="rule-icon">🔩</span><span><strong>Mix with a drill mixer only</strong> — do not mix by hand. Use a mechanical paddle/drill attachment for at least 2 minutes</span></div>
+                <div class="rule"><span class="rule-icon">🖌️</span><span><strong>Wet edge</strong> — don't stop mid-wall</span></div>
+                <div class="rule"><span class="rule-icon">📦</span><span><strong>Only mix what you need for the day</strong> — don't batch ahead</span></div>
+                <div class="rule"><span class="rule-icon">🧱</span><span><strong>Mineral substrates only</strong> — bare concrete, cement render, masonry. Not for plasterboard, timber, metal or painted surfaces</span></div>
+                <div class="rule"><span class="rule-icon">✂️</span><span><strong>Apply in cross-hatch pattern</strong> — work in alternating directions for even coverage</span></div>
+                <div class="rule"><span class="rule-icon">🌡️</span><span><strong>Temperature 5°C – 30°C</strong> — air and substrate. Do not apply in direct sunlight, frost, rain or strong wind</span></div>
+                <div class="rule"><span class="rule-icon">⏳</span><span><strong>Drying time ~12 hrs</strong> — wait at least 12 hours between coats. Allow longer in cold or humid conditions</span></div>
+                <div class="rule"><span class="rule-icon">💧</span><span><strong>Pre-dampen porous surfaces</strong> — lightly mist with water before applying to very absorbent concrete</span></div>
+            </div>
+        </div>
+
+        <p class="footer">KEIM Australia · For full TDS visit keim.com.au</p>
+    </div>
+
+    <script>
+    const ratios = [
+        { p:1,  d:0,  label:'1 : 0',  desc:'Solid colour',    pct:100 },
+        { p:10, d:1,  label:'10 : 1', desc:'Almost solid',     pct:91  },
+        { p:8,  d:1,  label:'8 : 1',  desc:'Very heavy',       pct:89  },
+        { p:6,  d:1,  label:'6 : 1',  desc:'Heavy colour',     pct:86  },
+        { p:5,  d:1,  label:'5 : 1',  desc:'Strong',           pct:83  },
+        { p:4,  d:1,  label:'4 : 1',  desc:'Good coverage',    pct:80  },
+        { p:3,  d:1,  label:'3 : 1',  desc:'Grain showing',    pct:75  },
+        { p:2,  d:1,  label:'2 : 1',  desc:'Colour + texture', pct:67  },
+        { p:3,  d:2,  label:'3 : 2',  desc:'Balanced',         pct:60  },
+        { p:1,  d:1,  label:'1 : 1',  desc:'Half-half',        pct:50  },
+        { p:2,  d:3,  label:'2 : 3',  desc:'More clear',       pct:40  },
+        { p:1,  d:2,  label:'1 : 2',  desc:'Light wash',       pct:33  },
+        { p:1,  d:3,  label:'1 : 3',  desc:'Gentle tint',      pct:25  },
+        { p:1,  d:4,  label:'1 : 4',  desc:'Soft veil',        pct:20  },
+        { p:1,  d:5,  label:'1 : 5',  desc:'Very light',       pct:17  },
+        { p:1,  d:6,  label:'1 : 6',  desc:'Hint of colour',   pct:14  },
+        { p:1,  d:8,  label:'1 : 8',  desc:'Barely there',     pct:11  },
+        { p:1,  d:10, label:'1 : 10', desc:'Ghost veil',       pct:9   },
+    ];
+
+    const volumes = [
+        { val:0.25, label:'250ml', sample:true },
+        { val:1,    label:'1L',    sample:true },
+        { val:5,    label:'5L' },  { val:10,  label:'10L' },
+        { val:15,   label:'15L' }, { val:20,  label:'20L' },
+        { val:25,   label:'25L' }, { val:30,  label:'30L' },
+        { val:40,   label:'40L' }, { val:50,  label:'50L' },
+        { val:60,   label:'60L' }, { val:75,  label:'75L' },
+        { val:80,   label:'80L' }, { val:100, label:'100L' },
+        { val:120,  label:'120L' },{ val:150, label:'150L' },
+        { val:175,  label:'175L' },{ val:200, label:'200L' },
+    ];
+
+    let selR = null, selV = null, customUnit = 'L';
+    let basePig = 0, baseDil = 0, adjPig = 0, adjDil = 0;
+
+    const customP = document.getElementById('customP');
+    const customD = document.getElementById('customD');
+    const customVolInput = document.getElementById('customVol');
+
+    function onCustomRatio() {
+        const p = parseFloat(customP.value), d = parseFloat(customD.value);
+        if (p >= 0 && d >= 0 && (p + d) > 0 && customP.value !== '' && customD.value !== '') {
+            selR = { p, d, label: p + ' : ' + d, desc: 'Custom', pct: Math.round((p / (p + d)) * 100) };
+            refresh();
+        }
+    }
+    customP.addEventListener('input', onCustomRatio);
+    customD.addEventListener('input', onCustomRatio);
+    customP.addEventListener('focus', () => { selR = null; refresh(); });
+    customD.addEventListener('focus', () => { selR = null; refresh(); });
+
+    function setCustomUnit(u) {
+        customUnit = u;
+        document.getElementById('unitML').classList.toggle('active', u === 'ml');
+        document.getElementById('unitL').classList.toggle('active', u === 'L');
+        onCustomVol();
+    }
+    function onCustomVol() {
+        const v = parseFloat(customVolInput.value);
+        if (v > 0) { selV = customUnit === 'ml' ? v / 1000 : v; refresh(); }
+    }
+    customVolInput.addEventListener('input', onCustomVol);
+    customVolInput.addEventListener('focus', () => { selV = null; refresh(); });
+
+    function buildR() {
+        const el = document.getElementById('ratioList'); el.innerHTML = '';
+        ratios.forEach(r => {
+            const on = selR && selR.label === r.label && selR.desc !== 'Custom';
+            const btn = document.createElement('button');
+            btn.className = 'ratio-btn' + (on ? ' active' : '');
+            btn.innerHTML = `
+                <div class="ratio-bar-track">
+                    <div class="ratio-bar-fill" style="width:${Math.max(r.pct,6)}%;background:${r.pct > 50 ? 'linear-gradient(90deg,#0d9488,#2dd4bf)' : 'linear-gradient(90deg,rgba(45,212,191,0.3),rgba(45,212,191,0.6))'}"></div>
+                </div>
+                <span class="ratio-label" style="color:${on ? '#5eead4' : 'rgba(255,255,255,0.35)'}">${r.label}</span>
+                <span class="ratio-desc" style="color:${on ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.1)'}">${r.desc}</span>
+            `;
+            btn.onclick = () => { selR = r; customP.value = ''; customD.value = ''; refresh(); };
+            el.appendChild(btn);
+        });
+    }
+
+    function buildV() {
+        const sEl = document.getElementById('volSamples');
+        const gEl = document.getElementById('volGrid');
+        sEl.innerHTML = ''; gEl.innerHTML = '';
+        volumes.forEach(v => {
+            const on = selV === v.val && customVolInput.value === '';
+            const btn = document.createElement('button');
+            btn.className = 'vol-btn ' + (v.sample ? 'sample' : 'bucket') + (on ? ' active' : '');
+            btn.textContent = v.label;
+            btn.onclick = () => { selV = v.val; customVolInput.value = ''; refresh(); };
+            (v.sample ? sEl : gEl).appendChild(btn);
+        });
+    }
+
+    function setCup(fillId, shineId, pct) {
+        const h = Math.max(pct > 0 ? 8 : 0, pct * 0.88), y = 115 - h;
+        document.getElementById(fillId).setAttribute('y', y);
+        document.getElementById(fillId).setAttribute('height', h);
+        document.getElementById(shineId).setAttribute('y', y);
+    }
+
+    function setCupM(pct) {
+        const h = Math.max(pct > 0 ? 10 : 0, pct * 1.0);
+        const y = 130 - h;
+        document.getElementById('cupFillM').setAttribute('y', y);
+        document.getElementById('cupFillM').setAttribute('height', h);
+        document.getElementById('cupShineM').setAttribute('y', y);
+    }
+
+    function showResult(pig, dil, tot, useML) {
+        document.getElementById('resPig').textContent = useML ? Math.round(pig * 1000) : pig.toFixed(1);
+        document.getElementById('resDil').textContent = useML ? Math.round(dil * 1000) : dil.toFixed(1);
+        const u = useML ? 'ml' : 'Litres';
+        document.getElementById('unitPig').textContent = u;
+        document.getElementById('unitDil').textContent = u;
+        const totStr = useML ? Math.round(tot * 1000) + 'ml' : tot + 'L';
+        document.getElementById('resTot').textContent = totStr;
+        document.getElementById('resTotAmount').textContent = useML ? Math.round(tot * 1000) : tot.toFixed(1);
+        document.getElementById('resTotUnit').textContent = u;
+
+        const mx = Math.max(pig, dil, 0.001);
+        setCup('cupFillP', 'cupShineP', Math.max((pig / mx) * 100, pig > 0 ? 8 : 0));
+        setCup('cupFillD', 'cupShineD', Math.max((dil / mx) * 100, dil > 0 ? 8 : 0));
+
+        // Mixed cup — always full
+        setCupM(95);
+
+        // Blend the gradient based on ratio
+        const pigPct = tot > 0 ? pig / tot : 0.5;
+        // Interpolate between teal (#2dd4bf) and stone (#a8a29e) for the top stop
+        const r1 = Math.round(45 + (168-45) * (1-pigPct));
+        const g1 = Math.round(212 + (162-212) * (1-pigPct));
+        const b1 = Math.round(191 + (158-191) * (1-pigPct));
+        // Bottom stop: darker version
+        const r2 = Math.round(13 + (120-13) * (1-pigPct));
+        const g2 = Math.round(148 + (113-148) * (1-pigPct));
+        const b2 = Math.round(136 + (108-136) * (1-pigPct));
+        document.getElementById('gradMStop1').setAttribute('stop-color', `rgb(${r1},${g1},${b1})`);
+        document.getElementById('gradMStop2').setAttribute('stop-color', `rgb(${r2},${g2},${b2})`);
+    }
+
+    function refresh() {
+        buildR(); buildV();
+        const a = document.getElementById('answer');
+        if (!selR || !selV) { a.style.display = 'none'; return; }
+        a.style.display = 'block';
+
+        const parts = selR.p + selR.d;
+        const pigL = parts > 0 ? (selV / parts) * selR.p : selV;
+        const dilL = parts > 0 ? (selV / parts) * selR.d : 0;
+        const useML = selV < 2;
+
+        showResult(pigL, dilL, selV, useML);
+        setupSliders(pigL, dilL, useML);
+
+        document.getElementById('barPig').style.width = Math.max(selR.pct, 3) + '%';
+        document.getElementById('barDil').style.width = Math.max(100 - selR.pct, 3) + '%';
+        document.getElementById('ratioLabel').textContent = selR.label;
+
+        const card = document.getElementById('resultCard');
+        card.style.animation = 'none'; void card.offsetWidth;
+        card.style.animation = 'popIn 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+        setTimeout(() => a.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
+    }
+
+    // ============ ADJUSTMENT SLIDERS ============
+    function setupSliders(pig, dil, useML) {
+        basePig = pig; baseDil = dil; adjPig = pig; adjDil = dil;
+        const wrap = document.getElementById('adjustWrap');
+        if ((pig + dil) < 0.5) { wrap.style.display = 'none'; return; }
+        wrap.style.display = 'block';
+
+        const sP = document.getElementById('sldP'), sD = document.getElementById('sldD');
+        const pMin = Math.max(0, pig * 0.5), pMax = Math.min(pig + dil, pig * 1.5);
+        const dMin = Math.max(0, dil * 0.5), dMax = Math.min(pig + dil, dil * 1.5);
+
+        if (useML) {
+            sP.min = Math.round(pMin*1000); sP.max = Math.round(pMax*1000); sP.step = 5; sP.value = Math.round(pig*1000);
+            sD.min = Math.round(dMin*1000); sD.max = Math.round(dMax*1000); sD.step = 5; sD.value = Math.round(dil*1000);
+        } else {
+            sP.min = pMin.toFixed(1); sP.max = pMax.toFixed(1); sP.step = 0.1; sP.value = pig.toFixed(1);
+            sD.min = dMin.toFixed(1); sD.max = dMax.toFixed(1); sD.step = 0.1; sD.value = dil.toFixed(1);
+        }
+
+        document.getElementById('adjRowP').style.display = pig > 0 ? 'flex' : 'none';
+        document.getElementById('adjRowD').style.display = dil > 0 ? 'flex' : 'none';
+        updSliderUI(useML);
+        document.getElementById('resetBtn').classList.remove('vis');
+    }
+
+    function onSldP(v) {
+        const useML = (basePig + baseDil) < 2;
+        adjPig = useML ? parseFloat(v) / 1000 : parseFloat(v);
+        if (selR && selR.p > 0) adjDil = adjPig * (selR.d / selR.p);
+        document.getElementById('sldD').value = useML ? Math.round(adjDil*1000) : adjDil.toFixed(1);
+        updSliderUI(useML); showResult(adjPig, adjDil, adjPig + adjDil, useML);
+    }
+
+    function onSldD(v) {
+        const useML = (basePig + baseDil) < 2;
+        adjDil = useML ? parseFloat(v) / 1000 : parseFloat(v);
+        if (selR && selR.d > 0) adjPig = adjDil * (selR.p / selR.d);
+        document.getElementById('sldP').value = useML ? Math.round(adjPig*1000) : adjPig.toFixed(1);
+        updSliderUI(useML); showResult(adjPig, adjDil, adjPig + adjDil, useML);
+    }
+
+    function updSliderUI(useML) {
+        const u = useML ? 'ml' : 'L';
+        document.getElementById('avP').textContent = useML ? Math.round(adjPig*1000) : adjPig.toFixed(1);
+        document.getElementById('avD').textContent = useML ? Math.round(adjDil*1000) : adjDil.toFixed(1);
+        document.getElementById('auP').textContent = u;
+        document.getElementById('auD').textContent = u;
+        document.getElementById('adjTot').textContent = useML ? Math.round((adjPig+adjDil)*1000)+'ml' : (adjPig+adjDil).toFixed(1)+'L';
+        delta('adP', adjPig - basePig, useML);
+        delta('adD', adjDil - baseDil, useML);
+        document.getElementById('resetBtn').classList.toggle('vis', Math.abs(adjPig-basePig) > 0.01 || Math.abs(adjDil-baseDil) > 0.01);
+    }
+
+    function delta(id, diff, useML) {
+        const el = document.getElementById(id);
+        if (Math.abs(diff) < 0.01) { el.classList.remove('vis'); return; }
+        el.classList.add('vis');
+        const v = useML ? Math.round(diff*1000) : diff.toFixed(1);
+        el.textContent = (diff > 0 ? '+' : '') + v + (useML ? 'ml' : 'L');
+        el.classList.toggle('up', diff > 0); el.classList.toggle('dn', diff < 0);
+    }
+
+    function resetAdj() {
+        adjPig = basePig; adjDil = baseDil;
+        const useML = (basePig + baseDil) < 2;
+        document.getElementById('sldP').value = useML ? Math.round(basePig*1000) : basePig.toFixed(1);
+        document.getElementById('sldD').value = useML ? Math.round(baseDil*1000) : baseDil.toFixed(1);
+        updSliderUI(useML); showResult(basePig, baseDil, basePig + baseDil, useML);
+    }
+
+    buildR(); buildV();
+
+    // Register service worker for offline / PWA
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
+    </script>
+</body>
+</html>
