@@ -539,17 +539,7 @@
         <div class="rules-card" id="rulesCard">
         </div>
 
-        <!-- REFERENCE TABLE -->
-        <div class="ref-card">
-            <div class="ref-header">
-                <span style="font-size:15px">📊</span>
-                <p class="ref-header-text" id="refTitle">Quick Reference</p>
-            </div>
-            <div style="padding:6px 10px 10px;overflow-x:auto">
-                <table class="ref-table" id="refTable"></table>
-            </div>
-        </div>
-
+        <!-- REFERENCE TABLE (removed) -->
         <p class="footer" id="footerText">KEIM Australia &middot; For full TDS visit keim.com.au</p>
     </div>
 
@@ -956,7 +946,6 @@
         document.getElementById('footerText').textContent = t('footer');
         // Rules & Reference table
         buildRules();
-        buildRefTable();
     }
 
     function buildRules() {
@@ -973,41 +962,7 @@
         `;
     }
 
-    // Reference table data: colour%, ratio, description key index
-    const refData = [
-        { pct: 100, ratio: '1 : 0', di: 0 },
-        { pct: 90,  ratio: '9 : 1', di: 1 },
-        { pct: 80,  ratio: '4 : 1', di: 5 },
-        { pct: 70,  ratio: '7 : 3', di: 6 },
-        { pct: 60,  ratio: '3 : 2', di: 8 },
-        { pct: 50,  ratio: '1 : 1', di: 9 },
-        { pct: 40,  ratio: '2 : 3', di: 10 },
-        { pct: 30,  ratio: '1 : 2.3', di: 11 },
-        { pct: 20,  ratio: '1 : 4', di: 13 },
-        { pct: 10,  ratio: '1 : 9', di: 16 },
-        { pct: 5,   ratio: '1 : 19', di: 17 },
-    ];
-
-    function buildRefTable() {
-        document.getElementById('refTitle').textContent = t('refTitle');
-        const tbl = document.getElementById('refTable');
-        tbl.innerHTML = `
-            <thead><tr>
-                <th></th>
-                <th>${t('thPct')}</th>
-                <th>${t('thRatio')}</th>
-                <th>${t('thLook')}</th>
-            </tr></thead>
-            <tbody>
-                ${refData.map(r => `<tr>
-                    <td class="ref-bar-cell"><div class="ref-bar" style="width:${Math.max(r.pct * 0.6, 3)}px"></div></td>
-                    <td class="col-pct">${localNum(r.pct + '%')}</td>
-                    <td class="col-ratio">${localNum(r.ratio)}</td>
-                    <td class="col-desc">${desc(r.di)}</td>
-                </tr>`).join('')}
-            </tbody>
-        `;
-    }
+    // Reference table removed
 
     function buildLangDropdown() {
         const dd = document.getElementById('langDropdown');
