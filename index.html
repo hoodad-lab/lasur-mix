@@ -62,19 +62,24 @@
         /* Language picker */
         .lang-wrap { position: relative; }
         .lang-btn {
-            height: 34px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.08);
-            background: rgba(255,255,255,0.03); cursor: pointer; display: flex; align-items: center;
-            gap: 6px; padding: 0 12px 0 8px;
-            font-size: 13px; transition: all 0.2s; color: #fff; font-family: inherit;
+            height: 36px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.1);
+            background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+            cursor: pointer; display: flex; align-items: center;
+            gap: 7px; padding: 0 12px 0 10px;
+            font-size: 13px; transition: all 0.25s ease; color: #fff; font-family: inherit;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04);
         }
-        .lang-btn:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); }
-        .lang-flag-icon { font-size: 18px; line-height: 1; }
-        .lang-name-short { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); letter-spacing: 0.02em; }
+        .lang-btn:hover { background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04)); border-color: rgba(255,255,255,0.18); box-shadow: 0 4px 12px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .lang-flag-icon { font-size: 15px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: rgba(20,184,166,0.12); color: #5eead4; flex-shrink: 0; }
+        .lang-name-short { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 0.02em; }
+        .lang-chevron { font-size: 10px; color: rgba(255,255,255,0.15); margin-left: 2px; transition: transform 0.2s; }
+        .lang-dropdown.open ~ .lang-btn .lang-chevron, .lang-wrap.open .lang-chevron { transform: rotate(180deg); }
         .lang-dropdown {
             display: none; position: absolute; top: 44px; right: 0; z-index: 50;
-            background: rgba(22,22,22,0.98); border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 16px; padding: 6px; min-width: 200px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.5); backdrop-filter: blur(20px);
+            background: rgba(18,18,18,0.98); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px; padding: 6px; min-width: 210px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
             max-height: 70vh; overflow-y: auto;
         }
         html[dir="rtl"] .lang-dropdown { right: auto; left: 0; }
@@ -83,12 +88,13 @@
             display: flex; align-items: center; gap: 10px; padding: 10px 14px;
             border-radius: 10px; cursor: pointer; border: none; background: none;
             color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600;
-            width: 100%; text-align: left; transition: all 0.1s; font-family: inherit;
+            width: 100%; text-align: left; transition: all 0.15s; font-family: inherit;
         }
         html[dir="rtl"] .lang-option { text-align: right; }
-        .lang-option:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); }
-        .lang-option.active { background: rgba(20,184,166,0.1); color: #5eead4; }
-        .lang-flag { font-size: 20px; flex-shrink: 0; }
+        .lang-option:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); }
+        .lang-option.active { background: rgba(20,184,166,0.12); color: #5eead4; }
+        .lang-option.active .lang-flag { box-shadow: 0 0 0 2px rgba(94,234,212,0.3); }
+        .lang-flag { font-size: 18px; flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.04); }
 
         .main { max-width: 460px; margin: 0 auto; padding: 0 16px 60px; position: relative; z-index: 1; }
 
@@ -344,8 +350,9 @@
             <div class="header-right">
                 <div class="lang-wrap">
                     <button class="lang-btn" id="langToggle" onclick="toggleLang()" aria-label="Change language">
-                        <span class="lang-flag-icon" id="langFlag">EN</span>
+                        <span class="lang-flag-icon" id="langFlag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
                         <span class="lang-name-short" id="langNameShort">English</span>
+                        <span class="lang-chevron">&#9662;</span>
                     </button>
                     <div class="lang-dropdown" id="langDropdown"></div>
                 </div>
@@ -611,7 +618,7 @@
         step1: '\u9009\u62e9\u6bd4\u4f8b', step2: '\u9700\u8981\u591a\u5c11\uff1f', step3: '\u5012\u5165\u8fd9\u4e9b',
         solid: '\u5b9e\u8272', transparent: '\u900f\u660e',
         customRatio: '\u6216\u8f93\u5165\u81ea\u5b9a\u4e49\u6bd4\u4f8b', customVol: '\u6216\u8f93\u5165\u81ea\u5b9a\u4e49\u91cf',
-        colour: 'Pigment', clear: 'Fixativ',
+        colour: 'Pigment', clear: 'Fixative',
         samples: '\u5c0f\u6837\u7f50', buckets: '\u6876\u88c5',
         litres: '\u5347', mixed: '\u6df7\u5408', ready: '\u53ef\u4ee5\u65bd\u5de5',
         mixInto: '\u2193 \u6df7\u5408\u5230 \u2193', total: '\u603b\u8ba1',
@@ -639,7 +646,7 @@
         step1: '\u0646\u0633\u0628\u062a \u0631\u0627 \u0627\u0646\u062a\u062e\u0627\u0628 \u06a9\u0646\u06cc\u062f', step2: '\u0686\u0642\u062f\u0631\u061f', step3: '\u0627\u06cc\u0646 \u0631\u0627 \u0628\u0631\u06cc\u0632\u06cc\u062f',
         solid: '\u0631\u0646\u06af \u06a9\u0627\u0645\u0644', transparent: '\u0634\u0641\u0627\u0641',
         customRatio: '\u06cc\u0627 \u0646\u0633\u0628\u062a \u062e\u0648\u062f \u0631\u0627 \u0648\u0627\u0631\u062f \u06a9\u0646\u06cc\u062f', customVol: '\u06cc\u0627 \u0645\u0642\u062f\u0627\u0631 \u062e\u0648\u062f \u0631\u0627 \u0648\u0627\u0631\u062f \u06a9\u0646\u06cc\u062f',
-        colour: 'Pigment', clear: 'Fixativ',
+        colour: 'Pigment', clear: 'Fixative',
         samples: '\u0646\u0645\u0648\u0646\u0647', buckets: '\u0633\u0637\u0644 \u0648 \u0628\u0634\u06a9\u0647',
         litres: '\u0644\u06cc\u062a\u0631', mixed: '\u0645\u062e\u0644\u0648\u0637', ready: '\u0622\u0645\u0627\u062f\u0647 \u0627\u0633\u062a\u0641\u0627\u062f\u0647',
         mixInto: '\u2193 \u0645\u062e\u0644\u0648\u0637 \u06a9\u0646\u06cc\u062f \u2193', total: '\u06a9\u0644',
@@ -667,7 +674,7 @@
         step1: '\u0646\u0633\u0628\u062a \u0631\u0627 \u0627\u0646\u062a\u062e\u0627\u0628 \u06a9\u0646\u06cc\u062f', step2: '\u0686\u0642\u062f\u0631 \u0636\u0631\u0648\u0631\u062a \u062f\u0627\u0631\u06cc\u062f\u061f', step3: '\u0627\u06cc \u0631\u0647 \u0628\u0631\u06cc\u0632\u06cc\u062f',
         solid: '\u0631\u0646\u06af \u06a9\u0627\u0645\u0644', transparent: '\u0634\u0641\u0627\u0641',
         customRatio: '\u06cc\u0627 \u0646\u0633\u0628\u062a \u062e\u0648\u062f\u0647 \u0631\u0647 \u062f\u0627\u062e\u0644 \u06a9\u0646\u06cc\u062f', customVol: '\u06cc\u0627 \u0645\u0642\u062f\u0627\u0631 \u062e\u0648\u062f\u0647 \u0631\u0647 \u062f\u0627\u062e\u0644 \u06a9\u0646\u06cc\u062f',
-        colour: 'Pigment', clear: 'Fixativ',
+        colour: 'Pigment', clear: 'Fixative',
         samples: '\u0646\u0645\u0648\u0646\u0647', buckets: '\u0633\u0637\u0644 \u0648 \u062f\u0631\u0645',
         litres: '\u0644\u06cc\u062a\u0631', mixed: '\u0645\u062e\u0644\u0648\u0637', ready: '\u0622\u0645\u0627\u062f\u0647 \u0627\u0633\u062a\u0641\u0627\u062f\u0647',
         mixInto: '\u2193 \u0645\u062e\u0644\u0648\u0637 \u06a9\u0646\u06cc\u062f \u2193', total: '\u0645\u062c\u0645\u0648\u0639',
@@ -695,7 +702,7 @@
         step1: 'Odaberite omjer', step2: 'Koliko?', step3: 'Ulijte ovo',
         solid: 'PUNA BOJA', transparent: 'PROZIRNO',
         customRatio: 'Ili unesite vlastiti omjer', customVol: 'Ili unesite vlastitu koli\u010dinu',
-        colour: 'Pigment', clear: 'Fixativ',
+        colour: 'Pigment', clear: 'Fixative',
         samples: 'Uzorci', buckets: 'Kante i ba\u010dve',
         litres: 'Litara', mixed: 'MIJE\u0160ANO', ready: 'Spremno za nano\u0161enje',
         mixInto: '\u2193 pomije\u0161ajte \u2193', total: 'ukupno',
@@ -723,7 +730,7 @@
         step1: '\u0627\u062e\u062a\u0631 \u0627\u0644\u0646\u0633\u0628\u0629', step2: '\u0643\u0645 \u062a\u062d\u062a\u0627\u062c\u061f', step3: '\u0627\u0633\u0643\u0628 \u0647\u0630\u0627',
         solid: '\u0644\u0648\u0646 \u0643\u0627\u0645\u0644', transparent: '\u0634\u0641\u0627\u0641',
         customRatio: '\u0623\u0648 \u0623\u062f\u062e\u0644 \u0646\u0633\u0628\u062a\u0643', customVol: '\u0623\u0648 \u0623\u062f\u062e\u0644 \u0627\u0644\u0643\u0645\u064a\u0629',
-        colour: 'Pigment', clear: 'Fixativ',
+        colour: 'Pigment', clear: 'Fixative',
         samples: '\u0639\u064a\u0646\u0627\u062a', buckets: '\u062f\u0644\u0627\u0621 \u0648 \u0628\u0631\u0627\u0645\u064a\u0644',
         litres: '\u0644\u062a\u0631', mixed: '\u0645\u062e\u0644\u0648\u0637', ready: '\u062c\u0627\u0647\u0632 \u0644\u0644\u062a\u0637\u0628\u064a\u0642',
         mixInto: '\u2193 \u0627\u062e\u0644\u0637 \u2193', total: '\u0627\u0644\u0645\u062c\u0645\u0648\u0639',
@@ -751,7 +758,7 @@
         step1: 'Wybierz proporcj\u0119', step2: 'Ile?', step3: 'Wlej to',
         solid: 'PE\u0141NY KOLOR', transparent: 'PRZEZROCZYSTY',
         customRatio: 'Lub wpisz w\u0142asn\u0105 proporcj\u0119', customVol: 'Lub wpisz w\u0142asn\u0105 ilo\u015b\u0107',
-        colour: 'Pigment', clear: 'Fixativ',
+        colour: 'Pigment', clear: 'Fixative',
         samples: 'Pr\u00f3bki', buckets: 'Wiadra i beczki',
         litres: 'Litr\u00f3w', mixed: 'MIESZANKA', ready: 'Gotowe do aplikacji',
         mixInto: '\u2193 wymiesza\u0107 \u2193', total: '\u0142\u0105cznie',
@@ -779,7 +786,7 @@
         step1: 'Mischverh\u00e4ltnis w\u00e4hlen', step2: 'Wie viel?', step3: 'Dies einf\u00fcllen',
         solid: 'DECKEND', transparent: 'TRANSPARENT',
         customRatio: 'Oder eigenes Verh\u00e4ltnis eingeben', customVol: 'Oder eigene Menge eingeben',
-        colour: 'Pigment', clear: 'Fixativ',
+        colour: 'Pigment', clear: 'Fixative',
         samples: 'Probedosen', buckets: 'Eimer & F\u00e4sser',
         litres: 'Liter', mixed: 'GEMISCHT', ready: 'Auftragfertig',
         mixInto: '\u2193 mischen \u2193', total: 'gesamt',
@@ -807,7 +814,7 @@
         step1: 'Choisir le ratio', step2: 'Quelle quantit\u00e9 ?', step3: 'Versez ceci',
         solid: 'COULEUR PLEINE', transparent: 'TRANSPARENT',
         customRatio: 'Ou entrez votre propre ratio', customVol: 'Ou entrez votre quantit\u00e9',
-        colour: 'Pigment', clear: 'Fixativ',
+        colour: 'Pigment', clear: 'Fixative',
         samples: '\u00c9chantillons', buckets: 'Seaux et f\u00fbts',
         litres: 'Litres', mixed: 'M\u00c9LANG\u00c9', ready: 'Pr\u00eat \u00e0 appliquer',
         mixInto: '\u2193 m\u00e9langer \u2193', total: 'total',
@@ -835,7 +842,7 @@
         step1: 'Scegli il rapporto', step2: 'Quanto?', step3: 'Versa questo',
         solid: 'COLORE PIENO', transparent: 'TRASPARENTE',
         customRatio: 'Oppure inserisci il tuo rapporto', customVol: 'Oppure inserisci la quantit\u00e0',
-        colour: 'Pigment', clear: 'Fixativ',
+        colour: 'Pigment', clear: 'Fixative',
         samples: 'Campioni', buckets: 'Secchi e fusti',
         litres: 'Litri', mixed: 'MISCELATO', ready: 'Pronto per applicare',
         mixInto: '\u2193 miscelare \u2193', total: 'totale',
@@ -863,7 +870,7 @@
         step1: 'Elige la proporci\u00f3n', step2: '\u00bfCu\u00e1nto?', step3: 'Vierte esto',
         solid: 'COLOR S\u00d3LIDO', transparent: 'TRANSPARENTE',
         customRatio: 'O ingresa tu propia proporci\u00f3n', customVol: 'O ingresa tu propia cantidad',
-        colour: 'Pigment', clear: 'Fixativ',
+        colour: 'Pigment', clear: 'Fixative',
         samples: 'Muestras', buckets: 'Cubetas y tambores',
         litres: 'Litros', mixed: 'MEZCLADO', ready: 'Listo para aplicar',
         mixInto: '\u2193 mezclar \u2193', total: 'total',
@@ -916,7 +923,7 @@
         buildLangDropdown();
         buildR(); buildV();
         document.getElementById('langDropdown').classList.remove('open');
-        document.getElementById('langFlag').textContent = T[lang].flag || 'EN';
+        // Keep the globe SVG icon — don't overwrite it
         document.getElementById('langNameShort').textContent = T[lang].name;
     }
 
