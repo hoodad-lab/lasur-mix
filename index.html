@@ -1392,16 +1392,29 @@
         updSliderUI(useML); showResult(basePig, baseDil, basePig + baseDil, useML);
     }
 
+    // ============ LOAD jsPDF (CDN first, local fallback) ============
+    function loadJsPDF(callback) {
+        if (window.jspdf) { callback(); return; }
+        var s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js';
+        s.onload = function() { if (window.jspdf) { callback(); } else { tryLocal(); } };
+        s.onerror = tryLocal;
+        document.head.appendChild(s);
+        function tryLocal() {
+            var s2 = document.createElement('script');
+            s2.src = './jspdf.min.js';
+            s2.onload = function() { callback(); };
+            s2.onerror = function() { alert('Could not load PDF library. Check your internet connection.'); callback(true); };
+            document.head.appendChild(s2);
+        }
+    }
+
     // ============ CHART PDF DOWNLOAD ============
     function downloadChartPDF() {
         if (!window.jspdf) {
             const btn = document.getElementById('downloadChartBtn');
             btn.style.opacity = '0.5';
-            const s = document.createElement('script');
-            s.src = './jspdf.min.js';
-            s.onload = function() { btn.style.opacity = '1'; generateChartPDF(); };
-            s.onerror = function() { btn.style.opacity = '1'; alert('Could not load PDF library.'); };
-            document.head.appendChild(s);
+            loadJsPDF(function(err) { btn.style.opacity = '1'; if (!err) generateChartPDF(); });
             return;
         }
         generateChartPDF();
@@ -1689,27 +1702,17 @@
 
     // ============ MIX SHEET PDF DOWNLOAD ============
     function downloadMixPDF() {
-        // Load jsPDF on first use
         if (!window.jspdf) {
             const btn = document.getElementById('downloadPdfBtn');
             btn.style.opacity = '0.5';
             btn.style.pointerEvents = 'none';
             document.getElementById('downloadPdfLabel').textContent = 'Loading...';
-            const s = document.createElement('script');
-            s.src = './jspdf.min.js';
-            s.onload = function() {
+            loadJsPDF(function(err) {
                 btn.style.opacity = '1';
                 btn.style.pointerEvents = 'auto';
                 document.getElementById('downloadPdfLabel').textContent = t('downloadPdf');
-                generatePDF();
-            };
-            s.onerror = function() {
-                btn.style.opacity = '1';
-                btn.style.pointerEvents = 'auto';
-                document.getElementById('downloadPdfLabel').textContent = t('downloadPdf');
-                alert('Could not load PDF library. Check your internet connection.');
-            };
-            document.head.appendChild(s);
+                if (!err) generatePDF();
+            });
             return;
         }
         generatePDF();
