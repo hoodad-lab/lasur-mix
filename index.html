@@ -13,6 +13,7 @@
     <meta name="apple-mobile-web-app-title" content="Lasur Mix">
     <link rel="apple-touch-icon" href="icon-192.png">
 
+    <!-- jsPDF for mix sheet download -->
     <!-- SEO / Open Graph -->
     <meta name="description" content="Quick mixing calculator for KEIM Concretal-Lasur. Pick your ratio, choose your volume, get exact amounts of colour and clear to pour.">
     <meta property="og:title" content="KEIM Concretal-Lasur Mixing Guide">
@@ -242,10 +243,23 @@
         }
         .adjust-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
         .adjust-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.18); }
+        .adjust-reset, .adjust-round {
+            font-size: 10px; font-weight: 700;
+            background: none; border-radius: 999px;
+            padding: 3px 12px; cursor: pointer;
+        }
+        .adjust-round {
+            color: rgba(250,204,21,0.7);
+            border: 1px solid rgba(250,204,21,0.18);
+            display: none;
+            transition: all 0.2s;
+        }
+        .adjust-round:active { transform: scale(0.95); }
+        .adjust-round.vis { display: inline-block; }
         .adjust-reset {
-            font-size: 10px; font-weight: 700; color: rgba(20,184,166,0.5);
-            background: none; border: 1px solid rgba(20,184,166,0.12); border-radius: 999px;
-            padding: 3px 12px; cursor: pointer; display: none;
+            color: rgba(20,184,166,0.5);
+            border: 1px solid rgba(20,184,166,0.12);
+            display: none;
         }
         .adjust-reset.vis { display: inline-block; }
         .adj-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
@@ -265,6 +279,21 @@
             font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.12);
         }
         .adj-total-val { font-size: 13px; font-weight: 900; color: rgba(255,255,255,0.35); }
+
+        .download-pdf-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; margin-top: 16px; padding: 12px 20px;
+            background: linear-gradient(135deg, rgba(20,184,166,0.12), rgba(20,184,166,0.06));
+            border: 1px solid rgba(20,184,166,0.25); border-radius: 12px;
+            color: #5eead4; font-size: 13px; font-weight: 700; letter-spacing: 0.02em;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .download-pdf-btn:hover {
+            background: linear-gradient(135deg, rgba(20,184,166,0.2), rgba(20,184,166,0.1));
+            border-color: rgba(45,212,191,0.4);
+            box-shadow: 0 4px 16px rgba(20,184,166,0.15);
+        }
+        .download-pdf-btn:active { transform: scale(0.98); }
 
         input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 999px; outline: none; cursor: pointer; }
         input[type=range].rng-p { background: linear-gradient(90deg, rgba(13,148,136,0.12), rgba(45,212,191,0.2)); }
@@ -306,32 +335,53 @@
 
         /* Reference table */
         .ref-card {
-            margin-top: 28px; border-radius: 20px; overflow: hidden;
+            margin-top: 28px; padding: 16px; border-radius: 20px; overflow: hidden;
             background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
         }
+        .ref-card-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.2); }
+        .download-chart-btn {
+            display: flex; align-items: center; gap: 5px;
+            font-size: 9px; font-weight: 700; color: rgba(94,234,212,0.6);
+            background: none; border: 1px solid rgba(20,184,166,0.15); border-radius: 999px;
+            padding: 4px 12px; cursor: pointer; transition: all 0.2s;
+        }
+        .download-chart-btn:hover { border-color: rgba(20,184,166,0.35); color: #5eead4; }
+        .download-chart-btn:active { transform: scale(0.97); }
         .ref-header {
             display: flex; align-items: center; gap: 10px; padding: 14px 18px;
             border-bottom: 1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.01);
         }
         .ref-header-text { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.3); }
-        .ref-table { width: 100%; border-collapse: collapse; }
-        .ref-table th {
-            padding: 10px 12px; font-size: 9px; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 0.1em; color: rgba(255,255,255,0.2);
-            border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left;
+
+        /* Full chart view */
+        .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -16px; padding: 0 16px; }
+        .chart-scroll::-webkit-scrollbar { height: 6px; }
+        .chart-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 3px; }
+        .chart-scroll::-webkit-scrollbar-thumb { background: rgba(94,234,212,0.15); border-radius: 3px; }
+        .full-chart { border-collapse: collapse; min-width: 900px; width: 100%; }
+        .full-chart th {
+            padding: 6px 4px; font-size: 8px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.05em; color: rgba(255,255,255,0.25);
+            border-bottom: 1px solid rgba(255,255,255,0.06); text-align: center; white-space: nowrap;
+            position: sticky; top: 0; background: rgba(20,20,20,0.95);
         }
-        html[dir="rtl"] .ref-table th { text-align: right; }
-        .ref-table td {
-            padding: 8px 12px; font-size: 13px; font-weight: 700;
-            border-bottom: 1px solid rgba(255,255,255,0.02); color: rgba(255,255,255,0.3);
+        .full-chart th.vol-hdr { color: rgba(255,255,255,0.35); font-size: 9px; }
+        .full-chart th.sub-hdr { font-size: 6.5px; font-weight: 700; letter-spacing: 0.08em; padding: 2px 4px; }
+        .full-chart th.sub-pig { color: rgba(94,234,212,0.5); }
+        .full-chart th.sub-fix { color: rgba(255,255,255,0.12); }
+        .full-chart td {
+            padding: 5px 4px; font-size: 10px; font-weight: 600;
+            border-bottom: 1px solid rgba(255,255,255,0.02); text-align: center; white-space: nowrap;
         }
-        .ref-table tr:last-child td { border-bottom: none; }
-        .ref-table tr:hover td { background: rgba(255,255,255,0.02); }
-        .ref-table .col-pct { color: #5eead4; font-weight: 900; font-size: 14px; }
-        .ref-table .col-ratio { color: rgba(255,255,255,0.45); font-weight: 800; }
-        .ref-table .col-desc { color: rgba(255,255,255,0.15); font-size: 11px; font-weight: 600; }
-        .ref-bar-cell { width: 60px; }
-        .ref-bar { height: 8px; border-radius: 999px; background: linear-gradient(90deg, #0d9488, #2dd4bf); opacity: 0.5; min-width: 3px; }
+        .full-chart tr:hover td { background: rgba(255,255,255,0.02); }
+        .full-chart .fc-ratio { color: rgba(255,255,255,0.5); font-weight: 800; font-size: 11px; text-align: left; padding-left: 8px; }
+        .full-chart .fc-pct { color: #5eead4; font-weight: 900; font-size: 11px; }
+        .full-chart .fc-look { color: rgba(255,255,255,0.13); font-size: 9px; font-weight: 600; text-align: left; }
+        .full-chart .fc-pig { color: rgba(94,234,212,0.7); font-weight: 700; font-size: 9px; }
+        .full-chart .fc-fix { color: rgba(255,255,255,0.15); font-weight: 500; font-size: 8.5px; }
+        .full-chart .fc-bar-cell { width: 36px; padding: 5px 2px; }
+        .fc-bar { height: 6px; border-radius: 999px; background: linear-gradient(90deg, #0d9488, #2dd4bf); opacity: 0.4; min-width: 2px; }
+        .full-chart .left-sticky { position: sticky; left: 0; background: rgba(20,20,20,0.95); z-index: 1; }
 
         .cup-tick { stroke: rgba(255,255,255,0.05); stroke-width: 1; }
         .cup-glass { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 1.5; }
@@ -511,7 +561,10 @@
                 <div id="adjustWrap" class="adjust-section" style="display:none">
                     <div class="adjust-header">
                         <span class="adjust-title" id="adjTitle">Adjust to round numbers</span>
-                        <button id="resetBtn" class="adjust-reset" onclick="resetAdj()">Reset</button>
+                        <span style="display:flex;gap:6px;align-items:center">
+                            <button id="roundBtn" class="adjust-round" onclick="roundAdj()">⟳ Round</button>
+                            <button id="resetBtn" class="adjust-reset" onclick="resetAdj()">Reset</button>
+                        </span>
                     </div>
                     <div class="adj-row" id="adjRowP">
                         <span class="adj-label" style="color:rgba(94,234,212,0.5)" id="adjLblP">Colour</span>
@@ -532,6 +585,12 @@
                         <span class="adj-total-val" id="adjTot">0</span>
                     </div>
                 </div>
+
+                <!-- Download PDF button -->
+                <button id="downloadPdfBtn" class="download-pdf-btn" onclick="downloadMixPDF()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span id="downloadPdfLabel">Download Mix Sheet</span>
+                </button>
             </div>
         </div>
 
@@ -539,7 +598,19 @@
         <div class="rules-card" id="rulesCard">
         </div>
 
-        <!-- REFERENCE TABLE (removed) -->
+        <!-- REFERENCE TABLE -->
+        <div class="ref-card" id="refCard">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px">
+                <p class="ref-card-title" id="refTitle">Quick Reference</p>
+                <button class="download-chart-btn" id="downloadChartBtn" onclick="downloadChartPDF()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span id="downloadChartLabel">Download Chart</span>
+                </button>
+            </div>
+            <div class="chart-scroll" id="fullChartWrap">
+                <table class="full-chart" id="fullChart"></table>
+            </div>
+        </div>
         <p class="footer" id="footerText">KEIM Australia &middot; For full TDS visit keim.com.au</p>
     </div>
 
@@ -556,13 +627,13 @@
         samples: 'Sample Pots', buckets: 'Buckets & Drums',
         litres: 'Litres', mixed: 'MIXED', ready: 'Ready to apply',
         mixInto: '\u2193 mix into \u2193', total: 'total',
-        adjust: 'Adjust to round numbers', reset: 'Reset', adjTotal: 'Adjusted total:',
+        adjust: 'Adjust to round numbers', round: '⟳ Round', downloadPdf: 'Download Mix Sheet', downloadChart: 'Download Chart', fullChart: 'Full Chart', simpleView: 'Simple', reset: 'Reset', adjTotal: 'Adjusted total:',
         beforeStart: 'Before you start', refTitle: 'Quick Reference', thPct: 'Pigment %', thRatio: 'Ratio', thLook: 'Look',
         footer: 'KEIM Australia \u00b7 For full TDS visit keim.com.au',
         rules: [
           {i:'🚫', t:'<span class="rule-danger">NO WATER \u2014 only dilute with Fixativ</span>'},
           {i:'🧪', t:'<strong>Test patch first</strong> \u2014 let it dry fully'},
-          {i:'🔄', t:'<strong>Stir before pouring</strong> \u2014 re-stir every 10\u201315 min'},
+          {i:'🔄', t:'<strong>Re-stir during application</strong> \u2014 pigment settles, stir the bucket every 10\u201315 min while working'},
           {i:'🔩', t:'<strong>Mix with a drill mixer only</strong> \u2014 do not mix by hand. Use a mechanical paddle/drill attachment for at least 2 minutes'},
           {i:'🖌\uFE0F', t:'<strong>Wet edge</strong> \u2014 don\u2019t stop mid-wall'},
           {i:'📦', t:'<strong>Only mix what you need for the day</strong> \u2014 don\u2019t batch ahead'},
@@ -584,13 +655,13 @@
         samples: 'Tinnies', buckets: 'Buckets & Drums',
         litres: 'Litres', mixed: 'MIXED', ready: 'Good to slap on',
         mixInto: '\u2193 chuck it together \u2193', total: 'total',
-        adjust: 'Tweak to round numbers', reset: 'Nah reset', adjTotal: 'Adjusted total:',
+        adjust: 'Tweak to round numbers', round: '⟳ Round', downloadPdf: 'Download Mix Sheet', downloadChart: 'Download Chart', fullChart: 'Full Chart', reset: 'Nah reset', adjTotal: 'Adjusted total:',
         beforeStart: 'Oi, before ya start', refTitle: 'Cheat Sheet', thPct: 'Pigment %', thRatio: 'Ratio', thLook: 'Vibe',
         footer: 'KEIM Australia \u00b7 Full TDS at keim.com.au',
         rules: [
           {i:'🚫', t:'<span class="rule-danger">NO WATER \u2014 only thin it with Fixativ, ya muppet</span>'},
           {i:'🧪', t:'<strong>Test patch first</strong> \u2014 let it dry proper'},
-          {i:'🔄', t:'<strong>Give it a stir before pouring</strong> \u2014 stir again every 10\u201315 min'},
+          {i:'🔄', t:'<strong>Keep stirring while you work</strong> \u2014 pigment settles, give the bucket a stir every 10\u201315 min'},
           {i:'🔩', t:'<strong>Use a drill mixer</strong> \u2014 don\u2019t be a hero stirring by hand. 2 minutes minimum'},
           {i:'🖌\uFE0F', t:'<strong>Keep a wet edge</strong> \u2014 don\u2019t stop halfway across the wall'},
           {i:'📦', t:'<strong>Only mix what ya need today</strong> \u2014 no batching ahead'},
@@ -612,13 +683,13 @@
         samples: '\u5c0f\u6837\u7f50', buckets: '\u6876\u88c5',
         litres: '\u5347', mixed: '\u6df7\u5408', ready: '\u53ef\u4ee5\u65bd\u5de5',
         mixInto: '\u2193 \u6df7\u5408\u5230 \u2193', total: '\u603b\u8ba1',
-        adjust: '\u8c03\u6574\u4e3a\u6574\u6570', reset: '\u91cd\u7f6e', adjTotal: '\u8c03\u6574\u540e\u603b\u91cf\uff1a',
+        adjust: '\u8c03\u6574\u4e3a\u6574\u6570', round: '\u27f3 \u53d6\u6574', downloadPdf: '下载混合单', downloadChart: '下载图表', fullChart: '完整图表', simpleView: '简表', reset: '\u91cd\u7f6e', adjTotal: '\u8c03\u6574\u540e\u603b\u91cf\uff1a',
         beforeStart: '\u5f00\u59cb\u524d\u6ce8\u610f', refTitle: '\u5feb\u901f\u53c2\u8003', thPct: 'Pigment %', thRatio: '\u6bd4\u4f8b', thLook: '\u6548\u679c',
         footer: 'KEIM Australia \u00b7 \u5b8c\u6574\u6280\u672f\u8d44\u6599\u8bf7\u8bbf\u95ee keim.com.au',
         rules: [
           {i:'🚫', t:'<span class="rule-danger">\u7981\u6b62\u52a0\u6c34 \u2014 \u53ea\u80fd\u7528 Fixativ \u7a00\u91ca</span>'},
           {i:'🧪', t:'<strong>\u5148\u505a\u8bd5\u6837</strong> \u2014 \u5b8c\u5168\u5e72\u900f\u540e\u518d\u5224\u65ad'},
-          {i:'🔄', t:'<strong>\u5012\u4e4b\u524d\u5148\u6405\u62cc</strong> \u2014 \u6bcf10\u201315\u5206\u949f\u518d\u6405'},
+          {i:'🔄', t:'<strong>施工中持续搅拌</strong> \u2014 颜料会沉淀，每10\u201315分钟搅拌一次'},
           {i:'🔩', t:'<strong>\u53ea\u7528\u7535\u94bb\u6405\u62cc\u5668</strong> \u2014 \u4e0d\u8981\u624b\u52a8\u6405\u62cc\uff0c\u81f3\u5c112\u5206\u949f'},
           {i:'🖌\uFE0F', t:'<strong>\u4fdd\u6301\u6e7f\u8fb9</strong> \u2014 \u4e0d\u8981\u5728\u5899\u9762\u4e2d\u95f4\u505c\u4e0b'},
           {i:'📦', t:'<strong>\u53ea\u6df7\u5408\u5f53\u5929\u7528\u91cf</strong> \u2014 \u4e0d\u8981\u63d0\u524d\u6279\u91cf\u6df7\u5408'},
@@ -640,13 +711,13 @@
         samples: '\u0646\u0645\u0648\u0646\u0647', buckets: '\u0633\u0637\u0644 \u0648 \u0628\u0634\u06a9\u0647',
         litres: '\u0644\u06cc\u062a\u0631', mixed: '\u0645\u062e\u0644\u0648\u0637', ready: '\u0622\u0645\u0627\u062f\u0647 \u0627\u0633\u062a\u0641\u0627\u062f\u0647',
         mixInto: '\u2193 \u0645\u062e\u0644\u0648\u0637 \u06a9\u0646\u06cc\u062f \u2193', total: '\u06a9\u0644',
-        adjust: '\u062a\u0646\u0638\u06cc\u0645 \u0628\u0647 \u0627\u0639\u062f\u0627\u062f \u0631\u0646\u062f', reset: '\u0628\u0627\u0632\u0646\u0634\u0627\u0646\u06cc', adjTotal: '\u0645\u062c\u0645\u0648\u0639 \u062a\u0646\u0638\u06cc\u0645 \u0634\u062f\u0647:',
+        adjust: '\u062a\u0646\u0638\u06cc\u0645 \u0628\u0647 \u0627\u0639\u062f\u0627\u062f \u0631\u0646\u062f', round: '\u27f3 \u06af\u0631\u062f', downloadPdf: 'دانلود برگه اختلاط', downloadChart: 'دانلود جدول', fullChart: 'جدول کامل', simpleView: 'ساده', reset: '\u0628\u0627\u0632\u0646\u0634\u0627\u0646\u06cc', adjTotal: '\u0645\u062c\u0645\u0648\u0639 \u062a\u0646\u0638\u06cc\u0645 \u0634\u062f\u0647:',
         beforeStart: '\u0642\u0628\u0644 \u0627\u0632 \u0634\u0631\u0648\u0639', refTitle: '\u0645\u0631\u062c\u0639 \u0633\u0631\u06cc\u0639', thPct: 'Pigment %', thRatio: '\u0646\u0633\u0628\u062a', thLook: '\u0638\u0627\u0647\u0631',
         footer: 'KEIM Australia \u00b7 \u0628\u0631\u0627\u06cc \u0627\u0637\u0644\u0627\u0639\u0627\u062a \u06a9\u0627\u0645\u0644 \u0628\u0647 keim.com.au \u0645\u0631\u0627\u062c\u0639\u0647 \u06a9\u0646\u06cc\u062f',
         rules: [
           {i:'🚫', t:'<span class="rule-danger">\u0622\u0628 \u0645\u0645\u0646\u0648\u0639 \u2014 \u0641\u0642\u0637 \u0628\u0627 Fixativ \u0631\u0642\u06cc\u0642 \u06a9\u0646\u06cc\u062f</span>'},
           {i:'🧪', t:'<strong>\u0627\u0628\u062a\u062f\u0627 \u062a\u0633\u062a \u06a9\u0646\u06cc\u062f</strong> \u2014 \u0628\u06af\u0630\u0627\u0631\u06cc\u062f \u06a9\u0627\u0645\u0644\u0627\u064b \u062e\u0634\u06a9 \u0634\u0648\u062f'},
-          {i:'🔄', t:'<strong>\u0642\u0628\u0644 \u0627\u0632 \u0631\u06cc\u062e\u062a\u0646 \u0647\u0645 \u0628\u0632\u0646\u06cc\u062f</strong> \u2014 \u0647\u0631 \u06f1\u06f0\u2013\u06f1\u06f5 \u062f\u0642\u06cc\u0642\u0647'},
+          {i:'🔄', t:'<strong>حین کار هم بزنید</strong> \u2014 رنگدانه ته\u200cنشین می\u200cشود، هر \u06f1\u06f0\u2013\u06f1\u06f5 دقیقه سطل را هم بزنید'},
           {i:'🔩', t:'<strong>\u0641\u0642\u0637 \u0628\u0627 \u062f\u0631\u06cc\u0644 \u0645\u062e\u0644\u0648\u0637 \u06a9\u0646\u06cc\u062f</strong> \u2014 \u062f\u0633\u062a\u06cc \u0645\u062e\u0644\u0648\u0637 \u0646\u06a9\u0646\u06cc\u062f\u060c \u062d\u062f\u0627\u0642\u0644 \u06f2 \u062f\u0642\u06cc\u0642\u0647'},
           {i:'🖌\uFE0F', t:'<strong>\u0644\u0628\u0647 \u0645\u0631\u0637\u0648\u0628</strong> \u2014 \u0648\u0633\u0637 \u062f\u06cc\u0648\u0627\u0631 \u0645\u062a\u0648\u0642\u0641 \u0646\u0634\u0648\u06cc\u062f'},
           {i:'📦', t:'<strong>\u0641\u0642\u0637 \u0628\u0647 \u0627\u0646\u062f\u0627\u0632\u0647 \u0646\u06cc\u0627\u0632 \u0631\u0648\u0632 \u0645\u062e\u0644\u0648\u0637 \u06a9\u0646\u06cc\u062f</strong>'},
@@ -668,13 +739,13 @@
         samples: '\u0646\u0645\u0648\u0646\u0647', buckets: '\u0633\u0637\u0644 \u0648 \u062f\u0631\u0645',
         litres: '\u0644\u06cc\u062a\u0631', mixed: '\u0645\u062e\u0644\u0648\u0637', ready: '\u0622\u0645\u0627\u062f\u0647 \u0627\u0633\u062a\u0641\u0627\u062f\u0647',
         mixInto: '\u2193 \u0645\u062e\u0644\u0648\u0637 \u06a9\u0646\u06cc\u062f \u2193', total: '\u0645\u062c\u0645\u0648\u0639',
-        adjust: '\u062a\u0646\u0638\u06cc\u0645 \u0628\u0647 \u0627\u0639\u062f\u0627\u062f \u0631\u0646\u062f', reset: '\u0628\u0627\u0632\u0646\u0634\u0627\u0646\u06cc', adjTotal: '\u0645\u062c\u0645\u0648\u0639 \u062a\u0646\u0638\u06cc\u0645:',
+        adjust: '\u062a\u0646\u0638\u06cc\u0645 \u0628\u0647 \u0627\u0639\u062f\u0627\u062f \u0631\u0646\u062f', round: '\u27f3 \u06af\u0631\u062f', downloadPdf: 'دانلود برگه اختلاط', downloadChart: 'دانلود جدول', fullChart: 'جدول کامل', simpleView: 'ساده', reset: '\u0628\u0627\u0632\u0646\u0634\u0627\u0646\u06cc', adjTotal: '\u0645\u062c\u0645\u0648\u0639 \u062a\u0646\u0638\u06cc\u0645:',
         beforeStart: '\u0642\u0628\u0644 \u0627\u0632 \u0634\u0631\u0648\u0639', refTitle: '\u0645\u0631\u062c\u0639 \u0633\u0631\u06cc\u0639', thPct: 'Pigment %', thRatio: '\u0646\u0633\u0628\u062a', thLook: '\u0638\u0627\u0647\u0631',
         footer: 'KEIM Australia \u00b7 \u0628\u0631\u0627\u06cc \u0645\u0639\u0644\u0648\u0645\u0627\u062a \u06a9\u0627\u0645\u0644 keim.com.au',
         rules: [
           {i:'🚫', t:'<span class="rule-danger">\u0622\u0628 \u0646\u06cc \u2014 \u0641\u0642\u0637 \u0628\u0627 Fixativ</span>'},
           {i:'🧪', t:'<strong>\u0627\u0648\u0644 \u062a\u0633\u062a \u06a9\u0646\u06cc\u062f</strong> \u2014 \u0628\u06af\u0630\u0627\u0631\u06cc\u062f \u062e\u0634\u06a9 \u0634\u0648\u062f'},
-          {i:'🔄', t:'<strong>\u0642\u0628\u0644 \u0627\u0632 \u0631\u06cc\u062e\u062a\u0646 \u0647\u0645 \u0628\u0632\u0646\u06cc\u062f</strong>'},
+          {i:'🔄', t:'<strong>حین کار هم بزنید</strong> \u2014 رنگدانه ته\u200cنشین میشه، هر \u06f1\u06f0\u2013\u06f1\u06f5 دقیقه سطل ره هم بزنید'},
           {i:'🔩', t:'<strong>\u0628\u0627 \u062f\u0631\u06cc\u0644 \u0645\u062e\u0644\u0648\u0637 \u06a9\u0646\u06cc\u062f</strong> \u2014 \u062f\u0633\u062a\u06cc \u0646\u06cc'},
           {i:'🖌\uFE0F', t:'<strong>\u0644\u0628\u0647 \u062a\u0631 \u0646\u06af\u0647\u062f\u0627\u0631\u06cc\u062f</strong>'},
           {i:'📦', t:'<strong>\u0641\u0642\u0637 \u0628\u0647 \u0627\u0646\u062f\u0627\u0632\u0647 \u0631\u0648\u0632 \u0645\u062e\u0644\u0648\u0637 \u06a9\u0646\u06cc\u062f</strong>'},
@@ -696,13 +767,13 @@
         samples: 'Uzorci', buckets: 'Kante i ba\u010dve',
         litres: 'Litara', mixed: 'MIJE\u0160ANO', ready: 'Spremno za nano\u0161enje',
         mixInto: '\u2193 pomije\u0161ajte \u2193', total: 'ukupno',
-        adjust: 'Prilagodite na okrugle brojeve', reset: 'Resetiraj', adjTotal: 'Prilago\u0111eni ukupno:',
+        adjust: 'Prilagodite na okrugle brojeve', round: '⟳ Zaokruži', downloadPdf: 'Preuzmi list za miješanje', downloadChart: 'Preuzmi tablicu', fullChart: 'Cijela tablica', simpleView: 'Jednostavno', reset: 'Resetiraj', adjTotal: 'Prilago\u0111eni ukupno:',
         beforeStart: 'Prije po\u010detka', refTitle: 'Brza referenca', thPct: 'Pigment %', thRatio: 'Omjer', thLook: 'Izgled',
         footer: 'KEIM Australia \u00b7 Za potpunu tehni\u010dku dokumentaciju posjetite keim.com.au',
         rules: [
           {i:'🚫', t:'<span class="rule-danger">BEZ VODE \u2014 razrje\u0111ujte samo Fixativom</span>'},
           {i:'🧪', t:'<strong>Prvo probni nanos</strong> \u2014 pustite da se potpuno osu\u0161i'},
-          {i:'🔄', t:'<strong>Promije\u0161ajte prije ulijevanja</strong> \u2014 svako 10\u201315 minuta'},
+          {i:'🔄', t:'<strong>Mije\u0161ajte tijekom rada</strong> \u2014 pigment se talo\u017ei, promije\u0161ajte kantu svakih 10\u201315 min'},
           {i:'🔩', t:'<strong>Mije\u0161ajte samo bu\u0161ilicom</strong> \u2014 ne ru\u010dno, minimalno 2 minute'},
           {i:'🖌\uFE0F', t:'<strong>Mokri rub</strong> \u2014 ne zaustavljajte se na sredini zida'},
           {i:'📦', t:'<strong>Mije\u0161ajte samo za taj dan</strong>'},
@@ -724,13 +795,13 @@
         samples: '\u0639\u064a\u0646\u0627\u062a', buckets: '\u062f\u0644\u0627\u0621 \u0648 \u0628\u0631\u0627\u0645\u064a\u0644',
         litres: '\u0644\u062a\u0631', mixed: '\u0645\u062e\u0644\u0648\u0637', ready: '\u062c\u0627\u0647\u0632 \u0644\u0644\u062a\u0637\u0628\u064a\u0642',
         mixInto: '\u2193 \u0627\u062e\u0644\u0637 \u2193', total: '\u0627\u0644\u0645\u062c\u0645\u0648\u0639',
-        adjust: '\u0639\u062f\u0644 \u0625\u0644\u0649 \u0623\u0631\u0642\u0627\u0645 \u0635\u062d\u064a\u062d\u0629', reset: '\u0625\u0639\u0627\u062f\u0629', adjTotal: '\u0627\u0644\u0645\u062c\u0645\u0648\u0639 \u0627\u0644\u0645\u0639\u062f\u0644:',
+        adjust: '\u0639\u062f\u0644 \u0625\u0644\u0649 \u0623\u0631\u0642\u0627\u0645 \u0635\u062d\u064a\u062d\u0629', round: '\u27f3 \u062a\u0642\u0631\u064a\u0628', downloadPdf: 'تحميل ورقة الخلط', downloadChart: 'تحميل الجدول', fullChart: 'الجدول الكامل', simpleView: 'مبسط', reset: '\u0625\u0639\u0627\u062f\u0629', adjTotal: '\u0627\u0644\u0645\u062c\u0645\u0648\u0639 \u0627\u0644\u0645\u0639\u062f\u0644:',
         beforeStart: '\u0642\u0628\u0644 \u0627\u0644\u0628\u062f\u0621', refTitle: '\u0645\u0631\u062c\u0639 \u0633\u0631\u064a\u0639', thPct: 'Pigment %', thRatio: '\u0627\u0644\u0646\u0633\u0628\u0629', thLook: '\u0627\u0644\u0645\u0638\u0647\u0631',
         footer: 'KEIM Australia \u00b7 \u0644\u0644\u0645\u0639\u0644\u0648\u0645\u0627\u062a \u0627\u0644\u0643\u0627\u0645\u0644\u0629 keim.com.au',
         rules: [
           {i:'🚫', t:'<span class="rule-danger">\u0645\u0645\u0646\u0648\u0639 \u0627\u0644\u0645\u0627\u0621 \u2014 \u0627\u0633\u062a\u062e\u062f\u0645 Fixativ \u0641\u0642\u0637</span>'},
           {i:'🧪', t:'<strong>\u0627\u062e\u062a\u0628\u0631 \u0623\u0648\u0644\u0627\u064b</strong> \u2014 \u0627\u062a\u0631\u0643\u0647 \u064a\u062c\u0641 \u062a\u0645\u0627\u0645\u0627\u064b'},
-          {i:'🔄', t:'<strong>\u062d\u0631\u0643 \u0642\u0628\u0644 \u0627\u0644\u0633\u0643\u0628</strong> \u2014 \u0643\u0644 \u0661\u0660\u2013\u0661\u0665 \u062f\u0642\u064a\u0642\u0629'},
+          {i:'🔄', t:'<strong>\u062d\u0631\u0643 \u0623\u062b\u0646\u0627\u0621 \u0627\u0644\u0639\u0645\u0644</strong> \u2014 \u0627\u0644\u0635\u0628\u063a\u0629 \u062a\u062a\u0631\u0633\u0628\u060c \u062d\u0631\u0643 \u0627\u0644\u062f\u0644\u0648 \u0643\u0644 \u0661\u0660\u2013\u0661\u0665 \u062f\u0642\u064a\u0642\u0629'},
           {i:'🔩', t:'<strong>\u0627\u062e\u0644\u0637 \u0628\u0627\u0644\u062f\u0631\u064a\u0644 \u0641\u0642\u0637</strong> \u2014 \u0644\u0627 \u062a\u062e\u0644\u0637 \u064a\u062f\u0648\u064a\u0627\u064b'},
           {i:'🖌\uFE0F', t:'<strong>\u062d\u0627\u0641\u0629 \u0631\u0637\u0628\u0629</strong> \u2014 \u0644\u0627 \u062a\u062a\u0648\u0642\u0641 \u0641\u064a \u0645\u0646\u062a\u0635\u0641 \u0627\u0644\u062c\u062f\u0627\u0631'},
           {i:'📦', t:'<strong>\u0627\u062e\u0644\u0637 \u0644\u0644\u064a\u0648\u0645 \u0641\u0642\u0637</strong>'},
@@ -752,13 +823,13 @@
         samples: 'Pr\u00f3bki', buckets: 'Wiadra i beczki',
         litres: 'Litr\u00f3w', mixed: 'MIESZANKA', ready: 'Gotowe do aplikacji',
         mixInto: '\u2193 wymiesza\u0107 \u2193', total: '\u0142\u0105cznie',
-        adjust: 'Dostosuj do okr\u0105g\u0142ych liczb', reset: 'Resetuj', adjTotal: 'Suma po korekcie:',
+        adjust: 'Dostosuj do okr\u0105g\u0142ych liczb', round: '⟳ Zaokrąglij', downloadPdf: 'Pobierz kartę mieszania', downloadChart: 'Pobierz tabelę', fullChart: 'Pełna tabela', simpleView: 'Prosta', reset: 'Resetuj', adjTotal: 'Suma po korekcie:',
         beforeStart: 'Zanim zaczniesz', refTitle: 'Szybka referencja', thPct: 'Pigment %', thRatio: 'Proporcja', thLook: 'Wygląd',
         footer: 'KEIM Australia \u00b7 Pe\u0142na dokumentacja na keim.com.au',
         rules: [
           {i:'🚫', t:'<span class="rule-danger">BEZ WODY \u2014 rozcie\u0144czaj tylko Fixativem</span>'},
           {i:'🧪', t:'<strong>Najpierw pr\u00f3bka</strong> \u2014 poczekaj a\u017c wyschnie'},
-          {i:'🔄', t:'<strong>Mieszaj przed wylaniem</strong> \u2014 co 10\u201315 minut'},
+          {i:'🔄', t:'<strong>Mieszaj podczas pracy</strong> \u2014 pigment osadza si\u0119, mieszaj wiadro co 10\u201315 min'},
           {i:'🔩', t:'<strong>Mieszaj tylko wiertark\u0105</strong> \u2014 nie r\u0119cznie, min. 2 minuty'},
           {i:'🖌\uFE0F', t:'<strong>Mokra kraw\u0119d\u017a</strong> \u2014 nie przerywaj w po\u0142owie \u015bciany'},
           {i:'📦', t:'<strong>Mieszaj tylko na dany dzie\u0144</strong>'},
@@ -780,13 +851,13 @@
         samples: 'Probedosen', buckets: 'Eimer & F\u00e4sser',
         litres: 'Liter', mixed: 'GEMISCHT', ready: 'Auftragfertig',
         mixInto: '\u2193 mischen \u2193', total: 'gesamt',
-        adjust: 'Auf runde Zahlen anpassen', reset: 'Zur\u00fccksetzen', adjTotal: 'Angepasste Summe:',
+        adjust: 'Auf runde Zahlen anpassen', round: '\u27f3 Runden', downloadPdf: 'Mischblatt herunterladen', downloadChart: 'Tabelle herunterladen', fullChart: 'Gesamttabelle', simpleView: 'Einfach', reset: 'Zur\u00fccksetzen', adjTotal: 'Angepasste Summe:',
         beforeStart: 'Bevor Sie beginnen', refTitle: 'Kurzreferenz', thPct: 'Pigment %', thRatio: 'Verhältnis', thLook: 'Aussehen',
         footer: 'KEIM Australia \u00b7 Vollst\u00e4ndiges TDB auf keim.com.au',
         rules: [
           {i:'🚫', t:'<span class="rule-danger">KEIN WASSER \u2014 nur mit Fixativ verd\u00fcnnen</span>'},
           {i:'🧪', t:'<strong>Erst Probeanstrich</strong> \u2014 vollst\u00e4ndig trocknen lassen'},
-          {i:'🔄', t:'<strong>Vor dem Gie\u00dfen umr\u00fchren</strong> \u2014 alle 10\u201315 Min. nachf\u00fchren'},
+          {i:'🔄', t:'<strong>W\u00e4hrend der Arbeit umr\u00fchren</strong> \u2014 Pigment setzt sich ab, Eimer alle 10\u201315 Min. aufr\u00fchren'},
           {i:'🔩', t:'<strong>Nur mit Bohrmaschine mischen</strong> \u2014 nicht per Hand, mindestens 2 Minuten'},
           {i:'🖌\uFE0F', t:'<strong>Nass-in-Nass</strong> \u2014 nicht mitten in der Wand aufh\u00f6ren'},
           {i:'📦', t:'<strong>Nur den Tagesbedarf mischen</strong>'},
@@ -808,13 +879,13 @@
         samples: '\u00c9chantillons', buckets: 'Seaux et f\u00fbts',
         litres: 'Litres', mixed: 'M\u00c9LANG\u00c9', ready: 'Pr\u00eat \u00e0 appliquer',
         mixInto: '\u2193 m\u00e9langer \u2193', total: 'total',
-        adjust: 'Ajuster aux nombres ronds', reset: 'R\u00e9init.', adjTotal: 'Total ajust\u00e9 :',
+        adjust: 'Ajuster aux nombres ronds', round: '\u27f3 Arrondir', downloadPdf: 'Télécharger la fiche', downloadChart: 'Télécharger le tableau', fullChart: 'Tableau complet', simpleView: 'Simple', reset: 'R\u00e9init.', adjTotal: 'Total ajust\u00e9 :',
         beforeStart: 'Avant de commencer', refTitle: 'Référence rapide', thPct: 'Pigment %', thRatio: 'Ratio', thLook: 'Aspect',
         footer: 'KEIM Australia \u00b7 Fiche technique compl\u00e8te sur keim.com.au',
         rules: [
           {i:'🚫', t:'<span class="rule-danger">PAS D\u2019EAU \u2014 diluez uniquement avec Fixativ</span>'},
           {i:'🧪', t:'<strong>Essai pr\u00e9alable</strong> \u2014 laissez s\u00e9cher compl\u00e8tement'},
-          {i:'🔄', t:'<strong>Remuez avant de verser</strong> \u2014 toutes les 10\u201315 min'},
+          {i:'🔄', t:'<strong>Remuez pendant l\u2019application</strong> \u2014 le pigment se d\u00e9pose, remuez le seau toutes les 10\u201315 min'},
           {i:'🔩', t:'<strong>M\u00e9langez au malaxeur uniquement</strong> \u2014 pas \u00e0 la main, 2 min minimum'},
           {i:'🖌\uFE0F', t:'<strong>Bord mouill\u00e9</strong> \u2014 ne vous arr\u00eatez pas en plein mur'},
           {i:'📦', t:'<strong>Ne m\u00e9langez que pour la journ\u00e9e</strong>'},
@@ -836,13 +907,13 @@
         samples: 'Campioni', buckets: 'Secchi e fusti',
         litres: 'Litri', mixed: 'MISCELATO', ready: 'Pronto per applicare',
         mixInto: '\u2193 miscelare \u2193', total: 'totale',
-        adjust: 'Regola a numeri tondi', reset: 'Reset', adjTotal: 'Totale regolato:',
+        adjust: 'Regola a numeri tondi', round: '⟳ Arrotonda', downloadPdf: 'Scarica scheda miscela', downloadChart: 'Scarica tabella', fullChart: 'Tabella completa', simpleView: 'Semplice', reset: 'Reset', adjTotal: 'Totale regolato:',
         beforeStart: 'Prima di iniziare', refTitle: 'Riferimento rapido', thPct: 'Pigment %', thRatio: 'Rapporto', thLook: 'Aspetto',
         footer: 'KEIM Australia \u00b7 Scheda tecnica completa su keim.com.au',
         rules: [
           {i:'🚫', t:'<span class="rule-danger">NIENTE ACQUA \u2014 diluire solo con Fixativ</span>'},
           {i:'🧪', t:'<strong>Prova prima</strong> \u2014 lascia asciugare completamente'},
-          {i:'🔄', t:'<strong>Mescola prima di versare</strong> \u2014 ogni 10\u201315 minuti'},
+          {i:'🔄', t:'<strong>Mescola durante l\u2019applicazione</strong> \u2014 il pigmento si deposita, rimescola il secchio ogni 10\u201315 min'},
           {i:'🔩', t:'<strong>Miscela solo con trapano</strong> \u2014 non a mano, almeno 2 minuti'},
           {i:'🖌\uFE0F', t:'<strong>Bordo bagnato</strong> \u2014 non fermarti a met\u00e0 parete'},
           {i:'📦', t:'<strong>Miscela solo per la giornata</strong>'},
@@ -864,13 +935,13 @@
         samples: 'Muestras', buckets: 'Cubetas y tambores',
         litres: 'Litros', mixed: 'MEZCLADO', ready: 'Listo para aplicar',
         mixInto: '\u2193 mezclar \u2193', total: 'total',
-        adjust: 'Ajustar a n\u00fameros redondos', reset: 'Reiniciar', adjTotal: 'Total ajustado:',
+        adjust: 'Ajustar a n\u00fameros redondos', round: '⟳ Redondear', downloadPdf: 'Descargar hoja de mezcla', downloadChart: 'Descargar tabla', fullChart: 'Tabla completa', simpleView: 'Simple', reset: 'Reiniciar', adjTotal: 'Total ajustado:',
         beforeStart: 'Antes de empezar', refTitle: 'Referencia rápida', thPct: 'Pigment %', thRatio: 'Proporción', thLook: 'Aspecto',
         footer: 'KEIM Australia \u00b7 Ficha t\u00e9cnica completa en keim.com.au',
         rules: [
           {i:'🚫', t:'<span class="rule-danger">SIN AGUA \u2014 solo diluir con Fixativ</span>'},
           {i:'🧪', t:'<strong>Prueba primero</strong> \u2014 deja secar completamente'},
-          {i:'🔄', t:'<strong>Revuelve antes de verter</strong> \u2014 cada 10\u201315 min'},
+          {i:'🔄', t:'<strong>Revuelve durante la aplicaci\u00f3n</strong> \u2014 el pigmento se asienta, revuelve el balde cada 10\u201315 min'},
           {i:'🔩', t:'<strong>Mezcla solo con taladro</strong> \u2014 no a mano, m\u00edn. 2 minutos'},
           {i:'🖌\uFE0F', t:'<strong>Borde h\u00famedo</strong> \u2014 no pares a mitad de pared'},
           {i:'📦', t:'<strong>Mezcla solo para el d\u00eda</strong>'},
@@ -939,13 +1010,17 @@
         document.getElementById('barLblColour').textContent = t('colour');
         document.getElementById('barLblClear').textContent = t('clear');
         document.getElementById('adjTitle').textContent = t('adjust');
+        document.getElementById('roundBtn').textContent = t('round');
         document.getElementById('resetBtn').textContent = t('reset');
         document.getElementById('adjTotalLabel').textContent = t('adjTotal');
         document.getElementById('adjLblP').textContent = t('colour');
         document.getElementById('adjLblD').textContent = t('clear');
         document.getElementById('footerText').textContent = t('footer');
+        document.getElementById('downloadPdfLabel').textContent = t('downloadPdf');
         // Rules & Reference table
         buildRules();
+        buildRefTable();
+        document.getElementById('downloadChartLabel').textContent = t('downloadChart');
     }
 
     function buildRules() {
@@ -962,7 +1037,70 @@
         `;
     }
 
-    // Reference table removed
+    function buildRefTable() {
+        document.getElementById('refTitle').textContent = t('refTitle');
+        buildFullChart();
+    }
+
+    // Full chart data: 18 ratios
+    const fullChartRows = [
+        [1,0,100,'1:0',0],[10,1,91,'10:1',1],[8,1,89,'8:1',2],[6,1,86,'6:1',3],
+        [5,1,83,'5:1',4],[4,1,80,'4:1',5],[3,1,75,'3:1',6],[2,1,67,'2:1',7],
+        [3,2,60,'3:2',8],[1,1,50,'1:1',9],[2,3,40,'2:3',10],[1,2,33,'1:2',11],
+        [1,3,25,'1:3',12],[1,4,20,'1:4',13],[1,5,17,'1:5',14],[1,6,14,'1:6',15],
+        [1,8,11,'1:8',16],[1,10,9,'1:10',17],
+    ];
+    const chartVolumes = [1, 2, 5, 10, 15, 20, 25, 30, 40, 50];
+
+    function fmtVolHtml(litres) {
+        if (litres === 0) return '\u2014';
+        if (litres < 1) return localNum(Math.round(litres * 1000) + '') + '<span style="font-size:7px;opacity:0.6">ml</span>';
+        var v = litres;
+        if (v === Math.floor(v)) return localNum(v + '') + '<span style="font-size:7px;opacity:0.6">L</span>';
+        var s = v.toFixed(1);
+        if (s.endsWith('.0')) s = v.toFixed(0);
+        return localNum(s) + '<span style="font-size:7px;opacity:0.6">L</span>';
+    }
+
+    function buildFullChart() {
+        var fc = document.getElementById('fullChart');
+        // Header row 1: volume groups
+        var h1 = '<tr><th rowspan="2" style="text-align:left;padding-left:8px">' + t('thRatio') + '</th>';
+        h1 += '<th rowspan="2"></th>';
+        h1 += '<th rowspan="2" class="fc-pct">' + t('thPct') + '</th>';
+        h1 += '<th rowspan="2" style="text-align:left">' + t('thLook') + '</th>';
+        chartVolumes.forEach(function(v) {
+            h1 += '<th colspan="2" class="vol-hdr">' + localNum(v + '') + 'L</th>';
+        });
+        h1 += '</tr>';
+        // Header row 2: Pigment / Fixative sub-labels
+        var h2 = '<tr>';
+        chartVolumes.forEach(function() {
+            h2 += '<th class="sub-hdr sub-pig">' + t('colour') + '</th>';
+            h2 += '<th class="sub-hdr sub-fix">' + t('clear') + '</th>';
+        });
+        h2 += '</tr>';
+
+        // Data rows
+        var body = '';
+        fullChartRows.forEach(function(r) {
+            var pp = r[0], dp = r[1], pct = r[2], label = r[3], lookIdx = r[4];
+            body += '<tr>';
+            body += '<td class="fc-ratio left-sticky">' + localNum(label) + '</td>';
+            body += '<td class="fc-bar-cell left-sticky" style="left:44px"><div class="fc-bar" style="width:' + Math.max(pct * 0.32, 2) + 'px"></div></td>';
+            body += '<td class="fc-pct">' + localNum(pct + '%') + '</td>';
+            body += '<td class="fc-look">' + desc(lookIdx) + '</td>';
+            chartVolumes.forEach(function(vol) {
+                var pigL = vol * pp / (pp + dp);
+                var fixL = vol * dp / (pp + dp);
+                body += '<td class="fc-pig">' + fmtVolHtml(pigL) + '</td>';
+                body += '<td class="fc-fix">' + fmtVolHtml(fixL) + '</td>';
+            });
+            body += '</tr>';
+        });
+
+        fc.innerHTML = '<thead>' + h1 + h2 + '</thead><tbody>' + body + '</tbody>';
+    }
 
     function buildLangDropdown() {
         const dd = document.getElementById('langDropdown');
@@ -1104,14 +1242,14 @@
 
     function showResult(pig, dil, tot, useML) {
         const litresWord = t('litres');
-        document.getElementById('resPig').textContent = localNum(useML ? Math.round(pig * 1000) : pig.toFixed(1));
-        document.getElementById('resDil').textContent = localNum(useML ? Math.round(dil * 1000) : dil.toFixed(1));
+        document.getElementById('resPig').textContent = localNum(useML ? Math.round(pig * 1000) : pig.toFixed(2));
+        document.getElementById('resDil').textContent = localNum(useML ? Math.round(dil * 1000) : dil.toFixed(2));
         const u = useML ? localNum('ml') : litresWord;
         document.getElementById('unitPig').textContent = u;
         document.getElementById('unitDil').textContent = u;
-        const totStr = localNum(useML ? Math.round(tot * 1000) + 'ml' : tot.toFixed(1) + 'L');
+        const totStr = localNum(useML ? Math.round(tot * 1000) + 'ml' : tot.toFixed(2) + 'L');
         document.getElementById('resTot').textContent = totStr;
-        document.getElementById('resTotAmount').textContent = localNum(useML ? Math.round(tot * 1000) : tot.toFixed(1));
+        document.getElementById('resTotAmount').textContent = localNum(useML ? Math.round(tot * 1000) : tot.toFixed(2));
         document.getElementById('resTotUnit').textContent = u;
 
         const mx = Math.max(pig, dil, 0.001);
@@ -1166,16 +1304,17 @@
         const dMin = Math.max(0, dil * 0.5), dMax = Math.min(pig + dil, dil * 1.5);
 
         if (useML) {
-            sP.min = Math.round(pMin*1000); sP.max = Math.round(pMax*1000); sP.step = 5; sP.value = Math.round(pig*1000);
-            sD.min = Math.round(dMin*1000); sD.max = Math.round(dMax*1000); sD.step = 5; sD.value = Math.round(dil*1000);
+            sP.min = Math.round(pMin*1000); sP.max = Math.round(pMax*1000); sP.step = 1; sP.value = Math.round(pig*1000);
+            sD.min = Math.round(dMin*1000); sD.max = Math.round(dMax*1000); sD.step = 1; sD.value = Math.round(dil*1000);
         } else {
-            sP.min = pMin.toFixed(1); sP.max = pMax.toFixed(1); sP.step = 0.1; sP.value = pig.toFixed(1);
-            sD.min = dMin.toFixed(1); sD.max = dMax.toFixed(1); sD.step = 0.1; sD.value = dil.toFixed(1);
+            sP.min = pMin.toFixed(2); sP.max = pMax.toFixed(2); sP.step = 0.01; sP.value = pig.toFixed(2);
+            sD.min = dMin.toFixed(2); sD.max = dMax.toFixed(2); sD.step = 0.01; sD.value = dil.toFixed(2);
         }
 
         document.getElementById('adjRowP').style.display = pig > 0 ? 'flex' : 'none';
         document.getElementById('adjRowD').style.display = dil > 0 ? 'flex' : 'none';
         updSliderUI(useML);
+        document.getElementById('roundBtn').classList.add('vis');
         document.getElementById('resetBtn').classList.remove('vis');
     }
 
@@ -1183,7 +1322,7 @@
         const useML = (basePig + baseDil) < 2;
         adjPig = useML ? parseFloat(v) / 1000 : parseFloat(v);
         if (selR && selR.p > 0) adjDil = adjPig * (selR.d / selR.p);
-        document.getElementById('sldD').value = useML ? Math.round(adjDil*1000) : adjDil.toFixed(1);
+        document.getElementById('sldD').value = useML ? Math.round(adjDil*1000) : adjDil.toFixed(2);
         updSliderUI(useML); showResult(adjPig, adjDil, adjPig + adjDil, useML);
     }
 
@@ -1191,37 +1330,685 @@
         const useML = (basePig + baseDil) < 2;
         adjDil = useML ? parseFloat(v) / 1000 : parseFloat(v);
         if (selR && selR.d > 0) adjPig = adjDil * (selR.p / selR.d);
-        document.getElementById('sldP').value = useML ? Math.round(adjPig*1000) : adjPig.toFixed(1);
+        document.getElementById('sldP').value = useML ? Math.round(adjPig*1000) : adjPig.toFixed(2);
         updSliderUI(useML); showResult(adjPig, adjDil, adjPig + adjDil, useML);
     }
 
     function updSliderUI(useML) {
         const u = useML ? 'ml' : 'L';
-        document.getElementById('avP').textContent = localNum(useML ? Math.round(adjPig*1000) : adjPig.toFixed(1));
-        document.getElementById('avD').textContent = localNum(useML ? Math.round(adjDil*1000) : adjDil.toFixed(1));
+        document.getElementById('avP').textContent = localNum(useML ? Math.round(adjPig*1000) : adjPig.toFixed(2));
+        document.getElementById('avD').textContent = localNum(useML ? Math.round(adjDil*1000) : adjDil.toFixed(2));
         document.getElementById('auP').textContent = u;
         document.getElementById('auD').textContent = u;
-        document.getElementById('adjTot').textContent = localNum(useML ? Math.round((adjPig+adjDil)*1000)+'ml' : (adjPig+adjDil).toFixed(1)+'L');
+        document.getElementById('adjTot').textContent = localNum(useML ? Math.round((adjPig+adjDil)*1000)+'ml' : (adjPig+adjDil).toFixed(2)+'L');
         delta('adP', adjPig - basePig, useML);
         delta('adD', adjDil - baseDil, useML);
-        document.getElementById('resetBtn').classList.toggle('vis', Math.abs(adjPig-basePig) > 0.01 || Math.abs(adjDil-baseDil) > 0.01);
+        document.getElementById('resetBtn').classList.toggle('vis', Math.abs(adjPig-basePig) > 0.001 || Math.abs(adjDil-baseDil) > 0.001);
     }
 
     function delta(id, diff, useML) {
         const el = document.getElementById(id);
-        if (Math.abs(diff) < 0.01) { el.classList.remove('vis'); return; }
+        if (Math.abs(diff) < 0.001) { el.classList.remove('vis'); return; }
         el.classList.add('vis');
-        const v = useML ? Math.round(diff*1000) : diff.toFixed(1);
+        const v = useML ? Math.round(diff*1000) : diff.toFixed(2);
         el.textContent = localNum((diff > 0 ? '+' : '') + v + (useML ? 'ml' : 'L'));
         el.classList.toggle('up', diff > 0); el.classList.toggle('dn', diff < 0);
+    }
+
+    function roundAdj() {
+        const useML = (basePig + baseDil) < 2;
+        if (useML) {
+            // ml mode: round to nearest 5ml
+            adjPig = Math.round((adjPig * 1000) / 5) * 5 / 1000;
+            adjDil = Math.round((adjDil * 1000) / 5) * 5 / 1000;
+        } else {
+            // Litres mode: round from 2 decimals to 1 decimal (e.g. 4.27 → 4.3)
+            adjPig = Math.round(adjPig * 10) / 10;
+            adjDil = Math.round(adjDil * 10) / 10;
+        }
+        // Clamp within slider range
+        const sP = document.getElementById('sldP'), sD = document.getElementById('sldD');
+        const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+        if (useML) {
+            adjPig = clamp(adjPig, parseFloat(sP.min)/1000, parseFloat(sP.max)/1000);
+            adjDil = clamp(adjDil, parseFloat(sD.min)/1000, parseFloat(sD.max)/1000);
+            sP.value = Math.round(adjPig * 1000);
+            sD.value = Math.round(adjDil * 1000);
+        } else {
+            adjPig = clamp(adjPig, parseFloat(sP.min), parseFloat(sP.max));
+            adjDil = clamp(adjDil, parseFloat(sD.min), parseFloat(sD.max));
+            sP.value = adjPig.toFixed(2);
+            sD.value = adjDil.toFixed(2);
+        }
+        updSliderUI(useML);
+        showResult(adjPig, adjDil, adjPig + adjDil, useML);
     }
 
     function resetAdj() {
         adjPig = basePig; adjDil = baseDil;
         const useML = (basePig + baseDil) < 2;
-        document.getElementById('sldP').value = useML ? Math.round(basePig*1000) : basePig.toFixed(1);
-        document.getElementById('sldD').value = useML ? Math.round(baseDil*1000) : baseDil.toFixed(1);
+        document.getElementById('sldP').value = useML ? Math.round(basePig*1000) : basePig.toFixed(2);
+        document.getElementById('sldD').value = useML ? Math.round(baseDil*1000) : baseDil.toFixed(2);
         updSliderUI(useML); showResult(basePig, baseDil, basePig + baseDil, useML);
+    }
+
+    // ============ CHART PDF DOWNLOAD ============
+    function downloadChartPDF() {
+        if (!window.jspdf) {
+            const btn = document.getElementById('downloadChartBtn');
+            btn.style.opacity = '0.5';
+            const s = document.createElement('script');
+            s.src = './jspdf.min.js';
+            s.onload = function() { btn.style.opacity = '1'; generateChartPDF(); };
+            s.onerror = function() { btn.style.opacity = '1'; alert('Could not load PDF library.'); };
+            document.head.appendChild(s);
+            return;
+        }
+        generateChartPDF();
+    }
+
+    function generateChartPDF() {
+        try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'landscape' });
+        const W = 297, H = 210;
+        const LM = 8, RM = 8;
+        const contentW = W - LM - RM;
+
+        // 18 chart ratios: [pigParts, dilParts, pct, ratioLabel, lookIndex]
+        const chartRows = [
+            [1, 0, 100, '1:0', 0],
+            [10, 1, 91, '10:1', 1],
+            [8, 1, 89, '8:1', 2],
+            [6, 1, 86, '6:1', 3],
+            [5, 1, 83, '5:1', 4],
+            [4, 1, 80, '4:1', 5],
+            [3, 1, 75, '3:1', 6],
+            [2, 1, 67, '2:1', 7],
+            [3, 2, 60, '3:2', 8],
+            [1, 1, 50, '1:1', 9],
+            [2, 3, 40, '2:3', 10],
+            [1, 2, 33, '1:2', 11],
+            [1, 3, 25, '1:3', 12],
+            [1, 4, 20, '1:4', 13],
+            [1, 5, 17, '1:5', 14],
+            [1, 6, 14, '1:6', 15],
+            [1, 8, 11, '1:8', 16],
+            [1, 10, 9, '1:10', 17],
+        ];
+        const volumes = [1, 2, 5, 10, 15, 20, 25, 30, 40, 50];
+
+        function fmtVol(litres) {
+            if (litres === 0) return '\u2014';
+            if (litres < 1) return Math.round(litres * 1000) + 'ml';
+            if (litres === Math.floor(litres)) return litres + 'L';
+            // Show 1 decimal
+            var s = litres.toFixed(1);
+            if (s.endsWith('.0')) return litres.toFixed(0) + 'L';
+            return s + 'L';
+        }
+
+        // White background
+        doc.setFillColor(255, 255, 255);
+        doc.rect(0, 0, W, H, 'F');
+
+        // Teal accent bar at top
+        doc.setFillColor(13, 148, 136);
+        doc.rect(0, 0, W, 3.5, 'F');
+
+        // ---- HEADER ----
+        var y = 13;
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(30, 30, 30);
+        doc.text('KEIM Concretal-Lasur', LM, y);
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(100, 100, 100);
+        doc.text('Mixing Reference Chart', LM + 75, y);
+
+        // Right header
+        doc.setFontSize(7);
+        doc.setTextColor(120, 120, 120);
+        doc.text('How much Pigment (Concretal-Lasur) and Fixative (Concretal-Fixativ) for each total volume', W - RM, y - 4, { align: 'right' });
+        doc.setTextColor(13, 148, 136);
+        doc.text('keim.com.au', W - RM, y, { align: 'right' });
+
+        // ---- TABLE LAYOUT ----
+        var tableTop = 20;
+        var ratioColW = 22;
+        var pigPctColW = 24;
+        var lookColW = 32;
+        var leftColsW = ratioColW + pigPctColW + lookColW; // 78
+        var tableLeft = LM;
+        var volAreaW = contentW - leftColsW;
+        var volColW = volAreaW / volumes.length; // ~20.1mm each
+        var subColW = volColW / 2; // pigment and fixative sub-columns
+
+        // Header row 1: column group headers
+        var hdrY = tableTop;
+        var hdrH = 12;
+
+        // Header background
+        doc.setFillColor(245, 245, 245);
+        doc.rect(tableLeft, hdrY, contentW, hdrH, 'F');
+
+        // Left column headers
+        doc.setFontSize(6.5);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(80, 80, 80);
+        doc.text('RATIO', tableLeft + ratioColW / 2, hdrY + 5, { align: 'center' });
+        doc.text('PIGMENT', tableLeft + ratioColW + pigPctColW / 2, hdrY + 4, { align: 'center' });
+        doc.setFontSize(5.5);
+        doc.setTextColor(13, 148, 136);
+        doc.text('%', tableLeft + ratioColW + pigPctColW / 2, hdrY + 7.5, { align: 'center' });
+        doc.setFontSize(6.5);
+        doc.setTextColor(80, 80, 80);
+        doc.text('LOOK', tableLeft + ratioColW + pigPctColW + lookColW / 2, hdrY + 5, { align: 'center' });
+
+        // Volume column headers
+        for (var vi = 0; vi < volumes.length; vi++) {
+            var vx = tableLeft + leftColsW + vi * volColW;
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(30, 30, 30);
+            doc.text(volumes[vi] + 'L', vx + volColW / 2, hdrY + 4, { align: 'center' });
+            doc.setFontSize(5);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(140, 140, 140);
+            doc.text('total mix', vx + volColW / 2, hdrY + 7.5, { align: 'center' });
+        }
+
+        // Sub-header row: Pigment / Fixative labels
+        var subHdrY = hdrY + hdrH;
+        var subHdrH = 4.5;
+        doc.setFillColor(250, 250, 250);
+        doc.rect(tableLeft + leftColsW, subHdrY, volAreaW, subHdrH, 'F');
+
+        for (var vi = 0; vi < volumes.length; vi++) {
+            var vx = tableLeft + leftColsW + vi * volColW;
+            doc.setFontSize(4);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(13, 148, 136);
+            doc.text('Pigment', vx + subColW / 2, subHdrY + 3, { align: 'center' });
+            doc.setTextColor(160, 160, 160);
+            doc.text('Fixative', vx + subColW + subColW / 2, subHdrY + 3, { align: 'center' });
+        }
+
+        // Header divider
+        doc.setDrawColor(13, 148, 136);
+        doc.setLineWidth(0.4);
+        doc.line(tableLeft, subHdrY + subHdrH, tableLeft + contentW, subHdrY + subHdrH);
+
+        // ---- DATA ROWS ----
+        var rowH = 7.5;
+        var dataStartY = subHdrY + subHdrH;
+
+        for (var ri = 0; ri < chartRows.length; ri++) {
+            var row = chartRows[ri];
+            var pp = row[0], dp = row[1], pct = row[2], ratioLabel = row[3], lookIdx = row[4];
+            var ry = dataStartY + ri * rowH;
+            var rowMidY = ry + rowH / 2 + 1.2;
+
+            // Alternate row background
+            if (ri % 2 === 0) {
+                doc.setFillColor(252, 252, 252);
+                doc.rect(tableLeft, ry, contentW, rowH, 'F');
+            }
+
+            // Ratio
+            doc.setFontSize(7.5);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(50, 50, 50);
+            doc.text(ratioLabel, tableLeft + ratioColW / 2, rowMidY, { align: 'center' });
+
+            // Pigment % with teal bar
+            var barMaxW = pigPctColW - 10;
+            var barW = Math.max(pct / 100 * barMaxW, 1.5);
+            var barX = tableLeft + ratioColW + 1.5;
+            var barY = ry + 2;
+            var barH = 3.5;
+            doc.setFillColor(13, 148, 136);
+            doc.roundedRect(barX, barY, barW, barH, 1.2, 1.2, 'F');
+
+            doc.setFontSize(6);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(13, 148, 136);
+            doc.text(pct + '%', tableLeft + ratioColW + pigPctColW - 2, rowMidY, { align: 'right' });
+
+            // Look description
+            doc.setFontSize(5.5);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(120, 120, 120);
+            doc.text(desc(lookIdx), tableLeft + ratioColW + pigPctColW + 2, rowMidY);
+
+            // Volume cells
+            for (var vi = 0; vi < volumes.length; vi++) {
+                var totalVol = volumes[vi];
+                var pigLitres = totalVol * pp / (pp + dp);
+                var fixLitres = totalVol * dp / (pp + dp);
+                var vx = tableLeft + leftColsW + vi * volColW;
+
+                // Pigment value (bold teal)
+                doc.setFontSize(5.5);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(13, 148, 136);
+                var pigStr = fmtVol(pigLitres);
+                doc.text(pigStr, vx + subColW / 2, rowMidY, { align: 'center' });
+
+                // Fixative value (gray)
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(150, 150, 150);
+                var fixStr = fmtVol(fixLitres);
+                doc.text(fixStr, vx + subColW + subColW / 2, rowMidY, { align: 'center' });
+            }
+
+            // Row separator
+            doc.setDrawColor(235, 235, 235);
+            doc.setLineWidth(0.1);
+            doc.line(tableLeft, ry + rowH, tableLeft + contentW, ry + rowH);
+        }
+
+        // Vertical column separators for volume columns
+        doc.setDrawColor(230, 230, 230);
+        doc.setLineWidth(0.15);
+        for (var vi = 0; vi <= volumes.length; vi++) {
+            var lx = tableLeft + leftColsW + vi * volColW;
+            doc.line(lx, tableTop, lx, dataStartY + chartRows.length * rowH);
+        }
+
+        // Left columns vertical separators
+        doc.line(tableLeft + ratioColW, tableTop, tableLeft + ratioColW, dataStartY + chartRows.length * rowH);
+        doc.line(tableLeft + ratioColW + pigPctColW, tableTop, tableLeft + ratioColW + pigPctColW, dataStartY + chartRows.length * rowH);
+        doc.line(tableLeft + leftColsW, tableTop, tableLeft + leftColsW, dataStartY + chartRows.length * rowH);
+
+        // Outer border
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.3);
+        doc.rect(tableLeft, tableTop, contentW, subHdrH + hdrH + chartRows.length * rowH);
+
+        // ---- KEY RULES ----
+        var rulesY = dataStartY + chartRows.length * rowH + 5;
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(30, 30, 30);
+        doc.text('KEY RULES:', LM, rulesY);
+        rulesY += 3;
+
+        var ruleTexts = [
+            ['NO WATER', 'Only dilute with Concretal-Fixativ, never water'],
+            ['TEST PATCH', 'Always test first \u2014 let it dry fully before judging colour'],
+            ['DRILL MIX', 'Use a mechanical paddle/drill mixer for at least 2 minutes'],
+            ['WET EDGE', "Don't stop mid-wall \u2014 keep a wet edge at all times"],
+            ['STIR', 'Pigment settles \u2014 re-stir the bucket every 10\u201315 min while working'],
+            ['TEMP', 'Apply between 5\u00b0C \u2013 30\u00b0C, no direct sun/frost/rain'],
+            ['DRY TIME', 'Wait at least 12 hours between coats'],
+            ['SUBSTRATES', 'Mineral only \u2014 concrete, render, masonry'],
+            ['CROSS-HATCH', 'Apply in alternating directions for even coverage'],
+            ['DAILY MIX', 'Only mix what you need for the day'],
+        ];
+
+        var colMid = W / 2;
+        var rulesPerCol = 5;
+        var ruleLineH = 3.8;
+
+        for (var ri = 0; ri < ruleTexts.length; ri++) {
+            var col = ri < rulesPerCol ? 0 : 1;
+            var row = ri < rulesPerCol ? ri : ri - rulesPerCol;
+            var rx = col === 0 ? LM + 2 : colMid + 2;
+            var rry = rulesY + row * ruleLineH;
+
+            doc.setFontSize(5);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(13, 148, 136);
+            doc.text(ruleTexts[ri][0], rx, rry);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100, 100, 100);
+            var labelW = doc.getTextWidth(ruleTexts[ri][0]);
+            doc.text(ruleTexts[ri][1], rx + labelW + 1.5, rry);
+        }
+
+        // ---- FOOTER ----
+        var footY = H - 5;
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.2);
+        doc.line(LM, footY - 2, W - RM, footY - 2);
+
+        doc.setFontSize(5);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(140, 140, 140);
+        doc.text('KEIM Australia  \u00b7  keim.com.au  \u00b7  Concretal-Lasur + Concretal-Fixativ', LM, footY);
+        doc.text('Pigment = Concretal-Lasur  \u00b7  Fixative = Concretal-Fixativ  \u00b7  All volumes are approximate', W - RM, footY, { align: 'right' });
+
+        doc.save('KEIM_Concretal-Lasur_Mixing_Chart.pdf');
+        } catch(e) {
+            alert('PDF error: ' + e.message);
+            console.error(e);
+        }
+    }
+
+    // ============ MIX SHEET PDF DOWNLOAD ============
+    function downloadMixPDF() {
+        // Load jsPDF on first use
+        if (!window.jspdf) {
+            const btn = document.getElementById('downloadPdfBtn');
+            btn.style.opacity = '0.5';
+            btn.style.pointerEvents = 'none';
+            document.getElementById('downloadPdfLabel').textContent = 'Loading...';
+            const s = document.createElement('script');
+            s.src = './jspdf.min.js';
+            s.onload = function() {
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'auto';
+                document.getElementById('downloadPdfLabel').textContent = t('downloadPdf');
+                generatePDF();
+            };
+            s.onerror = function() {
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'auto';
+                document.getElementById('downloadPdfLabel').textContent = t('downloadPdf');
+                alert('Could not load PDF library. Check your internet connection.');
+            };
+            document.head.appendChild(s);
+            return;
+        }
+        generatePDF();
+    }
+
+    function generatePDF() {
+        try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+        const W = 210, H = 297;
+        const margin = 20;
+        const useML = (adjPig + adjDil) < 2;
+        const u = useML ? 'ml' : 'L';
+        const pigVal = useML ? Math.round(adjPig * 1000) : adjPig.toFixed(2);
+        const dilVal = useML ? Math.round(adjDil * 1000) : adjDil.toFixed(2);
+        const totVal = useML ? Math.round((adjPig + adjDil) * 1000) + ' ml' : (adjPig + adjDil).toFixed(2) + ' L';
+        const ratioText = selR ? selR.label : '—';
+        const pigPct = selR ? selR.pct : 50;
+        const contentW = W - margin * 2;
+
+        // Emoji-to-ASCII map (jsPDF can't render emoji)
+        const emojiMap = {
+            '\uD83D\uDEAB': '[X]', '\uD83E\uDDEA': '[T]', '\uD83D\uDD04': '[~]',
+            '\uD83D\uDD29': '[D]', '\uD83D\uDD8C\uFE0F': '[B]', '\uD83D\uDCE6': '[!]',
+            '\uD83E\uDDF1': '[S]', '\u2702\uFE0F': '[+]', '\uD83C\uDF21\uFE0F': '[*]',
+            '\u231B': '[H]', '\uD83D\uDCA7': '[W]'
+        };
+
+        // Plain-text rule labels (no emoji)
+        const ruleIcons = ['X', 'TEST', 'STIR', 'DRILL', 'EDGE', 'DAY', 'SUBS', 'CROSS', 'TEMP', 'DRY', 'DAMP'];
+
+        // ---- WHITE BACKGROUND (clean for printing) ----
+        doc.setFillColor(255, 255, 255);
+        doc.rect(0, 0, W, H, 'F');
+
+        // Teal accent bar at top
+        doc.setFillColor(13, 148, 136);
+        doc.rect(0, 0, W, 5, 'F');
+
+        // ---- HEADER ----
+        let y = 16;
+        doc.setFontSize(24);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(13, 148, 136);
+        doc.text('KEIM', margin, y);
+
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(40, 40, 40);
+        doc.text('Concretal-Lasur  |  ' + t('headerSub'), margin + 30, y);
+
+        // Date
+        const today = new Date();
+        const dateStr = today.toLocaleDateString(curLang === 'en' ? 'en-AU' : undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+        doc.setFontSize(9);
+        doc.setTextColor(130, 130, 130);
+        doc.text(dateStr, W - margin, y, { align: 'right' });
+
+        // Divider
+        y += 5;
+        doc.setDrawColor(13, 148, 136);
+        doc.setLineWidth(0.8);
+        doc.line(margin, y, W - margin, y);
+
+        // ---- TITLE + RATIO BADGE ----
+        y += 12;
+        doc.setFontSize(22);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(30, 30, 30);
+        doc.text('Mix Sheet', margin, y);
+
+        // Ratio badge
+        doc.setFillColor(13, 148, 136);
+        doc.roundedRect(W - margin - 40, y - 8, 40, 11, 3, 3, 'F');
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 255, 255);
+        doc.text(ratioText, W - margin - 20, y, { align: 'center' });
+
+        // ---- RATIO BAR ----
+        y += 8;
+        const barH = 8;
+        const pigBarW = Math.max(contentW * (pigPct / 100), 2);
+        doc.setFillColor(13, 148, 136);
+        doc.roundedRect(margin, y, pigBarW, barH, 3, 3, 'F');
+        doc.setFillColor(180, 175, 170);
+        doc.roundedRect(margin + pigBarW, y, contentW - pigBarW, barH, 3, 3, 'F');
+
+        y += barH + 4;
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(13, 148, 136);
+        doc.text(t('colour'), margin, y);
+        doc.setTextColor(140, 135, 130);
+        doc.text(t('clear'), W - margin, y, { align: 'right' });
+        doc.setTextColor(100, 100, 100);
+        doc.text(ratioText, W / 2, y, { align: 'center' });
+
+        // ---- MAIN MIX CARD ----
+        y += 10;
+        const cardY = y;
+        const cardH = 72;
+        doc.setFillColor(248, 248, 248);
+        doc.roundedRect(margin, cardY, contentW, cardH, 5, 5, 'F');
+        doc.setDrawColor(220, 220, 220);
+        doc.setLineWidth(0.4);
+        doc.roundedRect(margin, cardY, contentW, cardH, 5, 5, 'S');
+
+        const colW = contentW / 3;
+        const cx1 = margin + colW * 0.5;
+        const cx2 = margin + colW * 1.5;
+        const cx3 = margin + colW * 2.5;
+
+        // Draw measuring cup (beaker style)
+        function drawCup(cx, cy, r, g, b, level, isBig) {
+            const bw = isBig ? 26 : 22, bh = isBig ? 34 : 30;
+            const bx = cx - bw / 2, by = cy - bh / 2;
+            const rad = 3;
+
+            // Glass body (light fill)
+            doc.setFillColor(245, 245, 245);
+            doc.roundedRect(bx, by, bw, bh, rad, rad, 'F');
+
+            // Liquid fill
+            const fh = bh * Math.min(level, 1);
+            if (fh > 1) {
+                const fy = by + bh - fh;
+                doc.setFillColor(r, g, b);
+                doc.rect(bx + 0.8, fy, bw - 1.6, fh - 0.5, 'F');
+            }
+
+            // Glass border
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(0.6);
+            doc.roundedRect(bx, by, bw, bh, rad, rad, 'S');
+
+            // Spout (small lip at top-left)
+            doc.setDrawColor(190, 190, 190);
+            doc.setLineWidth(0.5);
+            doc.line(bx, by + 1, bx - 2, by + 3);
+
+            // Handle (smooth curved arc on right side, like SVG Q curves)
+            const hx = bx + bw;
+            const hy1 = by + bh * 0.25;
+            const hy2 = by + bh * 0.75;
+            const hBulge = isBig ? 8 : 6.5;
+            doc.setDrawColor(190, 190, 190);
+            doc.setLineWidth(0.7);
+            // Draw smooth D-shaped handle using many small segments
+            const steps = 20;
+            for (let i = 0; i < steps; i++) {
+                const t1 = i / steps;
+                const t2 = (i + 1) / steps;
+                // Parametric D-curve: x bulges out as sin, y goes from hy1 to hy2
+                const x1 = hx + Math.sin(t1 * Math.PI) * hBulge;
+                const y1 = hy1 + t1 * (hy2 - hy1);
+                const x2 = hx + Math.sin(t2 * Math.PI) * hBulge;
+                const y2 = hy1 + t2 * (hy2 - hy1);
+                doc.line(x1, y1, x2, y2);
+            }
+
+            // Tick marks (left side, 4 marks)
+            doc.setDrawColor(210, 210, 210);
+            doc.setLineWidth(0.3);
+            for (let i = 1; i <= 4; i++) {
+                const ty = by + (bh / 5) * i;
+                doc.line(bx + 1.5, ty, bx + 4.5, ty);
+            }
+        }
+
+        const bucketY = cardY + 22;
+        const totalVol = adjPig + adjDil || 1;
+        // Fill each cup proportional to the total — so all 3 cups are same "capacity"
+        drawCup(cx1, bucketY, 13, 180, 165, adjPig / totalVol, false);
+        drawCup(cx2, bucketY, 175, 170, 160, adjDil / totalVol, false);
+
+        // Mix colour: blend teal and grey based on pigment percentage
+        const pp = pigPct / 100;
+        const mixR = Math.round(13 * pp + 160 * (1 - pp));
+        const mixG = Math.round(180 * pp + 165 * (1 - pp));
+        const mixB = Math.round(165 * pp + 155 * (1 - pp));
+        drawCup(cx3, bucketY, mixR, mixG, mixB, 0.95, true);
+
+        // Plus and equals
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(180, 180, 180);
+        doc.text('+', margin + colW, bucketY + 2, { align: 'center' });
+        doc.text('=', margin + colW * 2, bucketY + 2, { align: 'center' });
+
+        // Values
+        const valY = cardY + 46;
+        doc.setFontSize(20);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(13, 148, 136);
+        doc.text(String(pigVal), cx1, valY, { align: 'center' });
+        doc.setTextColor(100, 95, 90);
+        doc.text(String(dilVal), cx2, valY, { align: 'center' });
+        doc.setTextColor(30, 30, 30);
+        doc.text(totVal, cx3, valY, { align: 'center' });
+
+        // Units
+        const unitY = valY + 6;
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(13, 148, 136);
+        doc.text(u, cx1, unitY, { align: 'center' });
+        doc.setTextColor(140, 140, 140);
+        doc.text(u, cx2, unitY, { align: 'center' });
+
+        // Labels
+        const lblY = unitY + 6;
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(13, 148, 136);
+        doc.text(t('colour').toUpperCase(), cx1, lblY, { align: 'center' });
+        doc.setTextColor(120, 115, 110);
+        doc.text(t('clear').toUpperCase(), cx2, lblY, { align: 'center' });
+        doc.setTextColor(60, 60, 60);
+        doc.text(t('mixed'), cx3, lblY, { align: 'center' });
+
+        doc.setFontSize(6);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(160, 160, 160);
+        doc.text('Concretal-Lasur', cx1, lblY + 4, { align: 'center' });
+        doc.text('Concretal-Fixativ', cx2, lblY + 4, { align: 'center' });
+        doc.text(t('ready'), cx3, lblY + 4, { align: 'center' });
+
+        // ---- RULES SECTION ----
+        y = cardY + cardH + 12;
+        const rulesData = t('rules');
+
+        // Strip emoji and HTML from rules, use plain labels
+        const cleanRules = rulesData.map(function(rule, idx) {
+            const text = rule.t.replace(/<[^>]+>/g, '').replace(/\u2014/g, '-').replace(/\u2013/g, '-');
+            const label = ruleIcons[idx] || '*';
+            return { label: label, text: text };
+        });
+
+        // Pre-calculate height
+        doc.setFontSize(7.5);
+        doc.setFont('helvetica', 'normal');
+        let totalRulesH = 12;
+        const ruleTextW = contentW - 20;
+        cleanRules.forEach(function(r) {
+            const lines = doc.splitTextToSize(r.text, ruleTextW);
+            totalRulesH += lines.length * 3.8 + 2;
+        });
+
+        // Rules box
+        doc.setFillColor(255, 250, 240);
+        doc.roundedRect(margin, y, contentW, totalRulesH, 4, 4, 'F');
+        doc.setDrawColor(245, 200, 100);
+        doc.setLineWidth(0.4);
+        doc.roundedRect(margin, y, contentW, totalRulesH, 4, 4, 'S');
+
+        // Warning icon header
+        y += 7;
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(180, 120, 0);
+        doc.text('!   ' + t('beforeStart').toUpperCase(), margin + 5, y);
+
+        y += 5;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7.5);
+        cleanRules.forEach(function(r) {
+            // Teal bullet
+            doc.setFillColor(13, 148, 136);
+            doc.circle(margin + 6.5, y - 0.8, 1, 'F');
+            // Text
+            doc.setTextColor(60, 60, 60);
+            const lines = doc.splitTextToSize(r.text, ruleTextW);
+            lines.forEach(function(line, li) {
+                doc.text(line, margin + 10, y);
+                y += 3.8;
+            });
+            y += 1.2;
+        });
+
+        // ---- FOOTER ----
+        const footerY = H - 14;
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.3);
+        doc.line(margin, footerY - 4, W - margin, footerY - 4);
+
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(150, 150, 150);
+        doc.text('KEIM Australia  |  keim.com.au  |  For full TDS visit keim.com.au/concretal-lasur', margin, footerY);
+        doc.text('Generated by KEIM Lasur Mix Guide', W - margin, footerY, { align: 'right' });
+
+        // ---- SAVE ----
+        const filename = 'KEIM_Mix_' + ratioText.replace(/\s*:\s*/g, '-') + '_' + totVal.replace(/\s/g, '').replace('.', '_') + '.pdf';
+        doc.save(filename);
+        } catch(e) {
+            alert('PDF error: ' + e.message);
+            console.error('PDF generation error:', e);
+        }
     }
 
     // ============ INIT ============
