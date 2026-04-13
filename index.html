@@ -71,7 +71,7 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04);
         }
         .lang-btn:hover { background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04)); border-color: rgba(255,255,255,0.18); box-shadow: 0 4px 12px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06); }
-        .lang-flag-icon { font-size: 15px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: rgba(20,184,166,0.12); color: #5eead4; flex-shrink: 0; }
+        .lang-flag-icon { font-size: 18px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; flex-shrink: 0; }
         .lang-name-short { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 0.02em; }
         .lang-chevron { font-size: 10px; color: rgba(255,255,255,0.15); margin-left: 2px; transition: transform 0.2s; }
         .lang-dropdown.open ~ .lang-btn .lang-chevron, .lang-wrap.open .lang-chevron { transform: rotate(180deg); }
@@ -400,7 +400,7 @@
             <div class="header-right">
                 <div class="lang-wrap">
                     <button class="lang-btn" id="langToggle" onclick="toggleLang()" aria-label="Change language">
-                        <span class="lang-flag-icon" id="langFlag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+                        <span class="lang-flag-icon" id="langFlag">🇬🇧</span>
                         <span class="lang-name-short" id="langNameShort">English</span>
                         <span class="lang-chevron">&#9662;</span>
                     </button>
@@ -984,7 +984,7 @@
         buildLangDropdown();
         buildR(); buildV();
         document.getElementById('langDropdown').classList.remove('open');
-        // Keep the globe SVG icon — don't overwrite it
+        document.getElementById('langFlag').textContent = T[lang].flag;
         document.getElementById('langNameShort').textContent = T[lang].name;
     }
 
@@ -1395,18 +1395,25 @@
     // ============ LOAD jsPDF (CDN first, local fallback) ============
     function loadJsPDF(callback) {
         if (window.jspdf) { callback(); return; }
-        var s = document.createElement('script');
-        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js';
-        s.onload = function() { if (window.jspdf) { callback(); } else { tryLocal(); } };
-        s.onerror = tryLocal;
-        document.head.appendChild(s);
-        function tryLocal() {
-            var s2 = document.createElement('script');
-            s2.src = './jspdf.min.js';
-            s2.onload = function() { callback(); };
-            s2.onerror = function() { alert('Could not load PDF library. Check your internet connection.'); callback(true); };
-            document.head.appendChild(s2);
+        var cdns = [
+            'https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js',
+            'https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js'
+        ];
+        var i = 0;
+        function tryNext() {
+            if (i >= cdns.length) {
+                alert('Could not load PDF library. Check your internet connection.');
+                callback(true);
+                return;
+            }
+            var s = document.createElement('script');
+            s.src = cdns[i++];
+            s.onload = function() { if (window.jspdf) { callback(); } else { tryNext(); } };
+            s.onerror = tryNext;
+            document.head.appendChild(s);
         }
+        tryNext();
     }
 
     // ============ CHART PDF DOWNLOAD ============
