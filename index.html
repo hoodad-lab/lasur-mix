@@ -1822,15 +1822,25 @@ h<!DOCTYPE html>
           } catch(e) { console.warn('Font load failed:', e); }
         }
 
-        // Load CJK font for Chinese (via Google Fonts - lightweight WOFF2 subsets)
+        // Load CJK font for Chinese (via Google Fonts)
         if (isCjk && !window._notoScLoaded) {
           try {
-            var link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap';
-            document.head.appendChild(link);
-            await document.fonts.load('12px "Noto Sans SC"');
-            await document.fonts.ready;
+            await new Promise(function(resolve) {
+              var lnk = document.createElement('link');
+              lnk.rel = 'stylesheet';
+              lnk.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap';
+              lnk.onload = resolve;
+              lnk.onerror = resolve;
+              document.head.appendChild(lnk);
+              setTimeout(resolve, 8000);
+            });
+            // Probe element forces browser to start downloading the font
+            var probe = document.createElement('span');
+            probe.style.cssText = 'font-family:"Noto Sans SC";position:absolute;left:-9999px';
+            probe.textContent = '\u6D4B\u8BD5';
+            document.body.appendChild(probe);
+            await Promise.race([document.fonts.ready, new Promise(function(r){setTimeout(r,8000);})]);
+            document.body.removeChild(probe);
             window._notoScLoaded = true;
           } catch(e) { console.warn('CJK font load failed:', e); }
         }
