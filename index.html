@@ -7,6 +7,7 @@
 
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
     <meta name="theme-color" content="#0d9488">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -71,7 +72,8 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04);
         }
         .lang-btn:hover { background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04)); border-color: rgba(255,255,255,0.18); box-shadow: 0 4px 12px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06); }
-        .lang-flag-icon { font-size: 18px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; flex-shrink: 0; }
+        .lang-flag-icon { display: flex; align-items: center; justify-content: center; width: 24px; height: 18px; flex-shrink: 0; border-radius: 3px; overflow: hidden; box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
+        .lang-flag-icon .fi { width: 100%; height: 100%; background-size: cover; background-position: center; line-height: 1; }
         .lang-name-short { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 0.02em; }
         .lang-chevron { font-size: 10px; color: rgba(255,255,255,0.15); margin-left: 2px; transition: transform 0.2s; }
         .lang-dropdown.open ~ .lang-btn .lang-chevron, .lang-wrap.open .lang-chevron { transform: rotate(180deg); }
@@ -95,7 +97,8 @@
         .lang-option:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); }
         .lang-option.active { background: rgba(20,184,166,0.12); color: #5eead4; }
         .lang-option.active .lang-flag { box-shadow: 0 0 0 2px rgba(94,234,212,0.3); }
-        .lang-flag { font-size: 18px; flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.04); }
+        .lang-flag { flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.04); overflow: hidden; }
+        .lang-flag .fi { width: 22px; height: 22px; border-radius: 50%; background-size: cover; background-position: center; line-height: 1; box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
 
         .main { max-width: 460px; margin: 0 auto; padding: 0 16px 60px; position: relative; z-index: 1; }
 
@@ -400,7 +403,7 @@
             <div class="header-right">
                 <div class="lang-wrap">
                     <button class="lang-btn" id="langToggle" onclick="toggleLang()" aria-label="Change language">
-                        <span class="lang-flag-icon" id="langFlag">🇬🇧</span>
+                        <span class="lang-flag-icon" id="langFlag"><span class="fi fi-gb"></span></span>
                         <span class="lang-name-short" id="langNameShort">English</span>
                         <span class="lang-chevron">&#9662;</span>
                     </button>
@@ -618,7 +621,7 @@
     // ============ TRANSLATIONS ============
     const T = {
       en: {
-        flag: '🇬🇧', name: 'English',
+        flag: 'gb', name: 'English',
         headerSub: 'Mixing Guide',
         step1: 'Pick your ratio', step2: 'How much?', step3: 'Pour this',
         solid: 'SOLID COLOUR', transparent: 'TRANSPARENT',
@@ -646,7 +649,7 @@
         descs: ['Solid colour','Almost solid','Very heavy','Heavy colour','Strong','Good coverage','Grain showing','Colour + texture','Balanced','Half-half','More clear','Light wash','Gentle tint','Soft veil','Very light','Hint of colour','Barely there','Ghost veil']
       },
       slang: {
-        flag: '🇦🇺', name: 'Aussie Slang',
+        flag: 'au', name: 'Aussie Slang',
         headerSub: 'Mix Guide, Mate',
         step1: 'Pick ya ratio', step2: 'How much ya need?', step3: 'Chuck this in',
         solid: 'FULL SEND', transparent: 'SEE-THROUGH',
@@ -674,7 +677,7 @@
         descs: ['Full monty','Nearly full','Heaps thick','Solid as','Strong stuff','Good coverage','Grain peekin\u2019','Colour + grit','50-50 mate','Half-half','More clear','Light wash','Gentle tint','Soft touch','Barely there','Just a whisper','Ghost mode','Can\u2019t even tell']
       },
       zh: {
-        flag: '🇨🇳', name: '\u4e2d\u6587',
+        flag: 'cn', name: '\u4e2d\u6587',
         headerSub: '\u6df7\u5408\u6307\u5357',
         step1: '\u9009\u62e9\u6bd4\u4f8b', step2: '\u9700\u8981\u591a\u5c11\uff1f', step3: '\u5012\u5165\u8fd9\u4e9b',
         solid: '\u5b9e\u8272', transparent: '\u900f\u660e',
@@ -702,7 +705,7 @@
         descs: ['\u5b9e\u8272','\u51e0\u4e4e\u5b9e\u8272','\u975e\u5e38\u6d53','\u6d53\u8272','\u6d53\u70c8','\u826f\u597d\u8986\u76d6','\u663e\u73b0\u7eb9\u7406','\u8272\u5f69+\u8d28\u611f','\u5e73\u8861','\u5bf9\u534a','\u504f\u900f\u660e','\u6de1\u5f69','\u67d4\u548c\u8272\u8c03','\u8584\u7eb1','\u975e\u5e38\u6de1','\u4e00\u62b9\u8272\u5f69','\u82e5\u6709\u82e5\u65e0','\u5e7d\u7075\u8584\u7eb1']
       },
       fa: {
-        flag: '🇮🇷', name: '\u0641\u0627\u0631\u0633\u06cc', rtl: true,
+        flag: 'ir', name: '\u0641\u0627\u0631\u0633\u06cc', rtl: true,
         headerSub: '\u0631\u0627\u0647\u0646\u0645\u0627\u06cc \u0627\u062e\u062a\u0644\u0627\u0637',
         step1: '\u0646\u0633\u0628\u062a \u0631\u0627 \u0627\u0646\u062a\u062e\u0627\u0628 \u06a9\u0646\u06cc\u062f', step2: '\u0686\u0642\u062f\u0631\u061f', step3: '\u0627\u06cc\u0646 \u0631\u0627 \u0628\u0631\u06cc\u0632\u06cc\u062f',
         solid: '\u0631\u0646\u06af \u06a9\u0627\u0645\u0644', transparent: '\u0634\u0641\u0627\u0641',
@@ -730,7 +733,7 @@
         descs: ['\u0631\u0646\u06af \u06a9\u0627\u0645\u0644','\u062a\u0642\u0631\u06cc\u0628\u0627\u064b \u06a9\u0627\u0645\u0644','\u0628\u0633\u06cc\u0627\u0631 \u063a\u0644\u06cc\u0638','\u063a\u0644\u06cc\u0638','\u0642\u0648\u06cc','\u067e\u0648\u0634\u0634 \u062e\u0648\u0628','\u0628\u0627\u0641\u062a \u0646\u0645\u0627\u06cc\u0627\u0646','\u0631\u0646\u06af + \u0628\u0627\u0641\u062a','\u0645\u062a\u0639\u0627\u062f\u0644','\u0646\u06cc\u0645\u0647\u200c\u0646\u06cc\u0645\u0647','\u0634\u0641\u0627\u0641\u200c\u062a\u0631','\u0634\u0633\u062a\u0634\u0648\u06cc \u0645\u0644\u0627\u06cc\u0645','\u062a\u0647 \u0631\u0646\u06af \u0644\u0637\u06cc\u0641','\u062d\u062c\u0627\u0628 \u0646\u0631\u0645','\u0628\u0633\u06cc\u0627\u0631 \u06a9\u0645\u0631\u0646\u06af','\u0627\u0634\u0627\u0631\u0647\u200c\u0627\u06cc \u0627\u0632 \u0631\u0646\u06af','\u062a\u0642\u0631\u06cc\u0628\u0627\u064b \u0646\u0627\u0645\u0631\u0626\u06cc','\u062d\u062c\u0627\u0628 \u0634\u0628\u062d\u200c\u06af\u0648\u0646\u0647']
       },
       da: {
-        flag: '🇦🇫', name: '\u062f\u0631\u06cc', rtl: true,
+        flag: 'af', name: '\u062f\u0631\u06cc', rtl: true,
         headerSub: '\u0631\u0647\u0646\u0645\u0627\u06cc \u0645\u062e\u0644\u0648\u0637',
         step1: '\u0646\u0633\u0628\u062a \u0631\u0627 \u0627\u0646\u062a\u062e\u0627\u0628 \u06a9\u0646\u06cc\u062f', step2: '\u0686\u0642\u062f\u0631 \u0636\u0631\u0648\u0631\u062a \u062f\u0627\u0631\u06cc\u062f\u061f', step3: '\u0627\u06cc \u0631\u0647 \u0628\u0631\u06cc\u0632\u06cc\u062f',
         solid: '\u0631\u0646\u06af \u06a9\u0627\u0645\u0644', transparent: '\u0634\u0641\u0627\u0641',
@@ -758,7 +761,7 @@
         descs: ['\u0631\u0646\u06af \u06a9\u0627\u0645\u0644','\u062a\u0642\u0631\u06cc\u0628\u0627\u064b \u06a9\u0627\u0645\u0644','\u0628\u0633\u06cc\u0627\u0631 \u063a\u0644\u06cc\u0638','\u063a\u0644\u06cc\u0638','\u0642\u0648\u06cc','\u067e\u0648\u0634\u0634 \u062e\u0648\u0628','\u0628\u0627\u0641\u062a \u0646\u0645\u0627\u06cc\u0627\u0646','\u0631\u0646\u06af + \u0628\u0627\u0641\u062a','\u0645\u062a\u0639\u0627\u062f\u0644','\u0646\u06cc\u0645\u0647\u200c\u0646\u06cc\u0645\u0647','\u0634\u0641\u0627\u0641\u200c\u062a\u0631','\u0634\u0633\u062a\u0634\u0648\u06cc \u0645\u0644\u0627\u06cc\u0645','\u062a\u0647 \u0631\u0646\u06af \u0644\u0637\u06cc\u0641','\u062d\u062c\u0627\u0628 \u0646\u0631\u0645','\u0628\u0633\u06cc\u0627\u0631 \u06a9\u0645','\u0627\u0634\u0627\u0631\u0647 \u0627\u0632 \u0631\u0646\u06af','\u062a\u0642\u0631\u06cc\u0628\u0627\u064b \u0647\u06cc\u0686','\u0634\u0628\u062d\u200c\u06af\u0648\u0646\u0647']
       },
       hr: {
-        flag: '🇭🇷', name: 'Hrvatski',
+        flag: 'hr', name: 'Hrvatski',
         headerSub: 'Vodi\u010d za mije\u0161anje',
         step1: 'Odaberite omjer', step2: 'Koliko?', step3: 'Ulijte ovo',
         solid: 'PUNA BOJA', transparent: 'PROZIRNO',
@@ -786,7 +789,7 @@
         descs: ['Puna boja','Gotovo puna','Vrlo gusto','Gusto','Jako','Dobra pokrivenost','Vidi se zrno','Boja + tekstura','Uravnote\u017eeno','Pola-pola','Vi\u0161e bistrog','Lagani premaz','Ne\u017eni ton','Meki veo','Vrlo lagano','Nagovje\u0161taj boje','Jedva vidljivo','Prozirni veo']
       },
       ar: {
-        flag: '🇸🇦', name: '\u0627\u0644\u0639\u0631\u0628\u064a\u0629', rtl: true,
+        flag: 'sa', name: '\u0627\u0644\u0639\u0631\u0628\u064a\u0629', rtl: true,
         headerSub: '\u062f\u0644\u064a\u0644 \u0627\u0644\u062e\u0644\u0637',
         step1: '\u0627\u062e\u062a\u0631 \u0627\u0644\u0646\u0633\u0628\u0629', step2: '\u0643\u0645 \u062a\u062d\u062a\u0627\u062c\u061f', step3: '\u0627\u0633\u0643\u0628 \u0647\u0630\u0627',
         solid: '\u0644\u0648\u0646 \u0643\u0627\u0645\u0644', transparent: '\u0634\u0641\u0627\u0641',
@@ -814,7 +817,7 @@
         descs: ['\u0644\u0648\u0646 \u0643\u0627\u0645\u0644','\u062a\u0642\u0631\u064a\u0628\u0627\u064b \u0643\u0627\u0645\u0644','\u063a\u0644\u064a\u0638 \u062c\u062f\u0627\u064b','\u063a\u0644\u064a\u0638','\u0642\u0648\u064a','\u062a\u063a\u0637\u064a\u0629 \u062c\u064a\u062f\u0629','\u0627\u0644\u062d\u0628\u064a\u0628\u0627\u062a \u0638\u0627\u0647\u0631\u0629','\u0644\u0648\u0646 + \u0645\u0644\u0645\u0633','\u0645\u062a\u0648\u0627\u0632\u0646','\u0646\u0635\u0641-\u0646\u0635\u0641','\u0634\u0641\u0627\u0641 \u0623\u0643\u062b\u0631','\u063a\u0633\u064a\u0644 \u062e\u0641\u064a\u0641','\u0644\u0645\u0633\u0629 \u0644\u0637\u064a\u0641\u0629','\u062d\u062c\u0627\u0628 \u0646\u0627\u0639\u0645','\u062e\u0641\u064a\u0641 \u062c\u062f\u0627\u064b','\u0625\u0634\u0627\u0631\u0629 \u0644\u0648\u0646','\u0628\u0627\u0644\u0643\u0627\u062f \u0645\u0631\u0626\u064a','\u062d\u062c\u0627\u0628 \u0634\u0628\u062d\u064a']
       },
       pl: {
-        flag: '🇵🇱', name: 'Polski',
+        flag: 'pl', name: 'Polski',
         headerSub: 'Poradnik mieszania',
         step1: 'Wybierz proporcj\u0119', step2: 'Ile?', step3: 'Wlej to',
         solid: 'PE\u0141NY KOLOR', transparent: 'PRZEZROCZYSTY',
@@ -842,7 +845,7 @@
         descs: ['Pe\u0142ny kolor','Prawie pe\u0142ny','Bardzo g\u0119sty','G\u0119sty kolor','Mocny','Dobre krycie','Wida\u0107 ziarno','Kolor + tekstura','Zr\u00f3wnowa\u017cony','P\u00f3\u0142 na p\u00f3\u0142','Wi\u0119cej bezbarwnego','Lekki mycie','Delikatny odcie\u0144','Mi\u0119kki welon','Bardzo lekki','Odrobin\u0105 koloru','Ledwo widoczny','Welon duchowy']
       },
       de: {
-        flag: '🇩🇪', name: 'Deutsch',
+        flag: 'de', name: 'Deutsch',
         headerSub: 'Mischanleitung',
         step1: 'Mischverh\u00e4ltnis w\u00e4hlen', step2: 'Wie viel?', step3: 'Dies einf\u00fcllen',
         solid: 'DECKEND', transparent: 'TRANSPARENT',
@@ -870,7 +873,7 @@
         descs: ['Vollton','Fast deckend','Sehr stark','Stark','Kr\u00e4ftig','Gute Deckung','Korn sichtbar','Farbe + Struktur','Ausgewogen','Halb und halb','Mehr klar','Leichte Lasur','Sanfter Ton','Weicher Schleier','Sehr leicht','Hauch von Farbe','Kaum sichtbar','Geisterschleier']
       },
       fr: {
-        flag: '🇫🇷', name: 'Fran\u00e7ais',
+        flag: 'fr', name: 'Fran\u00e7ais',
         headerSub: 'Guide de m\u00e9lange',
         step1: 'Choisir le ratio', step2: 'Quelle quantit\u00e9 ?', step3: 'Versez ceci',
         solid: 'COULEUR PLEINE', transparent: 'TRANSPARENT',
@@ -898,7 +901,7 @@
         descs: ['Couleur pleine','Presque plein','Tr\u00e8s \u00e9pais','Couleur forte','\u00c9nergique','Bonne couverture','Grain visible','Couleur + texture','\u00c9quilibr\u00e9','Moiti\u00e9-moiti\u00e9','Plus transparent','Lavis l\u00e9ger','Teinte douce','Voile doux','Tr\u00e8s l\u00e9ger','Soupcon de couleur','\u00c0 peine visible','Voile fant\u00f4me']
       },
       it: {
-        flag: '🇮🇹', name: 'Italiano',
+        flag: 'it', name: 'Italiano',
         headerSub: 'Guida alla miscelazione',
         step1: 'Scegli il rapporto', step2: 'Quanto?', step3: 'Versa questo',
         solid: 'COLORE PIENO', transparent: 'TRASPARENTE',
@@ -926,7 +929,7 @@
         descs: ['Colore pieno','Quasi pieno','Molto denso','Denso','Forte','Buona copertura','Grana visibile','Colore + texture','Equilibrato','Met\u00e0 e met\u00e0','Pi\u00f9 trasparente','Lavaggio leggero','Tinta delicata','Velo morbido','Molto leggero','Accenno di colore','Appena visibile','Velo fantasma']
       },
       es: {
-        flag: '🇪🇸', name: 'Espa\u00f1ol',
+        flag: 'es', name: 'Espa\u00f1ol',
         headerSub: 'Gu\u00eda de mezcla',
         step1: 'Elige la proporci\u00f3n', step2: '\u00bfCu\u00e1nto?', step3: 'Vierte esto',
         solid: 'COLOR S\u00d3LIDO', transparent: 'TRANSPARENTE',
@@ -984,7 +987,7 @@
         buildLangDropdown();
         buildR(); buildV();
         document.getElementById('langDropdown').classList.remove('open');
-        document.getElementById('langFlag').textContent = T[lang].flag;
+        document.getElementById('langFlag').innerHTML = '<span class="fi fi-' + T[lang].flag + '"></span>';
         document.getElementById('langNameShort').textContent = T[lang].name;
     }
 
@@ -1109,7 +1112,7 @@
             const lang = T[code];
             const btn = document.createElement('button');
             btn.className = 'lang-option' + (code === curLang ? ' active' : '');
-            btn.innerHTML = `<span class="lang-flag">${lang.flag}</span> ${lang.name}`;
+            btn.innerHTML = `<span class="lang-flag"><span class="fi fi-${lang.flag}"></span></span> ${lang.name}`;
             btn.onclick = (e) => { e.stopPropagation(); setLang(code); };
             dd.appendChild(btn);
         });
