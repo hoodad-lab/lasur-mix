@@ -1822,17 +1822,16 @@ h<!DOCTYPE html>
           } catch(e) { console.warn('Font load failed:', e); }
         }
 
-        // Load CJK font for Chinese
-        if (isCjk && !window._notoScFont) {
+        // Load CJK font for Chinese (via Google Fonts - lightweight WOFF2 subsets)
+        if (isCjk && !window._notoScLoaded) {
           try {
-            const resp = await fetch('https://cdn.jsdelivr.net/gh/notofonts/noto-cjk@main/Sans/Variable/TTF/Subset/NotoSansSC-VF.ttf');
-            const buf = await resp.arrayBuffer();
-            const bytes = new Uint8Array(buf);
-            let bin = '';
-            for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-            window._notoScFont = btoa(bin);
-            var ff2 = new FontFace('NotoSC', buf);
-            await ff2.load(); document.fonts.add(ff2);
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap';
+            document.head.appendChild(link);
+            await document.fonts.load('12px "Noto Sans SC"');
+            await document.fonts.ready;
+            window._notoScLoaded = true;
           } catch(e) { console.warn('CJK font load failed:', e); }
         }
 
@@ -1844,16 +1843,11 @@ h<!DOCTYPE html>
           doc.addFont('Vazirmatn-Regular.ttf', 'Vazirmatn', 'normal');
           doc.addFont('Vazirmatn-Regular.ttf', 'Vazirmatn', 'bold');
         }
-        if (isCjk && window._notoScFont) {
-          doc.addFileToVFS('NotoSansSC-VF.ttf', window._notoScFont);
-          doc.addFont('NotoSansSC-VF.ttf', 'NotoSC', 'normal');
-          doc.addFont('NotoSansSC-VF.ttf', 'NotoSC', 'bold');
-        }
-        const pdfFont = isRtl ? 'Vazirmatn' : isCjk ? 'NotoSC' : 'helvetica';
+        const pdfFont = isRtl ? 'Vazirmatn' : 'helvetica';
         const rtl = function(s) { return s; }; // identity - canvas handles RTL
 
         // Monkey-patch doc.text for RTL: render Arabic text as canvas images
-        if ((isRtl && document.fonts.check('12px VazirCanvas')) || (isCjk && document.fonts.check('12px NotoSC'))) {
+        if ((isRtl && document.fonts.check('12px VazirCanvas')) || (isCjk && document.fonts.check('12px "Noto Sans SC"'))) {
           var _curColor = [0,0,0];
           var _origSTC = doc.setTextColor.bind(doc);
           doc.setTextColor = function(r,g,b) { _curColor = [r,g,b]; return _origSTC(r,g,b); };
@@ -1865,7 +1859,7 @@ h<!DOCTYPE html>
               var cv = document.createElement('canvas');
               var cx = cv.getContext('2d');
               var sc = 4, px = fs * 1.33 * sc;
-              cx.font = (fb?'bold ':'') + px + 'px ' + (isCjk ? 'NotoSC' : 'VazirCanvas');
+              cx.font = (fb?'bold ':'') + px + 'px ' + (isCjk ? 'Noto Sans SC' : 'VazirCanvas');
               var mw = cx.measureText(txt).width;
               cv.width = Math.ceil(mw) + 20;
               cv.height = Math.ceil(px * 1.6);
