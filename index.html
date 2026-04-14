@@ -1822,29 +1822,6 @@ h<!DOCTYPE html>
           } catch(e) { console.warn('Font load failed:', e); }
         }
 
-        // Load CJK font for Chinese (via Google Fonts)
-        if (isCjk && !window._notoScLoaded) {
-          try {
-            await new Promise(function(resolve) {
-              var lnk = document.createElement('link');
-              lnk.rel = 'stylesheet';
-              lnk.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap';
-              lnk.onload = resolve;
-              lnk.onerror = resolve;
-              document.head.appendChild(lnk);
-              setTimeout(resolve, 8000);
-            });
-            // Probe element forces browser to start downloading the font
-            var probe = document.createElement('span');
-            probe.style.cssText = 'font-family:"Noto Sans SC";position:absolute;left:-9999px';
-            probe.textContent = '\u6D4B\u8BD5';
-            document.body.appendChild(probe);
-            await Promise.race([document.fonts.ready, new Promise(function(r){setTimeout(r,8000);})]);
-            document.body.removeChild(probe);
-            window._notoScLoaded = true;
-          } catch(e) { console.warn('CJK font load failed:', e); }
-        }
-
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ unit: 'mm', format: 'a4' });
         // Register Persian font for RTL
@@ -1857,7 +1834,7 @@ h<!DOCTYPE html>
         const rtl = function(s) { return s; }; // identity - canvas handles RTL
 
         // Monkey-patch doc.text for RTL: render Arabic text as canvas images
-        if ((isRtl && document.fonts.check('12px VazirCanvas')) || (isCjk && document.fonts.check('12px "Noto Sans SC"'))) {
+        if ((isRtl && document.fonts.check('12px VazirCanvas')) || isCjk) {
           var _curColor = [0,0,0];
           var _origSTC = doc.setTextColor.bind(doc);
           doc.setTextColor = function(r,g,b) { _curColor = [r,g,b]; return _origSTC(r,g,b); };
@@ -1869,7 +1846,7 @@ h<!DOCTYPE html>
               var cv = document.createElement('canvas');
               var cx = cv.getContext('2d');
               var sc = 4, px = fs * 1.33 * sc;
-              cx.font = (fb?'bold ':'') + px + 'px ' + (isCjk ? 'Noto Sans SC' : 'VazirCanvas');
+              cx.font = (fb?'bold ':'') + px + 'px ' + (isCjk ? '"PingFang SC","Microsoft YaHei","Noto Sans CJK SC","Hiragino Sans GB",sans-serif' : 'VazirCanvas');
               var mw = cx.measureText(txt).width;
               cv.width = Math.ceil(mw) + 20;
               cv.height = Math.ceil(px * 1.6);
