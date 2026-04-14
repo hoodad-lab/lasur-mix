@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+h<!DOCTYPE html>
 <html lang="en-AU">
 <head>
     <meta charset="UTF-8">
@@ -19,7 +19,7 @@
     <link rel="apple-touch-icon" href="icon-192.png">
 
     <!-- jsPDF for mix sheet download -->
-    <!-- SEO / Open Graph -->
+    <!-- SEO / Open Graph -->h
     <meta name="description" content="Quick mixing calculator for KEIM Concretal-Lasur. Pick your ratio, choose your volume, get exact amounts of colour and clear to pour.">
     <meta property="og:title" content="KEIM Concretal-Lasur Mixing Guide">
     <meta property="og:description" content="Quick mixing calculator for KEIM Concretal-Lasur and Concretal-Fixativ ratios.">
@@ -1856,8 +1856,8 @@
               cx.textAlign = 'right';
               cx.fillText(txt, cv.width - 5, px * 0.9);
               var iD = cv.toDataURL('image/png');
-              var wP = cv.width / sc / 1.33;
-              var hP = cv.height / sc / 1.33;
+              var wP = cv.width / sc * 25.4 / 96;
+              var hP = cv.height / sc * 25.4 / 96;
               var al = opts && opts.align;
               var ix = al==='right' ? x-wP : al==='center' ? x-wP/2 : x;
               doc.addImage(iD, 'PNG', ix, y - hP*0.7, wP, hP);
