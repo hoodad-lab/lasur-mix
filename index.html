@@ -1732,10 +1732,31 @@
         generatePDF();
     }
 
-    function generatePDF() {
+    async function generatePDF() {
         try {
+        // --- RTL Font Support ---
+        const isRtl = T[curLang] && T[curLang].rtl;
+        if (isRtl && !window._vazirFont) {
+          try {
+            const resp = await fetch('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/ttf/Vazirmatn-Regular.ttf');
+            const buf = await resp.arrayBuffer();
+            const bytes = new Uint8Array(buf);
+            let bin = '';
+            for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+            window._vazirFont = btoa(bin);
+          } catch(e) { console.warn('Font load failed:', e); }
+        }
+
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+        // Register Persian font for RTL
+        if (isRtl && window._vazirFont) {
+          doc.addFileToVFS('Vazirmatn-Regular.ttf', window._vazirFont);
+          doc.addFont('Vazirmatn-Regular.ttf', 'Vazirmatn', 'normal');
+          doc.addFont('Vazirmatn-Regular.ttf', 'Vazirmatn', 'bold');
+        }
+        const pdfFont = isRtl ? 'Vazirmatn' : 'helvetica';
+
         const W = 210, H = 297;
         const margin = 20;
         const useML = (adjPig + adjDil) < 2;
@@ -1769,12 +1790,12 @@
         // ---- HEADER ----
         let y = 16;
         doc.setFontSize(24);
-        doc.setFont('helvetica', 'bold');
+        doc.setFont(pdfFont, 'bold');
         doc.setTextColor(13, 148, 136);
         doc.text('KEIM', margin, y);
 
         doc.setFontSize(11);
-        doc.setFont('helvetica', 'normal');
+        doc.setFont(pdfFont, 'normal');
         doc.setTextColor(40, 40, 40);
         doc.text('Concretal-Lasur  |  ' + t('headerSub'), margin + 30, y);
 
@@ -1794,7 +1815,7 @@
         // ---- TITLE + RATIO BADGE ----
         y += 12;
         doc.setFontSize(22);
-        doc.setFont('helvetica', 'bold');
+        doc.setFont(pdfFont, 'bold');
         doc.setTextColor(30, 30, 30);
         doc.text('Mix Sheet', margin, y);
 
@@ -1802,7 +1823,7 @@
         doc.setFillColor(13, 148, 136);
         doc.roundedRect(W - margin - 40, y - 8, 40, 11, 3, 3, 'F');
         doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
+        doc.setFont(pdfFont, 'bold');
         doc.setTextColor(255, 255, 255);
         doc.text(ratioText, W - margin - 20, y, { align: 'center' });
 
@@ -1817,7 +1838,7 @@
 
         y += barH + 4;
         doc.setFontSize(8);
-        doc.setFont('helvetica', 'bold');
+        doc.setFont(pdfFont, 'bold');
         doc.setTextColor(13, 148, 136);
         doc.text(t('colour'), margin, y);
         doc.setTextColor(140, 135, 130);
@@ -1912,7 +1933,7 @@
 
         // Plus and equals
         doc.setFontSize(18);
-        doc.setFont('helvetica', 'bold');
+        doc.setFont(pdfFont, 'bold');
         doc.setTextColor(180, 180, 180);
         doc.text('+', margin + colW, bucketY + 2, { align: 'center' });
         doc.text('=', margin + colW * 2, bucketY + 2, { align: 'center' });
@@ -1920,7 +1941,7 @@
         // Values
         const valY = cardY + 46;
         doc.setFontSize(20);
-        doc.setFont('helvetica', 'bold');
+        doc.setFont(pdfFont, 'bold');
         doc.setTextColor(13, 148, 136);
         doc.text(String(pigVal), cx1, valY, { align: 'center' });
         doc.setTextColor(100, 95, 90);
@@ -1931,7 +1952,7 @@
         // Units
         const unitY = valY + 6;
         doc.setFontSize(9);
-        doc.setFont('helvetica', 'normal');
+        doc.setFont(pdfFont, 'normal');
         doc.setTextColor(13, 148, 136);
         doc.text(u, cx1, unitY, { align: 'center' });
         doc.setTextColor(140, 140, 140);
@@ -1940,7 +1961,7 @@
         // Labels
         const lblY = unitY + 6;
         doc.setFontSize(8);
-        doc.setFont('helvetica', 'bold');
+        doc.setFont(pdfFont, 'bold');
         doc.setTextColor(13, 148, 136);
         doc.text(t('colour').toUpperCase(), cx1, lblY, { align: 'center' });
         doc.setTextColor(120, 115, 110);
@@ -1949,7 +1970,7 @@
         doc.text(t('mixed'), cx3, lblY, { align: 'center' });
 
         doc.setFontSize(6);
-        doc.setFont('helvetica', 'normal');
+        doc.setFont(pdfFont, 'normal');
         doc.setTextColor(160, 160, 160);
         doc.text('Concretal-Lasur', cx1, lblY + 4, { align: 'center' });
         doc.text('Concretal-Fixativ', cx2, lblY + 4, { align: 'center' });
@@ -1968,7 +1989,7 @@
 
         // Pre-calculate height
         doc.setFontSize(7.5);
-        doc.setFont('helvetica', 'normal');
+        doc.setFont(pdfFont, 'normal');
         let totalRulesH = 12;
         const ruleTextW = contentW - 20;
         cleanRules.forEach(function(r) {
@@ -1986,12 +2007,12 @@
         // Warning icon header
         y += 7;
         doc.setFontSize(9);
-        doc.setFont('helvetica', 'bold');
+        doc.setFont(pdfFont, 'bold');
         doc.setTextColor(180, 120, 0);
         doc.text('!   ' + t('beforeStart').toUpperCase(), margin + 5, y);
 
         y += 5;
-        doc.setFont('helvetica', 'normal');
+        doc.setFont(pdfFont, 'normal');
         doc.setFontSize(7.5);
         cleanRules.forEach(function(r) {
             // Teal bullet
@@ -2014,7 +2035,7 @@
         doc.line(margin, footerY - 4, W - margin, footerY - 4);
 
         doc.setFontSize(7);
-        doc.setFont('helvetica', 'normal');
+        doc.setFont(pdfFont, 'normal');
         doc.setTextColor(150, 150, 150);
         doc.text('KEIM Australia  |  keim.com.au  |  For full TDS visit keim.com.au/concretal-lasur', margin, footerY);
         doc.text('Generated by KEIM Lasur Mix Guide', W - margin, footerY, { align: 'right' });
