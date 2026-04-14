@@ -1815,6 +1815,9 @@
             let bin = '';
             for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
             window._vazirFont = btoa(bin);
+            // Register font for canvas RTL rendering
+            var ff = new FontFace('VazirCanvas', buf);
+            await ff.load(); document.fonts.add(ff);
           } catch(e) { console.warn('Font load failed:', e); }
         }
 
@@ -1827,7 +1830,42 @@
           doc.addFont('Vazirmatn-Regular.ttf', 'Vazirmatn', 'bold');
         }
         const pdfFont = isRtl ? 'Vazirmatn' : 'helvetica';
-        const rtl = function(s) { return isRtl ? reshapeForPDF(s) : s; };
+        const rtl = function(s) { return s; }; // identity - canvas handles RTL
+
+        // Monkey-patch doc.text for RTL: render Arabic text as canvas images
+        if (isRtl && document.fonts.check('12px VazirCanvas')) {
+          var _curColor = [0,0,0];
+          var _origSTC = doc.setTextColor.bind(doc);
+          doc.setTextColor = function(r,g,b) { _curColor = [r,g,b]; return _origSTC(r,g,b); };
+          var _origText = doc.text.bind(doc);
+          doc.text = function(txt, x, y, opts) {
+            if (typeof txt === 'string' && /[\u0600-\u06FF]/.test(txt)) {
+              var fs = doc.getFontSize();
+              var fb = doc.getFont().fontStyle === 'bold';
+              var cv = document.createElement('canvas');
+              var cx = cv.getContext('2d');
+              var sc = 4, px = fs * 1.33 * sc;
+              cx.font = (fb?'bold ':'') + px + 'px VazirCanvas';
+              var mw = cx.measureText(txt).width;
+              cv.width = Math.ceil(mw) + 20;
+              cv.height = Math.ceil(px * 1.6);
+              cx.font = (fb?'bold ':'') + px + 'px VazirCanvas';
+              cx.fillStyle = 'rgb('+_curColor.join(',')+')';
+              cx.textBaseline = 'alphabetic';
+              cx.direction = 'rtl';
+              cx.textAlign = 'right';
+              cx.fillText(txt, cv.width - 5, px * 0.9);
+              var iD = cv.toDataURL('image/png');
+              var wP = cv.width / sc / 1.33;
+              var hP = cv.height / sc / 1.33;
+              var al = opts && opts.align;
+              var ix = al==='right' ? x-wP : al==='center' ? x-wP/2 : x;
+              doc.addImage(iD, 'PNG', ix, y - hP*0.7, wP, hP);
+            } else {
+              _origText(txt, x, y, opts);
+            }
+          };
+        }
         // RTL layout helpers
         const rtlX = (x) => isRtl ? W - x : x;
         const rtlAlign = (opts, defaultAlign) => {
