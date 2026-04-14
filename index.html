@@ -1807,6 +1807,7 @@ h<!DOCTYPE html>
         try {
         // --- RTL Font Support ---
         const isRtl = T[curLang] && T[curLang].rtl;
+        const isCjk = curLang === 'zh';
         if (isRtl && !window._vazirFont) {
           try {
             const resp = await fetch('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/ttf/Vazirmatn-Regular.ttf');
@@ -1821,6 +1822,20 @@ h<!DOCTYPE html>
           } catch(e) { console.warn('Font load failed:', e); }
         }
 
+        // Load CJK font for Chinese
+        if (isCjk && !window._notoScFont) {
+          try {
+            const resp = await fetch('https://cdn.jsdelivr.net/gh/notofonts/noto-cjk@main/Sans/Variable/TTF/Subset/NotoSansSC-VF.ttf');
+            const buf = await resp.arrayBuffer();
+            const bytes = new Uint8Array(buf);
+            let bin = '';
+            for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+            window._notoScFont = btoa(bin);
+            var ff2 = new FontFace('NotoSC', buf);
+            await ff2.load(); document.fonts.add(ff2);
+          } catch(e) { console.warn('CJK font load failed:', e); }
+        }
+
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ unit: 'mm', format: 'a4' });
         // Register Persian font for RTL
@@ -1829,32 +1844,37 @@ h<!DOCTYPE html>
           doc.addFont('Vazirmatn-Regular.ttf', 'Vazirmatn', 'normal');
           doc.addFont('Vazirmatn-Regular.ttf', 'Vazirmatn', 'bold');
         }
-        const pdfFont = isRtl ? 'Vazirmatn' : 'helvetica';
+        if (isCjk && window._notoScFont) {
+          doc.addFileToVFS('NotoSansSC-VF.ttf', window._notoScFont);
+          doc.addFont('NotoSansSC-VF.ttf', 'NotoSC', 'normal');
+          doc.addFont('NotoSansSC-VF.ttf', 'NotoSC', 'bold');
+        }
+        const pdfFont = isRtl ? 'Vazirmatn' : isCjk ? 'NotoSC' : 'helvetica';
         const rtl = function(s) { return s; }; // identity - canvas handles RTL
 
         // Monkey-patch doc.text for RTL: render Arabic text as canvas images
-        if (isRtl && document.fonts.check('12px VazirCanvas')) {
+        if ((isRtl && document.fonts.check('12px VazirCanvas')) || (isCjk && document.fonts.check('12px NotoSC'))) {
           var _curColor = [0,0,0];
           var _origSTC = doc.setTextColor.bind(doc);
           doc.setTextColor = function(r,g,b) { _curColor = [r,g,b]; return _origSTC(r,g,b); };
           var _origText = doc.text.bind(doc);
           doc.text = function(txt, x, y, opts) {
-            if (typeof txt === 'string' && /[\u0600-\u06FF]/.test(txt)) {
+            if (typeof txt === 'string' && /[\u0600-\u06FF\u4E00-\u9FFF\u3400-\u4DBF\u3000-\u303F\uFF00-\uFFEF]/.test(txt)) {
               var fs = doc.getFontSize();
               var fb = doc.getFont().fontStyle === 'bold';
               var cv = document.createElement('canvas');
               var cx = cv.getContext('2d');
               var sc = 4, px = fs * 1.33 * sc;
-              cx.font = (fb?'bold ':'') + px + 'px VazirCanvas';
+              cx.font = (fb?'bold ':'') + px + 'px ' + (isCjk ? 'NotoSC' : 'VazirCanvas');
               var mw = cx.measureText(txt).width;
               cv.width = Math.ceil(mw) + 20;
               cv.height = Math.ceil(px * 1.6);
-              cx.font = (fb?'bold ':'') + px + 'px VazirCanvas';
+              cx.font = (fb?'bold ':'') + px + 'px ' + (isCjk ? 'NotoSC' : 'VazirCanvas');
               cx.fillStyle = 'rgb('+_curColor.join(',')+')';
               cx.textBaseline = 'alphabetic';
-              cx.direction = 'rtl';
-              cx.textAlign = 'right';
-              cx.fillText(txt, cv.width - 5, px * 0.9);
+              cx.direction = isRtl ? 'rtl' : 'ltr';
+              cx.textAlign = isRtl ? 'right' : 'left';
+              cx.fillText(txt, isRtl ? cv.width - 5 : 5, px * 0.9);
               var iD = cv.toDataURL('image/png');
               var wP = cv.width / sc * 25.4 / 96;
               var hP = cv.height / sc * 25.4 / 96;
