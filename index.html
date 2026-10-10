@@ -1,629 +1,304 @@
-h<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en-AU">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>KEIM Lasur — Mix Guide</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KEIM Concretal-Lasur Mix Calculator</title>
+<meta name="description" content="Mixing calculator for KEIM Concretal-Lasur and Concretal-Fixativ. Pick your ratio, pick your amount, get exactly what to pour.">
+<meta property="og:title" content="KEIM Concretal-Lasur Mix Calculator">
+<meta property="og:description" content="Exactly how much Concretal-Lasur and Concretal-Fixativ to pour, for any ratio and any amount.">
+<meta property="og:type" content="website">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Lasur Mix">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
+<style>
+  /* Lion and Sun flag for Farsi / Dari (local file in repo) */
+  .fi.fi-ir, span.fi.fi-ir { background-image:url("./flag-ir.svg") !important; background-size:cover !important; background-position:center !important; }
 
-    <!-- PWA -->
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/css/flag-icons.min.css">
-    <style>
-        /* Lion and Sun flag (pre-1979 Iranian flag) for Farsi */
-        .fi-ir { background-image: url("./flag-ir.svg") !important; background-size: cover !important; background-position: center !important; }
-    </style>
-    <meta name="theme-color" content="#0d9488">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Lasur Mix">
-    <link rel="apple-touch-icon" href="icon-192.png">
+  :root{
+    --bg:#f6f4f0;          /* warm limestone */
+    --card:#ffffff;
+    --ink:#1c1b19;
+    --muted:#55524c;
+    --line:#dcd7cf;
+    --red:#d51f24;         /* KEIM red */
+    --red-soft:#fdecec;
+    --lasur:#3e4852;       /* Concretal-Lasur (colour) */
+    --fix:#dfe9ef;         /* Concretal-Fixativ (clear) */
+    --fix-ink:#2c5872;
+    --concrete:#cdc7be;
+    --ok:#1f7a3f;
+    --warn:#a35a00;
+    --radius:18px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:'Inter',-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:19px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+  html[dir=rtl] body{direction:rtl}
+  button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+  input{font:inherit;color:inherit}
+  input[type=number]{-moz-appearance:textfield}
+  input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  :focus-visible{outline:3px solid var(--red);outline-offset:2px}
 
-    <!-- jsPDF for mix sheet download -->
-    <!-- SEO / Open Graph -->h
-    <meta name="description" content="Quick mixing calculator for KEIM Concretal-Lasur. Pick your ratio, choose your volume, get exact amounts of colour and clear to pour.">
-    <meta property="og:title" content="KEIM Concretal-Lasur Mixing Guide">
-    <meta property="og:description" content="Quick mixing calculator for KEIM Concretal-Lasur and Concretal-Fixativ ratios.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://keim.com.au/lasur-calculator/">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            background: #0a0a0a; color: #fff;
-            min-height: 100vh; overflow-x: hidden;
-        }
-        html[dir="rtl"] body { direction: rtl; }
-        input[type=number] { -moz-appearance: textfield; }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  /* Header */
+  .hdr{background:#fff;border-bottom:1px solid var(--line)}
+  .hdr-in{max-width:760px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;gap:12px}
+  .logo{display:flex;align-items:center;gap:6px;flex-shrink:0;text-decoration:none}
+  .logo b{font-weight:900;font-size:24px;letter-spacing:.02em;color:var(--red)}
+  .ttl{flex:1;min-width:0}
+  .ttl h1{font-size:19px;font-weight:800;line-height:1.15}
+  .ttl p{font-size:14px;color:var(--muted)}
+  .lang{position:relative}
+  .lang-btn{display:flex;align-items:center;gap:8px;min-height:48px;padding:0 14px;border:2px solid var(--line);border-radius:999px;background:#fff;font-size:16px;font-weight:700}
+  .lang-btn .fi{width:24px;height:18px;border-radius:3px}
+  .lang-dd{display:none;position:absolute;top:56px;inset-inline-end:0;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,.14);padding:6px;z-index:50;min-width:210px;max-height:70vh;overflow:auto}
+  .lang-dd.open{display:block}
+  .lang-dd button{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:10px;font-size:18px;text-align:start}
+  .lang-dd button:hover,.lang-dd button.on{background:var(--red-soft)}
+  .lang-dd .fi{width:26px;height:19px;border-radius:3px}
 
-        .bg-glow {
-            position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(ellipse at 30% 20%, rgba(20,184,166,0.06) 0%, transparent 50%),
-                        radial-gradient(ellipse at 70% 80%, rgba(13,148,136,0.04) 0%, transparent 50%);
-            pointer-events: none; z-index: 0;
-        }
+  main{max-width:760px;margin:0 auto;padding:8px 16px 40px}
+  section{margin-top:26px}
+  .step{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .num{width:40px;height:40px;border-radius:50%;background:var(--red);color:#fff;font-weight:900;font-size:20px;display:grid;place-items:center;flex-shrink:0}
+  .step h2{font-size:25px;font-weight:800;line-height:1.15}
+  .hint{font-size:16px;color:var(--muted);margin:-4px 0 12px}
+  .hint b{color:var(--ink)}
 
-        .header {
-            position: sticky; top: 0; z-index: 30;
-            background: rgba(10,10,10,0.85);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
-        .header-inner {
-            max-width: 460px; margin: 0 auto; padding: 14px 20px;
-            display: flex; align-items: center; justify-content: space-between;
-        }
-        .header-title { font-size: 15px; font-weight: 800; color: rgba(255,255,255,0.9); letter-spacing: -0.02em; }
-        .header-sub { font-size: 9px; color: rgba(255,255,255,0.25); letter-spacing: 0.18em; text-transform: uppercase; margin-top: 1px; }
-        .header-right { display: flex; align-items: center; gap: 8px; }
-        .header-link {
-            font-size: 10px; color: #2dd4bf; font-weight: 700;
-            border: 1px solid rgba(45,212,191,0.25); border-radius: 999px; padding: 4px 14px;
-            text-decoration: none; transition: all 0.2s;
-        }
-        .header-link:hover { background: rgba(45,212,191,0.1); border-color: rgba(45,212,191,0.4); }
+  /* Ratio tiles */
+  .scale{display:flex;justify-content:space-between;font-size:14px;font-weight:800;letter-spacing:.06em;color:var(--muted);margin-bottom:8px}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  @media(min-width:620px){.tiles{grid-template-columns:repeat(6,1fr)}}
+  .tile{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:0 0 10px;text-align:center;overflow:hidden;min-height:112px;display:flex;flex-direction:column;align-items:stretch;transition:border-color .12s,transform .12s}
+  .tile:active{transform:scale(.97)}
+  .tile .sw{height:30px;border-bottom:1px solid rgba(0,0,0,.06)}
+  .tile .r{font-size:26px;font-weight:900;margin-top:6px;font-variant-numeric:tabular-nums;direction:ltr}
+  .tile .d{font-size:13.5px;color:var(--muted);line-height:1.2;padding:2px 6px 0}
+  .tile.on{border-color:var(--red);background:var(--red-soft);box-shadow:0 0 0 2px var(--red) inset}
+  .tile.on .r{color:var(--red)}
 
-        /* Language picker */
-        .lang-wrap { position: relative; }
-        .lang-btn {
-            height: 36px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.1);
-            background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-            cursor: pointer; display: flex; align-items: center;
-            gap: 7px; padding: 0 12px 0 10px;
-            font-size: 13px; transition: all 0.25s ease; color: #fff; font-family: inherit;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04);
-        }
-        .lang-btn:hover { background: linear-gradient(135deg, rgba(255,255,255,0.07), rgba(255,255,255,0.04)); border-color: rgba(255,255,255,0.18); box-shadow: 0 4px 12px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06); }
-        .lang-flag-icon { display: flex; align-items: center; justify-content: center; width: 24px; height: 18px; flex-shrink: 0; border-radius: 3px; overflow: hidden; box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
-        .lang-flag-icon .fi { width: 100%; height: 100%; background-size: cover; background-position: center; line-height: 1; }
-        .lang-name-short { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 0.02em; }
-        .lang-chevron { font-size: 10px; color: rgba(255,255,255,0.15); margin-left: 2px; transition: transform 0.2s; }
-        .lang-dropdown.open ~ .lang-btn .lang-chevron, .lang-wrap.open .lang-chevron { transform: rotate(180deg); }
-        .lang-dropdown {
-            display: none; position: absolute; top: 44px; right: 0; z-index: 50;
-            background: rgba(18,18,18,0.98); border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 16px; padding: 6px; min-width: 210px;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03);
-            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            max-height: 70vh; overflow-y: auto;
-        }
-        html[dir="rtl"] .lang-dropdown { right: auto; left: 0; }
-        .lang-dropdown.open { display: block; animation: popIn 0.2s ease; }
-        .lang-option {
-            display: flex; align-items: center; gap: 10px; padding: 10px 14px;
-            border-radius: 10px; cursor: pointer; border: none; background: none;
-            color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600;
-            width: 100%; text-align: left; transition: all 0.15s; font-family: inherit;
-        }
-        html[dir="rtl"] .lang-option { text-align: right; }
-        .lang-option:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.8); }
-        .lang-option.active { background: rgba(20,184,166,0.12); color: #5eead4; }
-        .lang-option.active .lang-flag { box-shadow: 0 0 0 2px rgba(94,234,212,0.3); }
-        .lang-flag { flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.04); overflow: hidden; }
-        .lang-flag .fi { width: 22px; height: 22px; border-radius: 50%; background-size: cover; background-position: center; line-height: 1; box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
+  .custom{margin-top:12px;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:14px}
+  .custom.on{border-color:var(--red)}
+  .custom label.lbl{display:block;font-size:16px;font-weight:700;color:var(--muted);margin-bottom:8px}
+  .crow{display:flex;align-items:center;gap:10px;direction:ltr}
+  .cf{flex:1}
+  .cf span{display:block;font-size:14px;font-weight:700;color:var(--muted);margin-bottom:4px}
+  .inp{width:100%;min-height:60px;border:2px solid var(--line);border-radius:12px;font-size:28px;font-weight:800;text-align:center;background:#fff}
+  .inp:focus{border-color:var(--red);outline:none}
+  .colon{font-size:32px;font-weight:900;color:var(--muted);padding-top:20px}
 
-        .main { max-width: 460px; margin: 0 auto; padding: 0 16px 60px; position: relative; z-index: 1; }
+  /* Mode toggle */
+  .seg{display:grid;grid-template-columns:1fr 1fr;background:#e9e5de;border-radius:14px;padding:5px;gap:5px;margin-bottom:14px}
+  .seg button{min-height:56px;border-radius:10px;font-size:17px;font-weight:800;color:var(--muted);line-height:1.15;padding:4px 8px}
+  .seg button.on{background:#fff;color:var(--ink);box-shadow:0 2px 6px rgba(0,0,0,.1)}
 
-        .step-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-        .step-badge {
-            width: 36px; height: 36px; border-radius: 50%;
-            background: linear-gradient(135deg, #14b8a6, #0d9488);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 14px; font-weight: 900; color: #fff; flex-shrink: 0;
-            box-shadow: 0 4px 16px rgba(20,184,166,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
-        }
-        .step-title { font-size: 17px; font-weight: 800; letter-spacing: -0.02em; }
+  .vols{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .vol{min-height:64px;border:2px solid var(--line);border-radius:14px;background:var(--card);font-size:22px;font-weight:800;direction:ltr}
+  .vol.on{border-color:var(--red);background:var(--red-soft);color:var(--red);box-shadow:0 0 0 2px var(--red) inset}
+  .vrow{display:flex;gap:10px;align-items:stretch;margin-top:12px}
+  .vrow .inp{flex:1}
+  .unit{display:flex;border:2px solid var(--line);border-radius:12px;overflow:hidden;flex-shrink:0;direction:ltr}
+  .unit button{min-width:64px;font-size:20px;font-weight:800;color:var(--muted);background:#fff}
+  .unit button.on{background:var(--ink);color:#fff}
 
-        .spectrum-label {
-            display: flex; justify-content: space-between; padding: 0 4px; margin-bottom: 4px;
-            font-size: 9px; color: rgba(255,255,255,0.12); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600;
-        }
+  /* Result */
+  .result{background:var(--card);border-radius:var(--radius);border:2px solid var(--ink);padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+  .empty{font-size:18px;color:var(--muted);text-align:center;padding:26px 10px;border:2px dashed var(--line);border-radius:var(--radius);background:#fff}
+  .pours{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}
+  .pour{display:flex;gap:14px;align-items:center;padding:14px;border-radius:14px;margin-bottom:10px}
+  .pour:last-child{margin-bottom:0}
+  .pour.l{background:#eceff2}
+  .pour.f{background:#eef5f9}
+  .chip{width:22px;align-self:stretch;border-radius:8px;flex-shrink:0}
+  .pour.l .chip{background:var(--lasur)}
+  .pour.f .chip{background:var(--fix);border:2px solid #b8cfdc}
+  .pname{font-size:15px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
+  .pname small{display:block;text-transform:none;letter-spacing:0;font-weight:600;font-size:14px}
+  .pamt{font-size:52px;font-weight:900;line-height:1.02;font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+  .pamt u{text-decoration:none;font-size:26px;font-weight:800;margin-inline-start:4px}
+  .pour.l .pamt{color:var(--lasur)}
+  .pour.f .pamt{color:var(--fix-ink)}
+  .jugtxt{font-size:16px;color:var(--muted);font-weight:600;direction:ltr;unicode-bidi:isolate}
+  .jug{width:110px}
+  @media(max-width:520px){.pours{grid-template-columns:1fr}.jug{display:none}.pamt{font-size:46px}}
+  .tot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:baseline;border-top:2px solid var(--line);margin-top:14px;padding-top:14px}
+  .tot .big{font-size:24px;font-weight:900;direction:ltr;unicode-bidi:isolate}
+  .tot .rt{font-size:17px;font-weight:700;color:var(--muted)}
+  .tot .rt b{color:var(--ink)}
+  .note{margin-top:12px;font-size:16px;font-weight:700;padding:10px 12px;border-radius:10px}
+  .note.ok{background:#e8f5ec;color:var(--ok)}
+  .note.warn{background:#fff3e0;color:var(--warn)}
+  .opts{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .tog{display:flex;align-items:center;gap:12px;min-height:56px;padding:0 16px;border:2px solid var(--line);border-radius:14px;font-size:17px;font-weight:700;flex:1 1 280px;text-align:start}
+  .tog .box{width:28px;height:28px;border:2px solid var(--muted);border-radius:7px;flex-shrink:0;display:grid;place-items:center;font-size:18px;color:#fff}
+  .tog.on{border-color:var(--ok)}
+  .tog.on .box{background:var(--ok);border-color:var(--ok)}
+  .btn{min-height:56px;padding:0 18px;border-radius:14px;background:var(--ink);color:#fff;font-size:17px;font-weight:800;flex:0 1 auto}
 
-        .ratio-list {
-            border-radius: 20px; overflow: hidden;
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
-        }
-        .ratio-btn {
-            width: 100%; display: flex; align-items: center; gap: 12px;
-            padding: 9px 14px; border: none; cursor: pointer;
-            transition: all 0.15s ease; color: #fff; background: transparent;
-            border-bottom: 1px solid rgba(255,255,255,0.02);
-        }
-        .ratio-btn:last-child { border-bottom: none; }
-        .ratio-btn:hover { background: rgba(255,255,255,0.03); }
-        .ratio-btn.active { background: rgba(20,184,166,0.1); }
-        .ratio-bar-track { width: 44px; height: 10px; border-radius: 999px; background: rgba(255,255,255,0.04); overflow: hidden; flex-shrink: 0; }
-        .ratio-bar-fill { height: 100%; border-radius: 999px; transition: width 0.3s; }
-        .ratio-pct { font-size: 10px; font-weight: 800; width: 34px; text-align: right; flex-shrink: 0; transition: color 0.15s; font-variant-numeric: tabular-nums; }
-        html[dir="rtl"] .ratio-pct { text-align: left; }
-        .ratio-label { font-size: 15px; font-weight: 900; width: 52px; text-align: left; transition: color 0.15s; }
-        html[dir="rtl"] .ratio-label { text-align: right; }
-        .ratio-desc { font-size: 11px; flex: 1; text-align: left; transition: color 0.15s; }
-        html[dir="rtl"] .ratio-desc { text-align: right; }
+  /* Rules */
+  details.card{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);margin-top:26px;overflow:hidden}
+  details.card summary{list-style:none;display:flex;align-items:center;gap:12px;padding:16px 18px;font-size:22px;font-weight:800;cursor:pointer;min-height:64px}
+  details.card summary::-webkit-details-marker{display:none}
+  details.card summary::after{content:'+';margin-inline-start:auto;font-size:30px;font-weight:600;color:var(--muted)}
+  details.card[open] summary::after{content:'–'}
+  .warnhead{border-color:#f0c8c9}
+  .warnhead summary{background:var(--red-soft)}
+  .rules{padding:6px 18px 16px}
+  .rule{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid #eee;font-size:18px;line-height:1.35}
+  .rule:last-child{border-bottom:none}
+  .rule .ic{font-size:24px;flex-shrink:0;width:32px;text-align:center}
+  .rule-danger{color:var(--red);font-weight:900}
 
-        .glass-card {
-            margin-top: 10px; border-radius: 16px; padding: 14px;
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
-        }
-        .glass-card-label {
-            font-size: 10px; color: rgba(255,255,255,0.2); font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px;
-        }
-        .custom-row { display: flex; align-items: center; gap: 10px; }
-        .custom-field { flex: 1; }
-        .custom-field label { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
-        .custom-field input {
-            width: 100%; border-radius: 10px; padding: 10px 12px;
-            font-size: 20px; font-weight: 900; text-align: center; outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .input-pig { background: rgba(20,184,166,0.06); border: 1.5px solid rgba(20,184,166,0.15); color: #5eead4; }
-        .input-pig:focus { border-color: rgba(20,184,166,0.4); box-shadow: 0 0 0 3px rgba(20,184,166,0.08); }
-        .input-dil { background: rgba(255,255,255,0.02); border: 1.5px solid rgba(255,255,255,0.06); color: #d6d3d1; }
-        .input-dil:focus { border-color: rgba(255,255,255,0.15); box-shadow: 0 0 0 3px rgba(255,255,255,0.03); }
-        .colon { font-size: 26px; font-weight: 900; color: rgba(255,255,255,0.1); padding-top: 16px; }
+  /* Chart */
+  .chartwrap{overflow-x:auto;padding:0 0 12px}
+  table.chart{border-collapse:collapse;font-size:16px;min-width:100%;font-variant-numeric:tabular-nums;direction:ltr}
+  table.chart th,table.chart td{padding:9px 10px;border-bottom:1px solid #eee;text-align:center;white-space:nowrap}
+  table.chart thead th{background:#f1eee9;font-weight:800;position:sticky;top:0}
+  table.chart th.rl{text-align:left;position:sticky;left:0;background:#fff;font-weight:900;z-index:1}
+  table.chart thead th.rl{background:#f1eee9}
+  table.chart td .a{display:block;font-weight:800;color:var(--lasur)}
+  table.chart td .b{display:block;color:var(--fix-ink);font-weight:600}
+  table.chart tr.on th,table.chart tr.on td{background:var(--red-soft)}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;padding:0 18px 10px;font-size:15px;font-weight:700;color:var(--muted)}
+  .legend i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-inline-end:6px}
 
-        .vol-category-label {
-            font-size: 10px; color: rgba(255,255,255,0.2); font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.12em; margin-left: 4px;
-        }
-        html[dir="rtl"] .vol-category-label { margin-left: 0; margin-right: 4px; }
-        .vol-grid-samples { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
-        .vol-grid-buckets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 6px; }
-        .vol-btn {
-            border-radius: 14px; text-align: center; font-weight: 800; cursor: pointer;
-            transition: all 0.15s ease;
-            border: 2px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.015); color: rgba(255,255,255,0.2);
-        }
-        .vol-btn.sample { padding: 14px 0; font-size: 16px; }
-        .vol-btn.bucket { padding: 11px 0; font-size: 13px; }
-        .vol-btn:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
-        .vol-btn.active {
-            background: rgba(20,184,166,0.12); border-color: rgba(45,212,191,0.4);
-            color: #5eead4; box-shadow: 0 0 16px rgba(20,184,166,0.08);
-        }
+  footer{text-align:center;font-size:15px;color:var(--muted);margin-top:28px}
+  footer a{color:var(--red);font-weight:700}
 
-        .unit-toggle { display: flex; border-radius: 10px; overflow: hidden; border: 1.5px solid rgba(255,255,255,0.06); flex-shrink: 0; }
-        .unit-btn {
-            padding: 10px 16px; font-size: 14px; font-weight: 700; cursor: pointer;
-            border: none; transition: all 0.15s; text-align: center;
-            background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.2);
-        }
-        .unit-btn + .unit-btn { border-left: 1px solid rgba(255,255,255,0.06); }
-        .unit-btn.active { background: rgba(20,184,166,0.12); color: #5eead4; }
-        .custom-vol-input {
-            flex: 1; min-width: 0; border-radius: 10px; padding: 10px 14px; font-size: 20px; font-weight: 900; outline: none;
-            background: rgba(255,255,255,0.02); border: 1.5px solid rgba(255,255,255,0.06); color: #fff;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .custom-vol-input:focus { border-color: rgba(255,255,255,0.15); box-shadow: 0 0 0 3px rgba(255,255,255,0.03); }
-
-        .result-wrap { margin-top: 24px; }
-        .result-card {
-            border-radius: 28px; padding: 28px 22px 22px;
-            background: linear-gradient(180deg, rgba(26,26,26,1) 0%, rgba(20,20,20,1) 100%);
-            border: 1px solid rgba(255,255,255,0.06);
-            box-shadow: 0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
-            animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
-        }
-        @keyframes popIn { 0% { transform: scale(0.95); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-
-        .cups-row { display: flex; align-items: flex-end; justify-content: center; gap: 4px; }
-        .cup-col { width: 44%; display: flex; flex-direction: column; align-items: center; }
-        .cup-plus { padding-bottom: 80px; font-size: 22px; font-weight: 900; color: rgba(255,255,255,0.06); }
-        .cup-amount { font-size: 34px; font-weight: 900; margin-top: 6px; line-height: 1; }
-        .cup-unit { font-size: 11px; font-weight: 700; margin-top: 3px; }
-        .cup-tag { margin-top: 10px; border-radius: 10px; padding: 5px 14px; text-align: center; }
-        .cup-tag-label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; }
-        .cup-tag-sub { font-size: 8px; color: rgba(255,255,255,0.15); margin-top: 1px; }
-
-        /* Mixed cup */
-        .mix-arrow { text-align: center; margin-top: 14px; font-size: 18px; color: rgba(255,255,255,0.08); font-weight: 900; }
-        .mix-cup-wrap { display: flex; justify-content: center; margin-top: 8px; }
-        .mix-cup-col { width: 50%; max-width: 180px; display: flex; flex-direction: column; align-items: center; }
-        .mix-amount { font-size: 30px; font-weight: 900; margin-top: 6px; line-height: 1; color: rgba(255,255,255,0.7); }
-        .mix-unit { font-size: 11px; font-weight: 700; margin-top: 3px; color: rgba(255,255,255,0.25); }
-        .mix-tag {
-            margin-top: 10px; border-radius: 10px; padding: 5px 14px; text-align: center;
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
-        }
-        .mix-tag-label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: rgba(255,255,255,0.35); }
-        .mix-tag-sub { font-size: 8px; color: rgba(255,255,255,0.12); margin-top: 1px; }
-
-        .equals-row { display: flex; align-items: center; gap: 14px; margin-top: 18px; }
-        .equals-line { flex: 1; height: 1px; background: rgba(255,255,255,0.05); }
-        .equals-text { font-size: 12px; font-weight: 800; color: rgba(255,255,255,0.2); white-space: nowrap; }
-        .equals-total { color: rgba(255,255,255,0.5); }
-
-        .ratio-bar-container { display: flex; border-radius: 999px; overflow: hidden; margin-top: 14px; height: 10px; }
-        .ratio-bar-pig { background: linear-gradient(90deg, #0d9488, #2dd4bf); transition: width 0.5s ease; }
-        .ratio-bar-dil { background: linear-gradient(90deg, #78716c, #a8a29e); transition: width 0.5s ease; }
-        .ratio-bar-labels { display: flex; justify-content: space-between; margin-top: 4px; padding: 0 2px; font-size: 8px; color: rgba(255,255,255,0.12); }
-        .ratio-bar-center { font-weight: 700; color: rgba(255,255,255,0.25); }
-
-        /* Adjustment sliders */
-        .adjust-section {
-            margin-top: 18px; padding: 16px 14px 14px; border-radius: 16px;
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
-        }
-        .adjust-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-        .adjust-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.18); }
-        .adjust-reset, .adjust-round {
-            font-size: 10px; font-weight: 700;
-            background: none; border-radius: 999px;
-            padding: 3px 12px; cursor: pointer;
-        }
-        .adjust-round {
-            color: rgba(250,204,21,0.7);
-            border: 1px solid rgba(250,204,21,0.18);
-            display: none;
-            transition: all 0.2s;
-        }
-        .adjust-round:active { transform: scale(0.95); }
-        .adjust-round.vis { display: inline-block; }
-        .adjust-reset {
-            color: rgba(20,184,166,0.5);
-            border: 1px solid rgba(20,184,166,0.12);
-            display: none;
-        }
-        .adjust-reset.vis { display: inline-block; }
-        .adj-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-        .adj-row:last-of-type { margin-bottom: 0; }
-        .adj-label { width: 50px; font-size: 10px; font-weight: 800; letter-spacing: 0.06em; flex-shrink: 0; }
-        .adj-val { font-size: 16px; font-weight: 900; min-width: 46px; text-align: right; }
-        html[dir="rtl"] .adj-val { text-align: left; }
-        .adj-unit { font-size: 10px; color: rgba(255,255,255,0.12); font-weight: 600; width: 18px; }
-        .adj-delta { font-size: 9px; font-weight: 700; border-radius: 6px; padding: 2px 6px; margin-left: 2px; display: none; }
-        html[dir="rtl"] .adj-delta { margin-left: 0; margin-right: 2px; }
-        .adj-delta.vis { display: inline-block; }
-        .adj-delta.up { background: rgba(20,184,166,0.08); color: rgba(94,234,212,0.7); }
-        .adj-delta.dn { background: rgba(248,113,113,0.08); color: rgba(248,113,113,0.7); }
-        .adj-total {
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-            margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.03);
-            font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.12);
-        }
-        .adj-total-val { font-size: 13px; font-weight: 900; color: rgba(255,255,255,0.35); }
-
-        .download-pdf-btn {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            width: 100%; margin-top: 16px; padding: 12px 20px;
-            background: linear-gradient(135deg, rgba(20,184,166,0.12), rgba(20,184,166,0.06));
-            border: 1px solid rgba(20,184,166,0.25); border-radius: 12px;
-            color: #5eead4; font-size: 13px; font-weight: 700; letter-spacing: 0.02em;
-            cursor: pointer; transition: all 0.2s;
-        }
-        .download-pdf-btn:hover {
-            background: linear-gradient(135deg, rgba(20,184,166,0.2), rgba(20,184,166,0.1));
-            border-color: rgba(45,212,191,0.4);
-            box-shadow: 0 4px 16px rgba(20,184,166,0.15);
-        }
-        .download-pdf-btn:active { transform: scale(0.98); }
-
-        input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 999px; outline: none; cursor: pointer; }
-        input[type=range].rng-p { background: linear-gradient(90deg, rgba(13,148,136,0.12), rgba(45,212,191,0.2)); }
-        input[type=range].rng-d { background: linear-gradient(90deg, rgba(120,113,108,0.12), rgba(168,162,158,0.2)); }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.12); box-shadow: 0 2px 8px rgba(0,0,0,0.3); cursor: pointer;
-        }
-        input[type=range]::-moz-range-thumb {
-            width: 24px; height: 24px; border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.12); box-shadow: 0 2px 8px rgba(0,0,0,0.3); cursor: pointer;
-        }
-        input[type=range].rng-p::-webkit-slider-thumb { background: linear-gradient(135deg, #2dd4bf, #0d9488); }
-        input[type=range].rng-p::-moz-range-thumb { background: linear-gradient(135deg, #2dd4bf, #0d9488); }
-        input[type=range].rng-d::-webkit-slider-thumb { background: linear-gradient(135deg, #d6d3d1, #78716c); }
-        input[type=range].rng-d::-moz-range-thumb { background: linear-gradient(135deg, #d6d3d1, #78716c); }
-
-        .rules-card {
-            margin-top: 28px; border-radius: 20px; overflow: hidden;
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
-        }
-        .rules-header {
-            display: flex; align-items: center; gap: 10px; padding: 14px 18px;
-            border-bottom: 1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.01);
-        }
-        .rules-header-text { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.3); }
-        .rules-body { padding: 16px 18px; }
-        .rule {
-            display: flex; align-items: flex-start; gap: 10px;
-            padding: 8px 0; font-size: 12px; color: rgba(255,255,255,0.28); line-height: 1.5;
-        }
-        .rule:first-child { padding-top: 0; }
-        .rule:last-child { padding-bottom: 0; }
-        .rule-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
-        .rule strong { color: rgba(255,255,255,0.5); font-weight: 600; }
-        .rule-danger { color: #f87171; font-weight: 700; }
-
-        .footer { text-align: center; margin-top: 32px; font-size: 9px; color: rgba(255,255,255,0.06); }
-
-        /* Reference table */
-        .ref-card {
-            margin-top: 28px; padding: 16px; border-radius: 20px; overflow: hidden;
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04);
-        }
-        .ref-card-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.2); }
-        .download-chart-btn {
-            display: flex; align-items: center; gap: 5px;
-            font-size: 9px; font-weight: 700; color: rgba(94,234,212,0.6);
-            background: none; border: 1px solid rgba(20,184,166,0.15); border-radius: 999px;
-            padding: 4px 12px; cursor: pointer; transition: all 0.2s;
-        }
-        .download-chart-btn:hover { border-color: rgba(20,184,166,0.35); color: #5eead4; }
-        .download-chart-btn:active { transform: scale(0.97); }
-        .ref-header {
-            display: flex; align-items: center; gap: 10px; padding: 14px 18px;
-            border-bottom: 1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.01);
-        }
-        .ref-header-text { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.3); }
-
-        /* Full chart view */
-        .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -16px; padding: 0 16px; }
-        .chart-scroll::-webkit-scrollbar { height: 6px; }
-        .chart-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 3px; }
-        .chart-scroll::-webkit-scrollbar-thumb { background: rgba(94,234,212,0.15); border-radius: 3px; }
-        .full-chart { border-collapse: collapse; min-width: 900px; width: 100%; }
-        .full-chart th {
-            padding: 6px 4px; font-size: 8px; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 0.05em; color: rgba(255,255,255,0.25);
-            border-bottom: 1px solid rgba(255,255,255,0.06); text-align: center; white-space: nowrap;
-            position: sticky; top: 0; background: rgba(20,20,20,0.95);
-        }
-        .full-chart th.vol-hdr { color: rgba(255,255,255,0.35); font-size: 9px; }
-        .full-chart th.sub-hdr { font-size: 6.5px; font-weight: 700; letter-spacing: 0.08em; padding: 2px 4px; }
-        .full-chart th.sub-pig { color: rgba(94,234,212,0.5); }
-        .full-chart th.sub-fix { color: rgba(255,255,255,0.12); }
-        .full-chart td {
-            padding: 5px 4px; font-size: 10px; font-weight: 600;
-            border-bottom: 1px solid rgba(255,255,255,0.02); text-align: center; white-space: nowrap;
-        }
-        .full-chart tr:hover td { background: rgba(255,255,255,0.02); }
-        .full-chart .fc-ratio { color: rgba(255,255,255,0.5); font-weight: 800; font-size: 11px; text-align: left; padding-left: 8px; }
-        .full-chart .fc-pct { color: #5eead4; font-weight: 900; font-size: 11px; }
-        .full-chart .fc-look { color: rgba(255,255,255,0.13); font-size: 9px; font-weight: 600; text-align: left; }
-        .full-chart .fc-pig { color: rgba(94,234,212,0.7); font-weight: 700; font-size: 9px; }
-        .full-chart .fc-fix { color: rgba(255,255,255,0.15); font-weight: 500; font-size: 8.5px; }
-        .full-chart .fc-bar-cell { width: 36px; padding: 5px 2px; }
-        .fc-bar { height: 6px; border-radius: 999px; background: linear-gradient(90deg, #0d9488, #2dd4bf); opacity: 0.4; min-width: 2px; }
-        .full-chart .left-sticky { position: sticky; left: 0; background: rgba(20,20,20,0.95); z-index: 1; }
-
-        .cup-tick { stroke: rgba(255,255,255,0.05); stroke-width: 1; }
-        .cup-glass { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 1.5; }
-        .cup-handle { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 2; }
-    </style>
+  @media print{
+    body{background:#fff;font-size:14px}
+    .hdr .lang,#s1 .tiles,#s1 .custom,#s1 .scale,#s2,.opts,details.chartcard,footer a{display:none!important}
+    .result{box-shadow:none}
+    details.card{border-color:#ccc}
+    details.card .rules{display:block!important}
+    .pamt{font-size:40px}
+  }
+</style>
 </head>
 <body>
-    <div class="bg-glow"></div>
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="logo" href="https://keim.com.au" target="_blank" rel="noopener" aria-label="KEIM Australia">
+      <svg width="22" height="28" viewBox="0 0 22 28" aria-hidden="true"><path d="M1 2 Q11 -1 21 2 L11 27 Z" fill="#d51f24"/></svg>
+      <b>KEIM</b>
+    </a>
+    <div class="ttl">
+      <h1>Concretal-Lasur</h1>
+      <p id="tSub">Mixing Guide</p>
+    </div>
+    <div class="lang">
+      <button class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false"><span id="langFlag"></span><span id="langName">English</span></button>
+      <div class="lang-dd" id="langDd" role="menu"></div>
+    </div>
+  </div>
+</header>
 
-    <div class="header">
-        <div class="header-inner">
+<main>
+  <!-- STEP 1: RATIO -->
+  <section id="s1">
+    <div class="step"><div class="num">1</div><h2 id="tStep1">Pick your ratio</h2></div>
+    <p class="hint"><b>Lasur : Fixativ</b> &nbsp;·&nbsp; <span id="tHint">colour : clear thinner</span></p>
+    <div class="scale"><span id="tSolid">SOLID COLOUR</span><span id="tTrans">TRANSPARENT</span></div>
+    <div class="tiles" id="tiles"></div>
+    <div class="custom" id="customBox">
+      <label class="lbl" id="tCustomRatio">Or enter your own ratio</label>
+      <div class="crow">
+        <div class="cf"><span>Lasur</span><input class="inp" id="cP" type="number" inputmode="decimal" min="0" step="any" placeholder="1"></div>
+        <div class="colon">:</div>
+        <div class="cf"><span>Fixativ</span><input class="inp" id="cD" type="number" inputmode="decimal" min="0" step="any" placeholder="4"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 2: AMOUNT -->
+  <section id="s2">
+    <div class="step"><div class="num">2</div><h2 id="tStep2">How much?</h2></div>
+    <div class="seg" role="tablist">
+      <button id="mTotal" class="on" role="tab">Total I need</button>
+      <button id="mHave" role="tab">Lasur I've got</button>
+    </div>
+    <p class="hint" id="tStep2Hint"></p>
+    <div class="vols" id="vols"></div>
+    <div class="vrow">
+      <input class="inp" id="cV" type="number" inputmode="decimal" min="0" step="any" placeholder="e.g. 35">
+      <div class="unit"><button id="uL" class="on">L</button><button id="uML">ml</button></div>
+    </div>
+  </section>
+
+  <!-- STEP 3: RESULT -->
+  <section id="s3">
+    <div class="step"><div class="num">3</div><h2 id="tStep3">Pour this</h2></div>
+    <div id="empty" class="empty">Pick a ratio and an amount to see your mix</div>
+    <div id="result" class="result" hidden>
+      <div class="pours">
+        <div>
+          <div class="pour l">
+            <div class="chip"></div>
             <div>
-                <p class="header-title">KEIM Concretal-Lasur</p>
-                <p class="header-sub" id="headerSub">Mixing Guide</p>
+              <div class="pname">Concretal-Lasur <small id="tRoleL">colour</small></div>
+              <div class="pamt" id="aL">0</div>
+              <div class="jugtxt" id="jL"></div>
             </div>
-            <div class="header-right">
-                <div class="lang-wrap">
-                    <button class="lang-btn" id="langToggle" onclick="toggleLang()" aria-label="Change language">
-                        <span class="lang-flag-icon" id="langFlag"><span class="fi fi-gb"></span></span>
-                        <span class="lang-name-short" id="langNameShort">English</span>
-                        <span class="lang-chevron">&#9662;</span>
-                    </button>
-                    <div class="lang-dropdown" id="langDropdown"></div>
-                </div>
-                <a href="https://keim.com.au/products/concretal-lasur/" target="_blank" class="header-link">keim.com.au</a>
+          </div>
+          <div class="pour f" id="pourF">
+            <div class="chip"></div>
+            <div>
+              <div class="pname">Concretal-Fixativ <small id="tRoleF">clear thinner</small></div>
+              <div class="pamt" id="aF">0</div>
+              <div class="jugtxt" id="jF"></div>
             </div>
+          </div>
         </div>
+        <svg class="jug" viewBox="0 0 110 170" aria-hidden="true">
+          <defs><clipPath id="jc"><path d="M14 18 H86 L82 160 Q82 166 76 166 H24 Q18 166 18 160 Z"/></clipPath></defs>
+          <g clip-path="url(#jc)">
+            <rect id="jugF" x="0" y="166" width="110" height="0" fill="#dfe9ef"/>
+            <rect id="jugL" x="0" y="166" width="110" height="0" fill="#3e4852"/>
+          </g>
+          <path d="M14 18 H86 L82 160 Q82 166 76 166 H24 Q18 166 18 160 Z" fill="none" stroke="#1c1b19" stroke-width="3"/>
+          <path d="M86 40 Q106 42 104 74 Q102 104 83 108" fill="none" stroke="#1c1b19" stroke-width="3"/>
+          <path d="M14 18 L6 10" stroke="#1c1b19" stroke-width="3" stroke-linecap="round"/>
+          <g stroke="#1c1b19" stroke-width="2" opacity=".35"><line x1="18" y1="55" x2="32" y2="55"/><line x1="18" y1="90" x2="32" y2="90"/><line x1="18" y1="125" x2="32" y2="125"/></g>
+        </svg>
+      </div>
+      <div class="tot">
+        <div class="big" id="aT"></div>
+        <div class="rt" id="aR"></div>
+      </div>
+      <div class="note" id="note" hidden></div>
+      <div class="opts">
+        <button class="tog" id="easyBtn" aria-pressed="false"><span class="box">✓</span><span id="tEasy">Round to easy jug amounts (50 ml)</span></button>
+        <button class="btn" id="printBtn"><span id="tPrint">Print mix sheet</span></button>
+      </div>
     </div>
+  </section>
 
-    <div class="main">
+  <!-- RULES -->
+  <details class="card warnhead" id="rulesCard" open>
+    <summary><span aria-hidden="true">⚠️</span><span id="tBefore">Before you start</span></summary>
+    <div class="rules" id="rules"></div>
+  </details>
 
-        <!-- STEP 1 -->
-        <div style="margin-top:20px">
-            <div class="step-row">
-                <div class="step-badge">1</div>
-                <p class="step-title" id="step1Title">Pick your ratio</p>
-            </div>
-            <div class="spectrum-label"><span id="specSolid">SOLID COLOUR</span><span id="specTrans">TRANSPARENT</span></div>
-            <div id="ratioList" class="ratio-list"></div>
-            <div class="glass-card">
-                <p class="glass-card-label" id="customRatioLabel">Or enter your own ratio</p>
-                <div class="custom-row">
-                    <div class="custom-field">
-                        <label style="color:rgba(94,234,212,0.5)" id="lblColour">Colour</label>
-                        <input type="number" id="customP" placeholder="1" min="0" inputmode="decimal" class="input-pig">
-                    </div>
-                    <span class="colon">:</span>
-                    <div class="custom-field">
-                        <label style="color:rgba(168,162,158,0.5)" id="lblClear">Clear</label>
-                        <input type="number" id="customD" placeholder="1" min="0" inputmode="decimal" class="input-dil">
-                    </div>
-                </div>
-            </div>
-        </div>
+  <!-- CHART -->
+  <details class="card chartcard" id="chartCard">
+    <summary><span aria-hidden="true">📋</span><span id="tChart">Full mix chart</span></summary>
+    <div class="legend"><span><i style="background:#3e4852"></i>Concretal-Lasur</span><span><i style="background:#dfe9ef;border:1px solid #b8cfdc"></i>Concretal-Fixativ</span></div>
+    <div class="chartwrap"><table class="chart" id="chart"></table></div>
+  </details>
 
-        <!-- STEP 2 -->
-        <div style="margin-top:28px">
-            <div class="step-row">
-                <div class="step-badge">2</div>
-                <p class="step-title" id="step2Title">How much?</p>
-            </div>
-            <p class="vol-category-label" id="lblSamples">Sample Pots</p>
-            <div id="volSamples" class="vol-grid-samples"></div>
-            <p class="vol-category-label" style="margin-top:16px" id="lblBuckets">Buckets &amp; Drums</p>
-            <div id="volGrid" class="vol-grid-buckets"></div>
-            <div class="glass-card">
-                <p class="glass-card-label" id="customVolLabel">Or enter your own amount</p>
-                <div style="display:flex;align-items:center;gap:10px">
-                    <input type="number" id="customVol" placeholder="e.g. 35" min="0" inputmode="decimal" class="custom-vol-input">
-                    <div class="unit-toggle">
-                        <button id="unitML" onclick="setCustomUnit('ml')" class="unit-btn">ml</button>
-                        <button id="unitL" onclick="setCustomUnit('L')" class="unit-btn active">L</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <footer><p id="tFooter">KEIM Australia · For full TDS visit keim.com.au</p>
+    <p style="margin-top:6px"><a href="https://keim.com.au/concretal-lasur" target="_blank" rel="noopener">keim.com.au/concretal-lasur</a></p></footer>
+</main>
 
-        <!-- RESULT -->
-        <div id="answer" class="result-wrap" style="display:none">
-            <div class="step-row" style="margin-bottom:14px">
-                <div class="step-badge">&#10003;</div>
-                <p class="step-title" id="step3Title">Pour this</p>
-            </div>
-            <div id="resultCard" class="result-card">
-                <div class="cups-row">
-                    <div class="cup-col">
-                        <svg viewBox="0 0 100 130" style="width:100%;filter:drop-shadow(0 6px 16px rgba(0,0,0,0.35))">
-                            <defs>
-                                <clipPath id="cpP"><rect x="12" y="10" width="66" height="105" rx="6"/></clipPath>
-                                <linearGradient id="gradP" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5eead4"/><stop offset="100%" stop-color="#0d9488"/></linearGradient>
-                            </defs>
-                            <rect id="cupFillP" x="12" y="115" width="66" height="0" clip-path="url(#cpP)" fill="url(#gradP)" opacity="0.85"/>
-                            <rect id="cupShineP" x="14" y="115" width="62" height="3" rx="1.5" clip-path="url(#cpP)" fill="white" opacity="0.18"/>
-                            <line x1="16" y1="35" x2="30" y2="35" class="cup-tick"/><line x1="16" y1="58" x2="30" y2="58" class="cup-tick"/>
-                            <line x1="16" y1="81" x2="30" y2="81" class="cup-tick"/><line x1="16" y1="104" x2="30" y2="104" class="cup-tick"/>
-                            <rect x="12" y="10" width="66" height="105" rx="8" class="cup-glass"/>
-                            <path d="M12 10 Q6 10 8 18" class="cup-glass"/><path d="M78 35 Q95 35 95 62 Q95 88 78 88" class="cup-handle"/>
-                        </svg>
-                        <p class="cup-amount" style="color:#5eead4" id="resPig">&mdash;</p>
-                        <p class="cup-unit" style="color:rgba(94,234,212,0.5)" id="unitPig">Litres</p>
-                        <div class="cup-tag" style="background:rgba(13,148,136,0.15);border:1px solid rgba(13,148,136,0.25)">
-                            <p class="cup-tag-label" style="color:rgba(94,234,212,0.7)" id="tagColour">COLOUR</p>
-                            <p class="cup-tag-sub">Concretal-Lasur</p>
-                        </div>
-                    </div>
-                    <div class="cup-plus">+</div>
-                    <div class="cup-col">
-                        <svg viewBox="0 0 100 130" style="width:100%;filter:drop-shadow(0 6px 16px rgba(0,0,0,0.35))">
-                            <defs>
-                                <clipPath id="cpD"><rect x="12" y="10" width="66" height="105" rx="6"/></clipPath>
-                                <linearGradient id="gradD" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d6d3d1"/><stop offset="100%" stop-color="#78716c"/></linearGradient>
-                            </defs>
-                            <rect id="cupFillD" x="12" y="115" width="66" height="0" clip-path="url(#cpD)" fill="url(#gradD)" opacity="0.75"/>
-                            <rect id="cupShineD" x="14" y="115" width="62" height="3" rx="1.5" clip-path="url(#cpD)" fill="white" opacity="0.12"/>
-                            <line x1="16" y1="35" x2="30" y2="35" class="cup-tick"/><line x1="16" y1="58" x2="30" y2="58" class="cup-tick"/>
-                            <line x1="16" y1="81" x2="30" y2="81" class="cup-tick"/><line x1="16" y1="104" x2="30" y2="104" class="cup-tick"/>
-                            <rect x="12" y="10" width="66" height="105" rx="8" class="cup-glass"/>
-                            <path d="M12 10 Q6 10 8 18" class="cup-glass"/><path d="M78 35 Q95 35 95 62 Q95 88 78 88" class="cup-handle"/>
-                        </svg>
-                        <p class="cup-amount" style="color:#d6d3d1" id="resDil">&mdash;</p>
-                        <p class="cup-unit" style="color:rgba(168,162,158,0.5)" id="unitDil">Litres</p>
-                        <div class="cup-tag" style="background:rgba(120,113,108,0.1);border:1px solid rgba(120,113,108,0.18)">
-                            <p class="cup-tag-label" style="color:rgba(168,162,158,0.6)" id="tagClear">CLEAR</p>
-                            <p class="cup-tag-sub">Concretal-Fixativ</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mixed result cup -->
-                <div class="mix-arrow" id="mixArrow">&darr; mix into &darr;</div>
-                <div class="mix-cup-wrap">
-                    <div class="mix-cup-col">
-                        <svg viewBox="0 0 120 150" style="width:100%;filter:drop-shadow(0 6px 16px rgba(0,0,0,0.35))">
-                            <defs>
-                                <clipPath id="cpM"><rect x="14" y="10" width="80" height="120" rx="8"/></clipPath>
-                                <linearGradient id="gradM" x1="0" y1="0" x2="0" y2="1">
-                                    <stop id="gradMStop1" offset="0%" stop-color="#5eead4"/>
-                                    <stop id="gradMStop2" offset="100%" stop-color="#78716c"/>
-                                </linearGradient>
-                            </defs>
-                            <rect id="cupFillM" x="14" y="130" width="80" height="0" clip-path="url(#cpM)" fill="url(#gradM)" opacity="0.8"/>
-                            <rect id="cupShineM" x="16" y="130" width="76" height="3" rx="1.5" clip-path="url(#cpM)" fill="white" opacity="0.15"/>
-                            <line x1="18" y1="38" x2="34" y2="38" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-                            <line x1="18" y1="65" x2="34" y2="65" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-                            <line x1="18" y1="92" x2="34" y2="92" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-                            <line x1="18" y1="119" x2="34" y2="119" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-                            <rect x="14" y="10" width="80" height="120" rx="10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
-                            <path d="M14 10 Q7 10 9 20" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
-                            <path d="M94 40 Q114 40 114 72 Q114 104 94 104" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="2"/>
-                        </svg>
-                        <p class="mix-amount" id="resTotAmount">10</p>
-                        <p class="mix-unit" id="resTotUnit">Litres</p>
-                        <div class="mix-tag">
-                            <p class="mix-tag-label" id="tagMixed">MIXED</p>
-                            <p class="mix-tag-sub" id="tagReady">Ready to apply</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="equals-row" style="margin-top:14px">
-                    <div class="equals-line"></div>
-                    <p class="equals-text">= <span class="equals-total" id="resTot">10L</span> <span id="lblTotal">total</span></p>
-                    <div class="equals-line"></div>
-                </div>
-
-                <div class="ratio-bar-container">
-                    <div id="barPig" class="ratio-bar-pig" style="width:50%"></div>
-                    <div id="barDil" class="ratio-bar-dil" style="width:50%"></div>
-                </div>
-                <div class="ratio-bar-labels">
-                    <span id="barLblColour">Colour</span>
-                    <span class="ratio-bar-center" id="ratioLabel">1 : 1</span>
-                    <span id="barLblClear">Clear</span>
-                </div>
-
-                <!-- Adjustment sliders -->
-                <div id="adjustWrap" class="adjust-section" style="display:none">
-                    <div class="adjust-header">
-                        <span class="adjust-title" id="adjTitle">Adjust to round numbers</span>
-                        <span style="display:flex;gap:6px;align-items:center">
-                            <button id="roundBtn" class="adjust-round" onclick="roundAdj()">⟳ Round</button>
-                            <button id="resetBtn" class="adjust-reset" onclick="resetAdj()">Reset</button>
-                        </span>
-                    </div>
-                    <div class="adj-row" id="adjRowP">
-                        <span class="adj-label" style="color:rgba(94,234,212,0.5)" id="adjLblP">Colour</span>
-                        <input type="range" id="sldP" class="rng-p" oninput="onSldP(this.value)">
-                        <span class="adj-val" style="color:#5eead4" id="avP">0</span>
-                        <span class="adj-unit" id="auP">L</span>
-                        <span class="adj-delta" id="adP"></span>
-                    </div>
-                    <div class="adj-row" id="adjRowD">
-                        <span class="adj-label" style="color:rgba(168,162,158,0.4)" id="adjLblD">Clear</span>
-                        <input type="range" id="sldD" class="rng-d" oninput="onSldD(this.value)">
-                        <span class="adj-val" style="color:#d6d3d1" id="avD">0</span>
-                        <span class="adj-unit" id="auD">L</span>
-                        <span class="adj-delta" id="adD"></span>
-                    </div>
-                    <div class="adj-total">
-                        <span id="adjTotalLabel">Adjusted total:</span>
-                        <span class="adj-total-val" id="adjTot">0</span>
-                    </div>
-                </div>
-
-                <!-- Download PDF button -->
-                <button id="downloadPdfBtn" class="download-pdf-btn" onclick="downloadMixPDF()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    <span id="downloadPdfLabel">Download Mix Sheet</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- RULES -->
-        <div class="rules-card" id="rulesCard">
-        </div>
-
-        <!-- REFERENCE TABLE -->
-        <div class="ref-card" id="refCard">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px">
-                <p class="ref-card-title" id="refTitle">Quick Reference</p>
-                <button class="download-chart-btn" id="downloadChartBtn" onclick="downloadChartPDF()">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    <span id="downloadChartLabel">Download Chart</span>
-                </button>
-            </div>
-            <div class="chart-scroll" id="fullChartWrap">
-                <table class="full-chart" id="fullChart"></table>
-            </div>
-        </div>
-        <p class="footer" id="footerText">KEIM Australia &middot; For full TDS visit keim.com.au</p>
-    </div>
-
-    <script>
-    // ============ TRANSLATIONS ============
-    const T = {
+<script>
+const T = {
       en: {
         flag: 'gb', name: 'English',
         headerSub: 'Mixing Guide',
@@ -962,1220 +637,262 @@ h<!DOCTYPE html>
       }
     };
 
-    // ============ LANGUAGE SYSTEM ============
-    let curLang = localStorage.getItem('lasur-lang') || 'en';
-    const langOrder = ['en','slang','zh','fa','da','hr','ar','pl','de','fr','it','es'];
+// ===== New strings for the simplified UI (all languages) =====
+const T2 = {
+  en:{modeTotal:'Total I need',modeHave:"Lasur I've got",step2have:'How much Lasur have you got?',step2hint:'Total mixed amount you need',easyPour:'Round to easy jug amounts (50 ml)',actual:'Actual ratio',print:'Print mix sheet',pickFirst:'Pick a ratio and an amount to see your mix',roleLasur:'colour',roleFix:'clear thinner',chart:'Full mix chart',noFix:'No Fixativ — use it straight',hint:'colour : clear thinner',exact:'Exact ratio',off:'off target',colourPct:'colour'},
+  slang:{modeTotal:'Total I need',modeHave:"Lasur I've got",step2have:'How much Lasur ya got?',step2hint:'How much mix ya need all up',easyPour:'Round it to easy jug amounts (50 ml)',actual:'Actual ratio',print:'Print the mix sheet',pickFirst:'Pick a ratio and an amount, mate',roleLasur:'the colour',roleFix:'the clear stuff',chart:'Full mix chart',noFix:'No Fixativ — use it straight from the tin',hint:'colour : clear stuff',exact:'Spot on',off:'out',colourPct:'colour'},
+  zh:{modeTotal:'我需要的总量',modeHave:'我已有的 Lasur',step2have:'你有多少 Lasur？',step2hint:'需要调配的总量',easyPour:'取整到方便量取的量（50 毫升）',actual:'实际比例',print:'打印配比单',pickFirst:'选择比例和用量即可查看配比',roleLasur:'颜色',roleFix:'透明稀释剂',chart:'完整配比表',noFix:'无需 Fixativ — 直接使用',hint:'颜色 : 透明稀释剂',exact:'比例准确',off:'偏差',colourPct:'颜色'},
+  fa:{modeTotal:'مقدار کل لازم',modeHave:'Lasur که دارم',step2have:'چقدر Lasur دارید؟',step2hint:'مقدار کل مخلوط لازم',easyPour:'گرد کردن به مقادیر ساده (۵۰ میلی‌لیتر)',actual:'نسبت واقعی',print:'چاپ برگه ترکیب',pickFirst:'یک نسبت و یک مقدار انتخاب کنید',roleLasur:'رنگ',roleFix:'رقیق‌کننده شفاف',chart:'جدول کامل ترکیب',noFix:'بدون Fixativ — مستقیم استفاده کنید',hint:'رنگ : رقیق‌کننده شفاف',exact:'نسبت دقیق',off:'اختلاف',colourPct:'رنگ'},
+  da:{modeTotal:'مقدار مجموعی لازم',modeHave:'Lasur که دارم',step2have:'چقدر Lasur دارید؟',step2hint:'مقدار مجموعی مخلوط لازم',easyPour:'گرد کردن به مقدارهای ساده (۵۰ ملی‌لیتر)',actual:'نسبت اصلی',print:'چاپ ورق ترکیب',pickFirst:'یک نسبت و یک مقدار را انتخاب کنید',roleLasur:'رنگ',roleFix:'رقیق‌کننده شفاف',chart:'جدول کامل ترکیب',noFix:'بدون Fixativ — مستقیم استفاده کنید',hint:'رنگ : رقیق‌کننده شفاف',exact:'نسبت دقیق',off:'تفاوت',colourPct:'رنگ'},
+  hr:{modeTotal:'Ukupno trebam',modeHave:'Imam Lasura',step2have:'Koliko Lasura imate?',step2hint:'Ukupna količina mješavine',easyPour:'Zaokruži na lake količine (50 ml)',actual:'Stvarni omjer',print:'Ispiši list miješanja',pickFirst:'Odaberite omjer i količinu',roleLasur:'boja',roleFix:'bistro razrjeđivalo',chart:'Cijela tablica miješanja',noFix:'Bez Fixativa — koristiti nerazrijeđeno',hint:'boja : bistro razrjeđivalo',exact:'Točan omjer',off:'odstupanje',colourPct:'boja'},
+  ar:{modeTotal:'الكمية الإجمالية المطلوبة',modeHave:'لدي Lasur',step2have:'كم لديك من Lasur؟',step2hint:'إجمالي كمية الخليط المطلوبة',easyPour:'تقريب لكميات سهلة (50 مل)',actual:'النسبة الفعلية',print:'طباعة ورقة الخلط',pickFirst:'اختر النسبة والكمية لرؤية الخليط',roleLasur:'اللون',roleFix:'مخفف شفاف',chart:'جدول الخلط الكامل',noFix:'بدون Fixativ — يُستخدم مباشرة',hint:'اللون : مخفف شفاف',exact:'نسبة دقيقة',off:'انحراف',colourPct:'لون'},
+  pl:{modeTotal:'Potrzebuję łącznie',modeHave:'Mam Lasur',step2have:'Ile masz Lasuru?',step2hint:'Łączna ilość mieszanki',easyPour:'Zaokrąglij do łatwych ilości (50 ml)',actual:'Rzeczywista proporcja',print:'Drukuj kartę mieszania',pickFirst:'Wybierz proporcję i ilość',roleLasur:'kolor',roleFix:'bezbarwny rozcieńczalnik',chart:'Pełna tabela mieszania',noFix:'Bez Fixativu — stosować bez rozcieńczania',hint:'kolor : bezbarwny rozcieńczalnik',exact:'Dokładna proporcja',off:'odchyłka',colourPct:'koloru'},
+  de:{modeTotal:'Gesamtmenge',modeHave:'Lasur vorhanden',step2have:'Wie viel Lasur haben Sie?',step2hint:'Benötigte Gesamtmenge der Mischung',easyPour:'Auf einfache Mengen runden (50 ml)',actual:'Tatsächliches Verhältnis',print:'Mischblatt drucken',pickFirst:'Verhältnis und Menge wählen',roleLasur:'Farbe',roleFix:'klares Verdünnungsmittel',chart:'Komplette Mischtabelle',noFix:'Kein Fixativ — unverdünnt verwenden',hint:'Farbe : klares Verdünnungsmittel',exact:'Genaues Verhältnis',off:'Abweichung',colourPct:'Farbe'},
+  fr:{modeTotal:'Quantité totale',modeHave:"J'ai du Lasur",step2have:'Combien de Lasur avez-vous ?',step2hint:'Quantité totale de mélange',easyPour:'Arrondir à des quantités simples (50 ml)',actual:'Ratio réel',print:'Imprimer la fiche de mélange',pickFirst:'Choisissez un ratio et une quantité',roleLasur:'couleur',roleFix:'diluant incolore',chart:'Tableau de mélange complet',noFix:'Sans Fixativ — utiliser pur',hint:'couleur : diluant incolore',exact:'Ratio exact',off:'écart',colourPct:'couleur'},
+  it:{modeTotal:'Totale necessario',modeHave:'Ho del Lasur',step2have:'Quanto Lasur hai?',step2hint:'Quantità totale di miscela',easyPour:'Arrotonda a quantità facili (50 ml)',actual:'Rapporto effettivo',print:'Stampa scheda miscela',pickFirst:'Scegli rapporto e quantità',roleLasur:'colore',roleFix:'diluente trasparente',chart:'Tabella miscela completa',noFix:'Senza Fixativ — usare puro',hint:'colore : diluente trasparente',exact:'Rapporto esatto',off:'scarto',colourPct:'colore'},
+  es:{modeTotal:'Total que necesito',modeHave:'Tengo Lasur',step2have:'¿Cuánto Lasur tienes?',step2hint:'Cantidad total de mezcla',easyPour:'Redondear a cantidades fáciles (50 ml)',actual:'Proporción real',print:'Imprimir hoja de mezcla',pickFirst:'Elige proporción y cantidad',roleLasur:'color',roleFix:'diluyente transparente',chart:'Tabla de mezcla completa',noFix:'Sin Fixativ — usar puro',hint:'color : diluyente transparente',exact:'Proporción exacta',off:'desviación',colourPct:'color'}
+};
+for (const k in T2) Object.assign(T[k], T2[k]);
 
-    // Numeral maps: Persian/Dari use ۰-۹, Arabic uses ٠-٩
-    const numeralMaps = {
-        fa: '\u06f0\u06f1\u06f2\u06f3\u06f4\u06f5\u06f6\u06f7\u06f8\u06f9',
-        da: '\u06f0\u06f1\u06f2\u06f3\u06f4\u06f5\u06f6\u06f7\u06f8\u06f9',
-        ar: '\u0660\u0661\u0662\u0663\u0664\u0665\u0666\u0667\u0668\u0669',
-    };
-    function localNum(str) {
-        const map = numeralMaps[curLang];
-        if (!map) return String(str);
-        return String(str).replace(/[0-9]/g, d => map[parseInt(d)]);
-    }
+// ===== Aussie Slang: cleaned up (fixed 3:2 description, dropped insults/odd terms) =====
+Object.assign(T.slang, {
+  headerSub:"Mixin' Guide", step1:'Pick yer ratio', step2:'How much ya after?', step3:'Tip this in the bucket',
+  solid:'FULL COLOUR', transparent:'SEE-THROUGH', customRatio:'Or punch in yer own ratio', customVol:'Or punch in yer own amount',
+  total:'all up', beforeStart:'Righto — before ya start', refTitle:'Cheat sheet', thLook:'Look',
+  rules:[
+    {i:'🚫', t:'<span class="rule-danger">NO WATER — only ever thin it with Fixativ</span>'},
+    {i:'🧪', t:'<strong>Test patch first</strong> — let it dry proper before ya judge the colour'},
+    {i:'🔄', t:'<strong>Give it a stir every 10–15 min</strong> — the pigment sinks to the bottom'},
+    {i:'🔩', t:'<strong>Drill mixer, 2 minutes minimum</strong> — not a stirring stick'},
+    {i:'🖌️', t:'<strong>Keep a wet edge</strong> — don’t knock off halfway across a wall'},
+    {i:'📦', t:'<strong>Only mix what ya need for the day</strong> — no batching ahead'},
+    {i:'🧱', t:'<strong>Mineral surfaces only</strong> — bare concrete, render, masonry. Not gyprock, timber, metal or anything already painted'},
+    {i:'✂️', t:'<strong>Cross-hatch it</strong> — criss-cross for an even finish'},
+    {i:'🌡️', t:'<strong>5°C – 30°C only</strong> — no blazing sun, frost, rain or howling wind'},
+    {i:'⏳', t:'<strong>12 hours between coats</strong> — longer if it’s cold or muggy'},
+    {i:'💧', t:'<strong>Thirsty concrete?</strong> Give it a light mist of water first'}
+  ],
+  descs:['Full colour','Near enough solid','Heaps of colour','Solid as','Strong stuff','Good coverage','Grain peekin’ through','Colour + grain','Bit more colour','Half and half','More clear','Light wash','Gentle tint','Soft veil','Real light','Just a hint','Barely there','Ghost coat']
+});
 
-    function t(key) { return (T[curLang] && T[curLang][key]) || T.en[key]; }
-    function desc(i) { return (T[curLang] && T[curLang].descs && T[curLang].descs[i]) || T.en.descs[i]; }
+// ===== Data =====
+const RATIOS = [[1,0],[10,1],[8,1],[6,1],[5,1],[4,1],[3,1],[2,1],[3,2],[1,1],[2,3],[1,2],[1,3],[1,4],[1,5],[1,6],[1,8],[1,10]];
+const VOL_TOTAL = [0.5,1,2,5,10,15,20,30];
+const VOL_HAVE  = [0.5,1,2,5,10,15,20,30];
+const CHART_VOLS = [1,2,5,10,15,20,30,50];
+const LANGS = ['en','slang','zh','fa','da','hr','ar','pl','de','fr','it','es'];
+const NUMS = {fa:'۰۱۲۳۴۵۶۷۸۹', da:'۰۱۲۳۴۵۶۷۸۹', ar:'٠١٢٣٤٥٦٧٨٩'};
 
-    function setLang(lang) {
-        curLang = lang;
-        try { localStorage.setItem('lasur-lang', lang); } catch(e) {}
-        const isRtl = T[lang] && T[lang].rtl;
-        document.documentElement.setAttribute('dir', isRtl ? 'rtl' : 'ltr');
-        document.documentElement.setAttribute('lang', lang === 'slang' ? 'en-AU' : lang);
-        applyTranslations();
-        buildLangDropdown();
-        buildR(); buildV();
-        document.getElementById('langDropdown').classList.remove('open');
-        document.getElementById('langFlag').innerHTML = '<span class="fi fi-' + T[lang].flag + '"></span>';
-        document.getElementById('langNameShort').textContent = T[lang].name;
-    }
+// ===== State =====
+const S = { r:null, custom:false, mode:'total', v:null, unit:'L', easy:false };
+let lang = 'en';
+try { lang = localStorage.getItem('lasur-lang') || 'en'; } catch(e){}
+if (!T[lang]) lang = 'en';
 
-    function applyTranslations() {
-        document.getElementById('headerSub').textContent = t('headerSub');
-        document.getElementById('step1Title').textContent = t('step1');
-        document.getElementById('step2Title').textContent = t('step2');
-        document.getElementById('step3Title').textContent = t('step3');
-        document.getElementById('specSolid').textContent = '\u25a0 ' + t('solid');
-        document.getElementById('specTrans').textContent = t('transparent') + ' \u25a0';
-        document.getElementById('customRatioLabel').textContent = t('customRatio');
-        document.getElementById('customVolLabel').textContent = t('customVol');
-        document.getElementById('lblColour').textContent = t('colour');
-        document.getElementById('lblClear').textContent = t('clear');
-        document.getElementById('lblSamples').textContent = t('samples');
-        document.getElementById('lblBuckets').textContent = t('buckets');
-        document.getElementById('tagColour').textContent = t('colour').toUpperCase();
-        document.getElementById('tagClear').textContent = t('clear').toUpperCase();
-        document.getElementById('tagMixed').textContent = t('mixed');
-        document.getElementById('tagReady').textContent = t('ready');
-        document.getElementById('mixArrow').textContent = t('mixInto');
-        document.getElementById('lblTotal').textContent = t('total');
-        document.getElementById('barLblColour').textContent = t('colour');
-        document.getElementById('barLblClear').textContent = t('clear');
-        document.getElementById('adjTitle').textContent = t('adjust');
-        document.getElementById('roundBtn').textContent = t('round');
-        document.getElementById('resetBtn').textContent = t('reset');
-        document.getElementById('adjTotalLabel').textContent = t('adjTotal');
-        document.getElementById('adjLblP').textContent = t('colour');
-        document.getElementById('adjLblD').textContent = t('clear');
-        document.getElementById('footerText').textContent = t('footer');
-        document.getElementById('downloadPdfLabel').textContent = t('downloadPdf');
-        // Rules & Reference table
-        buildRules();
-        buildRefTable();
-        document.getElementById('downloadChartLabel').textContent = t('downloadChart');
-    }
+const $ = id => document.getElementById(id);
+const t = k => (T[lang] && T[lang][k] !== undefined ? T[lang][k] : T.en[k]);
+const desc = i => ((T[lang].descs||[])[i]) || T.en.descs[i];
+const ln = s => { const m = NUMS[lang]; return m ? String(s).replace(/[0-9]/g, d => m[d]) : String(s); };
+const pct = (p,d) => Math.round(p / (p + d) * 100);
 
-    function buildRules() {
-        const rules = t('rules');
-        const card = document.getElementById('rulesCard');
-        card.innerHTML = `
-            <div class="rules-header">
-                <span style="font-size:15px">\u26a0\ufe0f</span>
-                <p class="rules-header-text">${t('beforeStart')}</p>
-            </div>
-            <div class="rules-body">
-                ${rules.map(r => `<div class="rule"><span class="rule-icon">${r.i}</span><span>${r.t}</span></div>`).join('')}
-            </div>
-        `;
-    }
+// ===== Number formatting =====
+// Below 1 L show ml; otherwise litres, max 2 decimals, trailing zeros trimmed.
+function fmt(L){
+  if (L <= 0) return '0';
+  if (L < 1) return ln(Math.round(L*1000)) + '<u>ml</u>';
+  return ln(+L.toFixed(2)) + '<u>L</u>';
+}
+function fmtPlain(L){
+  if (L <= 0) return '—';
+  if (L < 1) return Math.round(L*1000) + ' ml';
+  return (+L.toFixed(2)) + ' L';
+}
+// "7 L + 140 ml" – easy to measure with a bucket + jug
+function jugHelp(L){
+  if (L < 1) return '';
+  const whole = Math.floor(L + 1e-9), ml = Math.round((L - whole) * 1000);
+  if (ml === 0 || ml === 1000) return '';
+  return '= ' + ln(whole) + ' L + ' + ln(ml) + ' ml';
+}
 
-    function buildRefTable() {
-        document.getElementById('refTitle').textContent = t('refTitle');
-        buildFullChart();
-    }
+// ===== Core maths =====
+// Ratio is always Lasur : Fixativ = p : d
+function compute(){
+  const r = S.r, v = S.v;
+  if (!r || !v || v <= 0) return null;
+  const [p, d] = r;
+  let L, F;
+  if (S.mode === 'total') { L = v * p / (p + d); F = v * d / (p + d); }
+  else { L = v; F = v * d / p; }
+  const step = S.easy ? 0.05 : 0.01;
+  let Lr, Fr;
+  if (S.mode === 'have') {
+    Lr = L;                                     // they already have this — never change it
+    Fr = Math.round(F / step) * step;
+  } else if (S.easy) {
+    // Round Lasur, then derive Fixativ from the *rounded* Lasur so the ratio stays true
+    Lr = Math.max(step, Math.round(L / step) * step);
+    Fr = Math.round((Lr * d / p) / step) * step;
+  } else {
+    Lr = Math.round(L / step) * step;
+    Fr = Math.round(F / step) * step;
+  }
+  if (d > 0 && F > 0 && Fr === 0) Fr = step;
+  // Accuracy check on what is actually poured
+  const target = d / p, actual = Lr > 0 ? Fr / Lr : 0;
+  const err = target > 0 ? Math.abs(actual - target) / target * 100 : 0;
+  return { L:Lr, F:Fr, T:Lr + Fr, p, d, err, actual };
+}
 
-    // Full chart data: 18 ratios
-    const fullChartRows = [
-        [1,0,100,'1:0',0],[10,1,91,'10:1',1],[8,1,89,'8:1',2],[6,1,86,'6:1',3],
-        [5,1,83,'5:1',4],[4,1,80,'4:1',5],[3,1,75,'3:1',6],[2,1,67,'2:1',7],
-        [3,2,60,'3:2',8],[1,1,50,'1:1',9],[2,3,40,'2:3',10],[1,2,33,'1:2',11],
-        [1,3,25,'1:3',12],[1,4,20,'1:4',13],[1,5,17,'1:5',14],[1,6,14,'1:6',15],
-        [1,8,11,'1:8',16],[1,10,9,'1:10',17],
-    ];
-    const chartVolumes = [1, 2, 5, 10, 15, 20, 25, 30, 40, 50];
+// ===== Rendering =====
+function swatch(p,d){
+  // concrete base -> slate as the colour share rises
+  const a = p/(p+d), b=[205,199,190], s=[62,72,82];
+  const c = b.map((x,i)=>Math.round(x+(s[i]-x)*a));
+  return `rgb(${c.join(',')})`;
+}
+function rLabel(p,d){ return ln(+p.toFixed(2)) + ' : ' + ln(+d.toFixed(2)); }
 
-    function fmtVolHtml(litres) {
-        if (litres === 0) return '\u2014';
-        if (litres < 1) return localNum(Math.round(litres * 1000) + '') + '<span style="font-size:7px;opacity:0.6">ml</span>';
-        var v = litres;
-        if (v === Math.floor(v)) return localNum(v + '') + '<span style="font-size:7px;opacity:0.6">L</span>';
-        var s = v.toFixed(1);
-        if (s.endsWith('.0')) s = v.toFixed(0);
-        return localNum(s) + '<span style="font-size:7px;opacity:0.6">L</span>';
-    }
+function buildTiles(){
+  const el = $('tiles'); el.innerHTML = '';
+  RATIOS.forEach(([p,d], i) => {
+    const b = document.createElement('button');
+    const on = !S.custom && S.r && S.r[0]===p && S.r[1]===d;
+    b.className = 'tile' + (on ? ' on' : '');
+    b.setAttribute('aria-pressed', on);
+    b.innerHTML = `<div class="sw" style="background:${swatch(p,d)}"></div><div class="r">${rLabel(p,d)}</div><div class="d">${desc(i)}</div>`;
+    b.onclick = () => { S.r=[p,d]; S.custom=false; $('cP').value=''; $('cD').value=''; render(true); };
+    el.appendChild(b);
+  });
+  $('customBox').classList.toggle('on', S.custom);
+}
 
-    function buildFullChart() {
-        var fc = document.getElementById('fullChart');
-        // Header row 1: volume groups
-        var h1 = '<tr><th rowspan="2" style="text-align:left;padding-left:8px">' + t('thRatio') + '</th>';
-        h1 += '<th rowspan="2"></th>';
-        h1 += '<th rowspan="2" class="fc-pct">' + t('thPct') + '</th>';
-        h1 += '<th rowspan="2" style="text-align:left">' + t('thLook') + '</th>';
-        chartVolumes.forEach(function(v) {
-            h1 += '<th colspan="2" class="vol-hdr">' + localNum(v + '') + 'L</th>';
-        });
-        h1 += '</tr>';
-        // Header row 2: Pigment / Fixative sub-labels
-        var h2 = '<tr>';
-        chartVolumes.forEach(function() {
-            h2 += '<th class="sub-hdr sub-pig">' + t('colour') + '</th>';
-            h2 += '<th class="sub-hdr sub-fix">' + t('clear') + '</th>';
-        });
-        h2 += '</tr>';
+function buildVols(){
+  const el = $('vols'); el.innerHTML = '';
+  (S.mode==='total' ? VOL_TOTAL : VOL_HAVE).forEach(v => {
+    const b = document.createElement('button');
+    const on = $('cV').value==='' && S.v===v;
+    b.className = 'vol' + (on ? ' on' : '');
+    b.innerHTML = v < 1 ? ln(v*1000)+' ml' : ln(v)+' L';
+    b.onclick = () => { S.v=v; $('cV').value=''; render(true); };
+    el.appendChild(b);
+  });
+}
 
-        // Data rows
-        var body = '';
-        fullChartRows.forEach(function(r) {
-            var pp = r[0], dp = r[1], pct = r[2], label = r[3], lookIdx = r[4];
-            body += '<tr>';
-            body += '<td class="fc-ratio left-sticky">' + localNum(label) + '</td>';
-            body += '<td class="fc-bar-cell left-sticky" style="left:44px"><div class="fc-bar" style="width:' + Math.max(pct * 0.32, 2) + 'px"></div></td>';
-            body += '<td class="fc-pct">' + localNum(pct + '%') + '</td>';
-            body += '<td class="fc-look">' + desc(lookIdx) + '</td>';
-            chartVolumes.forEach(function(vol) {
-                var pigL = vol * pp / (pp + dp);
-                var fixL = vol * dp / (pp + dp);
-                body += '<td class="fc-pig">' + fmtVolHtml(pigL) + '</td>';
-                body += '<td class="fc-fix">' + fmtVolHtml(fixL) + '</td>';
-            });
-            body += '</tr>';
-        });
+function render(scroll){
+  buildTiles(); buildVols();
+  $('mTotal').classList.toggle('on', S.mode==='total');
+  $('mHave').classList.toggle('on', S.mode==='have');
+  $('tStep2Hint').textContent = S.mode==='total' ? t('step2hint') : t('step2have');
+  $('easyBtn').classList.toggle('on', S.easy);
+  $('easyBtn').setAttribute('aria-pressed', S.easy);
+  buildChart();
 
-        fc.innerHTML = '<thead>' + h1 + h2 + '</thead><tbody>' + body + '</tbody>';
-    }
+  const res = compute();
+  $('empty').hidden = !!res; $('result').hidden = !res;
+  if (!res) { $('empty').textContent = t('pickFirst'); return; }
 
-    function buildLangDropdown() {
-        const dd = document.getElementById('langDropdown');
-        dd.innerHTML = '';
-        langOrder.forEach(code => {
-            const lang = T[code];
-            const btn = document.createElement('button');
-            btn.className = 'lang-option' + (code === curLang ? ' active' : '');
-            btn.innerHTML = `<span class="lang-flag"><span class="fi fi-${lang.flag}"></span></span> ${lang.name}`;
-            btn.onclick = (e) => { e.stopPropagation(); setLang(code); };
-            dd.appendChild(btn);
-        });
-    }
+  $('aL').innerHTML = fmt(res.L);
+  $('jL').textContent = jugHelp(res.L);
+  if (res.d === 0) {
+    $('aF').innerHTML = '0'; $('jF').textContent = t('noFix');
+  } else {
+    $('aF').innerHTML = fmt(res.F); $('jF').textContent = jugHelp(res.F);
+  }
+  $('aT').innerHTML = '= ' + fmt(res.T).replace(/<\/?u>/g,' ') + ' ' + t('total');
+  $('aR').innerHTML = `<b dir="ltr" style="unicode-bidi:isolate">${rLabel(res.p,res.d)}</b> · ${ln(pct(res.p,res.d))}% ${t('colourPct')}`;
 
-    function toggleLang() {
-        const dd = document.getElementById('langDropdown');
-        dd.classList.toggle('open');
-    }
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.lang-wrap')) {
-            document.getElementById('langDropdown').classList.remove('open');
-        }
+  // Jug: Lasur at the bottom, Fixativ on top
+  const H = 146, top = 20, frac = res.T>0 ? res.L/res.T : 0;
+  const hL = Math.max(res.L>0?4:0, H*frac), hF = H - hL;
+  $('jugL').setAttribute('y', 166-hL); $('jugL').setAttribute('height', hL);
+  $('jugF').setAttribute('y', top); $('jugF').setAttribute('height', hF);
+
+  // Ratio accuracy note (only when rounding is involved)
+  const n = $('note');
+  if (res.d > 0 && (S.easy || S.mode==='have')) {
+    n.hidden = false;
+    const actualTxt = '1 : ' + ln(+res.actual.toFixed(2));
+    if (res.err < 1) { n.className='note ok'; n.textContent = '✓ ' + t('exact') + ' (' + actualTxt + ')'; }
+    else { n.className='note warn'; n.textContent = '⚠ ' + t('actual') + ' ' + actualTxt + ' — ' + ln(res.err.toFixed(1)) + '% ' + t('off'); }
+  } else n.hidden = true;
+
+  if (scroll && window.innerWidth < 900) setTimeout(()=>$('s3').scrollIntoView({behavior:'smooth', block:'start'}), 60);
+}
+
+function buildChart(){
+  let h = '<thead><tr><th class="rl">' + (t('thRatio')) + '</th>' + CHART_VOLS.map(v=>`<th>${v} L</th>`).join('') + '</tr></thead><tbody>';
+  RATIOS.forEach(([p,d]) => {
+    const on = S.r && S.r[0]===p && S.r[1]===d;
+    h += `<tr class="${on?'on':''}"><th class="rl">${p} : ${d}</th>`;
+    CHART_VOLS.forEach(v => {
+      const L = Math.round(v*p/(p+d)*100)/100, F = Math.round((v - v*p/(p+d))*100)/100;
+      h += `<td><span class="a">${fmtPlain(L)}</span><span class="b">${d?fmtPlain(F):'—'}</span></td>`;
     });
-
-    // ============ DATA ============
-    const ratios = [
-        { p:1,  d:0,  label:'1 : 0',  pct:100 },
-        { p:10, d:1,  label:'10 : 1', pct:91  },
-        { p:8,  d:1,  label:'8 : 1',  pct:89  },
-        { p:6,  d:1,  label:'6 : 1',  pct:86  },
-        { p:5,  d:1,  label:'5 : 1',  pct:83  },
-        { p:4,  d:1,  label:'4 : 1',  pct:80  },
-        { p:3,  d:1,  label:'3 : 1',  pct:75  },
-        { p:2,  d:1,  label:'2 : 1',  pct:67  },
-        { p:3,  d:2,  label:'3 : 2',  pct:60  },
-        { p:1,  d:1,  label:'1 : 1',  pct:50  },
-        { p:2,  d:3,  label:'2 : 3',  pct:40  },
-        { p:1,  d:2,  label:'1 : 2',  pct:33  },
-        { p:1,  d:3,  label:'1 : 3',  pct:25  },
-        { p:1,  d:4,  label:'1 : 4',  pct:20  },
-        { p:1,  d:5,  label:'1 : 5',  pct:17  },
-        { p:1,  d:6,  label:'1 : 6',  pct:14  },
-        { p:1,  d:8,  label:'1 : 8',  pct:11  },
-        { p:1,  d:10, label:'1 : 10', pct:9   },
-    ];
-
-    const volumes = [
-        { val:0.25, label:'250ml', sample:true },
-        { val:1,    label:'1L',    sample:true },
-        { val:5,    label:'5L' },  { val:10,  label:'10L' },
-        { val:15,   label:'15L' }, { val:20,  label:'20L' },
-        { val:25,   label:'25L' }, { val:30,  label:'30L' },
-        { val:40,   label:'40L' }, { val:50,  label:'50L' },
-        { val:60,   label:'60L' }, { val:75,  label:'75L' },
-        { val:80,   label:'80L' }, { val:100, label:'100L' },
-        { val:120,  label:'120L' },{ val:150, label:'150L' },
-        { val:175,  label:'175L' },{ val:200, label:'200L' },
-    ];
-
-    let selR = null, selV = null, customUnit = 'L';
-    let basePig = 0, baseDil = 0, adjPig = 0, adjDil = 0;
-
-    const customP = document.getElementById('customP');
-    const customD = document.getElementById('customD');
-    const customVolInput = document.getElementById('customVol');
-
-    function onCustomRatio() {
-        const p = parseFloat(customP.value), d = parseFloat(customD.value);
-        if (p >= 0 && d >= 0 && (p + d) > 0 && customP.value !== '' && customD.value !== '') {
-            selR = { p, d, label: p + ' : ' + d, desc: 'Custom', pct: Math.round((p / (p + d)) * 100) };
-            refresh();
-        }
-    }
-    customP.addEventListener('input', onCustomRatio);
-    customD.addEventListener('input', onCustomRatio);
-    customP.addEventListener('focus', () => { selR = null; refresh(); });
-    customD.addEventListener('focus', () => { selR = null; refresh(); });
-
-    function setCustomUnit(u) {
-        customUnit = u;
-        document.getElementById('unitML').classList.toggle('active', u === 'ml');
-        document.getElementById('unitL').classList.toggle('active', u === 'L');
-        onCustomVol();
-    }
-    function onCustomVol() {
-        const v = parseFloat(customVolInput.value);
-        if (v > 0) { selV = customUnit === 'ml' ? v / 1000 : v; refresh(); }
-    }
-    customVolInput.addEventListener('input', onCustomVol);
-    customVolInput.addEventListener('focus', () => { selV = null; refresh(); });
-
-    function buildR() {
-        const el = document.getElementById('ratioList'); el.innerHTML = '';
-        ratios.forEach((r, idx) => {
-            const on = selR && selR.label === r.label && selR.desc !== 'Custom';
-            const btn = document.createElement('button');
-            btn.className = 'ratio-btn' + (on ? ' active' : '');
-            btn.innerHTML = `
-                <div class="ratio-bar-track">
-                    <div class="ratio-bar-fill" style="width:${Math.max(r.pct,6)}%;background:${r.pct > 50 ? 'linear-gradient(90deg,#0d9488,#2dd4bf)' : 'linear-gradient(90deg,rgba(45,212,191,0.3),rgba(45,212,191,0.6))'}"></div>
-                </div>
-                <span class="ratio-pct" style="color:${on ? '#5eead4' : 'rgba(255,255,255,0.12)'}">${localNum(r.pct + '%')}</span>
-                <span class="ratio-label" style="color:${on ? '#5eead4' : 'rgba(255,255,255,0.35)'}">${localNum(r.label)}</span>
-                <span class="ratio-desc" style="color:${on ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.1)'}">${desc(idx)}</span>
-            `;
-            btn.onclick = () => { selR = r; customP.value = ''; customD.value = ''; refresh(); };
-            el.appendChild(btn);
-        });
-    }
-
-    function buildV() {
-        const sEl = document.getElementById('volSamples');
-        const gEl = document.getElementById('volGrid');
-        sEl.innerHTML = ''; gEl.innerHTML = '';
-        volumes.forEach(v => {
-            const on = selV === v.val && customVolInput.value === '';
-            const btn = document.createElement('button');
-            btn.className = 'vol-btn ' + (v.sample ? 'sample' : 'bucket') + (on ? ' active' : '');
-            btn.textContent = localNum(v.label);
-            btn.onclick = () => { selV = v.val; customVolInput.value = ''; refresh(); };
-            (v.sample ? sEl : gEl).appendChild(btn);
-        });
-    }
-
-    function setCup(fillId, shineId, pct) {
-        const h = Math.max(pct > 0 ? 8 : 0, pct * 0.88), y = 115 - h;
-        document.getElementById(fillId).setAttribute('y', y);
-        document.getElementById(fillId).setAttribute('height', h);
-        document.getElementById(shineId).setAttribute('y', y);
-    }
-
-    function setCupM(pct) {
-        const h = Math.max(pct > 0 ? 10 : 0, pct * 1.0);
-        const y = 130 - h;
-        document.getElementById('cupFillM').setAttribute('y', y);
-        document.getElementById('cupFillM').setAttribute('height', h);
-        document.getElementById('cupShineM').setAttribute('y', y);
-    }
-
-    function showResult(pig, dil, tot, useML) {
-        const litresWord = t('litres');
-        document.getElementById('resPig').textContent = localNum(useML ? Math.round(pig * 1000) : pig.toFixed(2));
-        document.getElementById('resDil').textContent = localNum(useML ? Math.round(dil * 1000) : dil.toFixed(2));
-        const u = useML ? localNum('ml') : litresWord;
-        document.getElementById('unitPig').textContent = u;
-        document.getElementById('unitDil').textContent = u;
-        const totStr = localNum(useML ? Math.round(tot * 1000) + 'ml' : tot.toFixed(2) + 'L');
-        document.getElementById('resTot').textContent = totStr;
-        document.getElementById('resTotAmount').textContent = localNum(useML ? Math.round(tot * 1000) : tot.toFixed(2));
-        document.getElementById('resTotUnit').textContent = u;
-
-        const mx = Math.max(pig, dil, 0.001);
-        setCup('cupFillP', 'cupShineP', Math.max((pig / mx) * 100, pig > 0 ? 8 : 0));
-        setCup('cupFillD', 'cupShineD', Math.max((dil / mx) * 100, dil > 0 ? 8 : 0));
-        setCupM(95);
-
-        const pigPct = tot > 0 ? pig / tot : 0.5;
-        const r1 = Math.round(45 + (168-45) * (1-pigPct));
-        const g1 = Math.round(212 + (162-212) * (1-pigPct));
-        const b1 = Math.round(191 + (158-191) * (1-pigPct));
-        const r2 = Math.round(13 + (120-13) * (1-pigPct));
-        const g2 = Math.round(148 + (113-148) * (1-pigPct));
-        const b2 = Math.round(136 + (108-136) * (1-pigPct));
-        document.getElementById('gradMStop1').setAttribute('stop-color', `rgb(${r1},${g1},${b1})`);
-        document.getElementById('gradMStop2').setAttribute('stop-color', `rgb(${r2},${g2},${b2})`);
-    }
-
-    function refresh() {
-        buildR(); buildV();
-        const a = document.getElementById('answer');
-        if (!selR || !selV) { a.style.display = 'none'; return; }
-        a.style.display = 'block';
-
-        const parts = selR.p + selR.d;
-        const pigL = parts > 0 ? (selV / parts) * selR.p : selV;
-        const dilL = parts > 0 ? (selV / parts) * selR.d : 0;
-        const useML = selV < 2;
-
-        showResult(pigL, dilL, selV, useML);
-        setupSliders(pigL, dilL, useML);
-
-        document.getElementById('barPig').style.width = Math.max(selR.pct, 3) + '%';
-        document.getElementById('barDil').style.width = Math.max(100 - selR.pct, 3) + '%';
-        document.getElementById('ratioLabel').textContent = localNum(selR.label);
-
-        const card = document.getElementById('resultCard');
-        card.style.animation = 'none'; void card.offsetWidth;
-        card.style.animation = 'popIn 0.35s cubic-bezier(0.34,1.56,0.64,1)';
-        setTimeout(() => a.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
-    }
-
-    // ============ ADJUSTMENT SLIDERS ============
-    function setupSliders(pig, dil, useML) {
-        basePig = pig; baseDil = dil; adjPig = pig; adjDil = dil;
-        const wrap = document.getElementById('adjustWrap');
-        if ((pig + dil) < 0.5) { wrap.style.display = 'none'; return; }
-        wrap.style.display = 'block';
-
-        const sP = document.getElementById('sldP'), sD = document.getElementById('sldD');
-        const pMin = Math.max(0, pig * 0.5), pMax = Math.min(pig + dil, pig * 1.5);
-        const dMin = Math.max(0, dil * 0.5), dMax = Math.min(pig + dil, dil * 1.5);
-
-        if (useML) {
-            sP.min = Math.round(pMin*1000); sP.max = Math.round(pMax*1000); sP.step = 1; sP.value = Math.round(pig*1000);
-            sD.min = Math.round(dMin*1000); sD.max = Math.round(dMax*1000); sD.step = 1; sD.value = Math.round(dil*1000);
-        } else {
-            sP.min = pMin.toFixed(2); sP.max = pMax.toFixed(2); sP.step = 0.01; sP.value = pig.toFixed(2);
-            sD.min = dMin.toFixed(2); sD.max = dMax.toFixed(2); sD.step = 0.01; sD.value = dil.toFixed(2);
-        }
-
-        document.getElementById('adjRowP').style.display = pig > 0 ? 'flex' : 'none';
-        document.getElementById('adjRowD').style.display = dil > 0 ? 'flex' : 'none';
-        updSliderUI(useML);
-        document.getElementById('roundBtn').classList.add('vis');
-        document.getElementById('resetBtn').classList.remove('vis');
-    }
-
-    function onSldP(v) {
-        const useML = (basePig + baseDil) < 2;
-        adjPig = useML ? parseFloat(v) / 1000 : parseFloat(v);
-        if (selR && selR.p > 0) adjDil = adjPig * (selR.d / selR.p);
-        document.getElementById('sldD').value = useML ? Math.round(adjDil*1000) : adjDil.toFixed(2);
-        updSliderUI(useML); showResult(adjPig, adjDil, adjPig + adjDil, useML);
-    }
-
-    function onSldD(v) {
-        const useML = (basePig + baseDil) < 2;
-        adjDil = useML ? parseFloat(v) / 1000 : parseFloat(v);
-        if (selR && selR.d > 0) adjPig = adjDil * (selR.p / selR.d);
-        document.getElementById('sldP').value = useML ? Math.round(adjPig*1000) : adjPig.toFixed(2);
-        updSliderUI(useML); showResult(adjPig, adjDil, adjPig + adjDil, useML);
-    }
-
-    function updSliderUI(useML) {
-        const u = useML ? 'ml' : 'L';
-        document.getElementById('avP').textContent = localNum(useML ? Math.round(adjPig*1000) : adjPig.toFixed(2));
-        document.getElementById('avD').textContent = localNum(useML ? Math.round(adjDil*1000) : adjDil.toFixed(2));
-        document.getElementById('auP').textContent = u;
-        document.getElementById('auD').textContent = u;
-        document.getElementById('adjTot').textContent = localNum(useML ? Math.round((adjPig+adjDil)*1000)+'ml' : (adjPig+adjDil).toFixed(2)+'L');
-        delta('adP', adjPig - basePig, useML);
-        delta('adD', adjDil - baseDil, useML);
-        document.getElementById('resetBtn').classList.toggle('vis', Math.abs(adjPig-basePig) > 0.001 || Math.abs(adjDil-baseDil) > 0.001);
-    }
-
-    function delta(id, diff, useML) {
-        const el = document.getElementById(id);
-        if (Math.abs(diff) < 0.001) { el.classList.remove('vis'); return; }
-        el.classList.add('vis');
-        const v = useML ? Math.round(diff*1000) : diff.toFixed(2);
-        el.textContent = localNum((diff > 0 ? '+' : '') + v + (useML ? 'ml' : 'L'));
-        el.classList.toggle('up', diff > 0); el.classList.toggle('dn', diff < 0);
-    }
-
-    function roundAdj() {
-        const useML = (basePig + baseDil) < 2;
-        if (useML) {
-            // ml mode: round to nearest 5ml
-            adjPig = Math.round((adjPig * 1000) / 5) * 5 / 1000;
-            adjDil = Math.round((adjDil * 1000) / 5) * 5 / 1000;
-        } else {
-            // Litres mode: round from 2 decimals to 1 decimal (e.g. 4.27 → 4.3)
-            adjPig = Math.round(adjPig * 10) / 10;
-            adjDil = Math.round(adjDil * 10) / 10;
-        }
-        // Clamp within slider range
-        const sP = document.getElementById('sldP'), sD = document.getElementById('sldD');
-        const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
-        if (useML) {
-            adjPig = clamp(adjPig, parseFloat(sP.min)/1000, parseFloat(sP.max)/1000);
-            adjDil = clamp(adjDil, parseFloat(sD.min)/1000, parseFloat(sD.max)/1000);
-            sP.value = Math.round(adjPig * 1000);
-            sD.value = Math.round(adjDil * 1000);
-        } else {
-            adjPig = clamp(adjPig, parseFloat(sP.min), parseFloat(sP.max));
-            adjDil = clamp(adjDil, parseFloat(sD.min), parseFloat(sD.max));
-            sP.value = adjPig.toFixed(2);
-            sD.value = adjDil.toFixed(2);
-        }
-        updSliderUI(useML);
-        showResult(adjPig, adjDil, adjPig + adjDil, useML);
-    }
-
-    function resetAdj() {
-        adjPig = basePig; adjDil = baseDil;
-        const useML = (basePig + baseDil) < 2;
-        document.getElementById('sldP').value = useML ? Math.round(basePig*1000) : basePig.toFixed(2);
-        document.getElementById('sldD').value = useML ? Math.round(baseDil*1000) : baseDil.toFixed(2);
-        updSliderUI(useML); showResult(basePig, baseDil, basePig + baseDil, useML);
-    }
-
-    // ============ LOAD jsPDF (CDN first, local fallback) ============
-    function loadJsPDF(callback) {
-        if (window.jspdf) { callback(); return; }
-        var cdns = [
-            'https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js',
-            'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js',
-            'https://unpkg.com/jspdf@2.5.2/dist/jspdf.umd.min.js'
-        ];
-        var i = 0;
-        function tryNext() {
-            if (i >= cdns.length) {
-                alert('Could not load PDF library. Check your internet connection.');
-                callback(true);
-                return;
-            }
-            var s = document.createElement('script');
-            s.src = cdns[i++];
-            s.onload = function() { if (window.jspdf) { callback(); } else { tryNext(); } };
-            s.onerror = tryNext;
-            document.head.appendChild(s);
-        }
-        tryNext();
-    }
-
-    // ============ CHART PDF DOWNLOAD ============
-    function downloadChartPDF() {
-        if (!window.jspdf) {
-            const btn = document.getElementById('downloadChartBtn');
-            btn.style.opacity = '0.5';
-            loadJsPDF(function(err) { btn.style.opacity = '1'; if (!err) generateChartPDF(); });
-            return;
-        }
-        generateChartPDF();
-    }
-
-    function generateChartPDF() {
-        try {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'landscape' });
-        const W = 297, H = 210;
-        const LM = 8, RM = 8;
-        const contentW = W - LM - RM;
-
-        // 18 chart ratios: [pigParts, dilParts, pct, ratioLabel, lookIndex]
-        const chartRows = [
-            [1, 0, 100, '1:0', 0],
-            [10, 1, 91, '10:1', 1],
-            [8, 1, 89, '8:1', 2],
-            [6, 1, 86, '6:1', 3],
-            [5, 1, 83, '5:1', 4],
-            [4, 1, 80, '4:1', 5],
-            [3, 1, 75, '3:1', 6],
-            [2, 1, 67, '2:1', 7],
-            [3, 2, 60, '3:2', 8],
-            [1, 1, 50, '1:1', 9],
-            [2, 3, 40, '2:3', 10],
-            [1, 2, 33, '1:2', 11],
-            [1, 3, 25, '1:3', 12],
-            [1, 4, 20, '1:4', 13],
-            [1, 5, 17, '1:5', 14],
-            [1, 6, 14, '1:6', 15],
-            [1, 8, 11, '1:8', 16],
-            [1, 10, 9, '1:10', 17],
-        ];
-        const volumes = [1, 2, 5, 10, 15, 20, 25, 30, 40, 50];
-
-        function fmtVol(litres) {
-            if (litres === 0) return '\u2014';
-            if (litres < 1) return Math.round(litres * 1000) + 'ml';
-            if (litres === Math.floor(litres)) return litres + 'L';
-            // Show 1 decimal
-            var s = litres.toFixed(1);
-            if (s.endsWith('.0')) return litres.toFixed(0) + 'L';
-            return s + 'L';
-        }
-
-        // White background
-        doc.setFillColor(255, 255, 255);
-        doc.rect(0, 0, W, H, 'F');
-
-        // Teal accent bar at top
-        doc.setFillColor(13, 148, 136);
-        doc.rect(0, 0, W, 3.5, 'F');
-
-        // ---- HEADER ----
-        var y = 13;
-        doc.setFontSize(18);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(30, 30, 30);
-        doc.text('KEIM Concretal-Lasur', LM, y);
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(100, 100, 100);
-        doc.text('Mixing Reference Chart', LM + 75, y);
-
-        // Right header
-        doc.setFontSize(7);
-        doc.setTextColor(120, 120, 120);
-        doc.text('How much Pigment (Concretal-Lasur) and Fixative (Concretal-Fixativ) for each total volume', W - RM, y - 4, { align: 'right' });
-        doc.setTextColor(13, 148, 136);
-        doc.text('keim.com.au', W - RM, y, { align: 'right' });
-
-        // ---- TABLE LAYOUT ----
-        var tableTop = 20;
-        var ratioColW = 22;
-        var pigPctColW = 24;
-        var lookColW = 32;
-        var leftColsW = ratioColW + pigPctColW + lookColW; // 78
-        var tableLeft = LM;
-        var volAreaW = contentW - leftColsW;
-        var volColW = volAreaW / volumes.length; // ~20.1mm each
-        var subColW = volColW / 2; // pigment and fixative sub-columns
-
-        // Header row 1: column group headers
-        var hdrY = tableTop;
-        var hdrH = 12;
-
-        // Header background
-        doc.setFillColor(245, 245, 245);
-        doc.rect(tableLeft, hdrY, contentW, hdrH, 'F');
-
-        // Left column headers
-        doc.setFontSize(6.5);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(80, 80, 80);
-        doc.text('RATIO', tableLeft + ratioColW / 2, hdrY + 5, { align: 'center' });
-        doc.text('PIGMENT', tableLeft + ratioColW + pigPctColW / 2, hdrY + 4, { align: 'center' });
-        doc.setFontSize(5.5);
-        doc.setTextColor(13, 148, 136);
-        doc.text('%', tableLeft + ratioColW + pigPctColW / 2, hdrY + 7.5, { align: 'center' });
-        doc.setFontSize(6.5);
-        doc.setTextColor(80, 80, 80);
-        doc.text('LOOK', tableLeft + ratioColW + pigPctColW + lookColW / 2, hdrY + 5, { align: 'center' });
-
-        // Volume column headers
-        for (var vi = 0; vi < volumes.length; vi++) {
-            var vx = tableLeft + leftColsW + vi * volColW;
-            doc.setFontSize(8);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(30, 30, 30);
-            doc.text(volumes[vi] + 'L', vx + volColW / 2, hdrY + 4, { align: 'center' });
-            doc.setFontSize(5);
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(140, 140, 140);
-            doc.text('total mix', vx + volColW / 2, hdrY + 7.5, { align: 'center' });
-        }
-
-        // Sub-header row: Pigment / Fixative labels
-        var subHdrY = hdrY + hdrH;
-        var subHdrH = 4.5;
-        doc.setFillColor(250, 250, 250);
-        doc.rect(tableLeft + leftColsW, subHdrY, volAreaW, subHdrH, 'F');
-
-        for (var vi = 0; vi < volumes.length; vi++) {
-            var vx = tableLeft + leftColsW + vi * volColW;
-            doc.setFontSize(4);
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(13, 148, 136);
-            doc.text('Pigment', vx + subColW / 2, subHdrY + 3, { align: 'center' });
-            doc.setTextColor(160, 160, 160);
-            doc.text('Fixative', vx + subColW + subColW / 2, subHdrY + 3, { align: 'center' });
-        }
-
-        // Header divider
-        doc.setDrawColor(13, 148, 136);
-        doc.setLineWidth(0.4);
-        doc.line(tableLeft, subHdrY + subHdrH, tableLeft + contentW, subHdrY + subHdrH);
-
-        // ---- DATA ROWS ----
-        var rowH = 7.5;
-        var dataStartY = subHdrY + subHdrH;
-
-        for (var ri = 0; ri < chartRows.length; ri++) {
-            var row = chartRows[ri];
-            var pp = row[0], dp = row[1], pct = row[2], ratioLabel = row[3], lookIdx = row[4];
-            var ry = dataStartY + ri * rowH;
-            var rowMidY = ry + rowH / 2 + 1.2;
-
-            // Alternate row background
-            if (ri % 2 === 0) {
-                doc.setFillColor(252, 252, 252);
-                doc.rect(tableLeft, ry, contentW, rowH, 'F');
-            }
-
-            // Ratio
-            doc.setFontSize(7.5);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(50, 50, 50);
-            doc.text(ratioLabel, tableLeft + ratioColW / 2, rowMidY, { align: 'center' });
-
-            // Pigment % with teal bar
-            var barMaxW = pigPctColW - 10;
-            var barW = Math.max(pct / 100 * barMaxW, 1.5);
-            var barX = tableLeft + ratioColW + 1.5;
-            var barY = ry + 2;
-            var barH = 3.5;
-            doc.setFillColor(13, 148, 136);
-            doc.roundedRect(barX, barY, barW, barH, 1.2, 1.2, 'F');
-
-            doc.setFontSize(6);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(13, 148, 136);
-            doc.text(pct + '%', tableLeft + ratioColW + pigPctColW - 2, rowMidY, { align: 'right' });
-
-            // Look description
-            doc.setFontSize(5.5);
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(120, 120, 120);
-            doc.text(desc(lookIdx), tableLeft + ratioColW + pigPctColW + 2, rowMidY);
-
-            // Volume cells
-            for (var vi = 0; vi < volumes.length; vi++) {
-                var totalVol = volumes[vi];
-                var pigLitres = totalVol * pp / (pp + dp);
-                var fixLitres = totalVol * dp / (pp + dp);
-                var vx = tableLeft + leftColsW + vi * volColW;
-
-                // Pigment value (bold teal)
-                doc.setFontSize(5.5);
-                doc.setFont('helvetica', 'bold');
-                doc.setTextColor(13, 148, 136);
-                var pigStr = fmtVol(pigLitres);
-                doc.text(pigStr, vx + subColW / 2, rowMidY, { align: 'center' });
-
-                // Fixative value (gray)
-                doc.setFont('helvetica', 'normal');
-                doc.setTextColor(150, 150, 150);
-                var fixStr = fmtVol(fixLitres);
-                doc.text(fixStr, vx + subColW + subColW / 2, rowMidY, { align: 'center' });
-            }
-
-            // Row separator
-            doc.setDrawColor(235, 235, 235);
-            doc.setLineWidth(0.1);
-            doc.line(tableLeft, ry + rowH, tableLeft + contentW, ry + rowH);
-        }
-
-        // Vertical column separators for volume columns
-        doc.setDrawColor(230, 230, 230);
-        doc.setLineWidth(0.15);
-        for (var vi = 0; vi <= volumes.length; vi++) {
-            var lx = tableLeft + leftColsW + vi * volColW;
-            doc.line(lx, tableTop, lx, dataStartY + chartRows.length * rowH);
-        }
-
-        // Left columns vertical separators
-        doc.line(tableLeft + ratioColW, tableTop, tableLeft + ratioColW, dataStartY + chartRows.length * rowH);
-        doc.line(tableLeft + ratioColW + pigPctColW, tableTop, tableLeft + ratioColW + pigPctColW, dataStartY + chartRows.length * rowH);
-        doc.line(tableLeft + leftColsW, tableTop, tableLeft + leftColsW, dataStartY + chartRows.length * rowH);
-
-        // Outer border
-        doc.setDrawColor(200, 200, 200);
-        doc.setLineWidth(0.3);
-        doc.rect(tableLeft, tableTop, contentW, subHdrH + hdrH + chartRows.length * rowH);
-
-        // ---- KEY RULES ----
-        var rulesY = dataStartY + chartRows.length * rowH + 5;
-        doc.setFontSize(7);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(30, 30, 30);
-        doc.text('KEY RULES:', LM, rulesY);
-        rulesY += 3;
-
-        var ruleTexts = [
-            ['NO WATER', 'Only dilute with Concretal-Fixativ, never water'],
-            ['TEST PATCH', 'Always test first \u2014 let it dry fully before judging colour'],
-            ['DRILL MIX', 'Use a mechanical paddle/drill mixer for at least 2 minutes'],
-            ['WET EDGE', "Don't stop mid-wall \u2014 keep a wet edge at all times"],
-            ['STIR', 'Pigment settles \u2014 re-stir the bucket every 10\u201315 min while working'],
-            ['TEMP', 'Apply between 5\u00b0C \u2013 30\u00b0C, no direct sun/frost/rain'],
-            ['DRY TIME', 'Wait at least 12 hours between coats'],
-            ['SUBSTRATES', 'Mineral only \u2014 concrete, render, masonry'],
-            ['CROSS-HATCH', 'Apply in alternating directions for even coverage'],
-            ['DAILY MIX', 'Only mix what you need for the day'],
-        ];
-
-        var colMid = W / 2;
-        var rulesPerCol = 5;
-        var ruleLineH = 3.8;
-
-        for (var ri = 0; ri < ruleTexts.length; ri++) {
-            var col = ri < rulesPerCol ? 0 : 1;
-            var row = ri < rulesPerCol ? ri : ri - rulesPerCol;
-            var rx = col === 0 ? LM + 2 : colMid + 2;
-            var rry = rulesY + row * ruleLineH;
-
-            doc.setFontSize(5);
-            doc.setFont('helvetica', 'bold');
-            doc.setTextColor(13, 148, 136);
-            doc.text(ruleTexts[ri][0], rx, rry);
-            doc.setFont('helvetica', 'normal');
-            doc.setTextColor(100, 100, 100);
-            var labelW = doc.getTextWidth(ruleTexts[ri][0]);
-            doc.text(ruleTexts[ri][1], rx + labelW + 1.5, rry);
-        }
-
-        // ---- FOOTER ----
-        var footY = H - 5;
-        doc.setDrawColor(200, 200, 200);
-        doc.setLineWidth(0.2);
-        doc.line(LM, footY - 2, W - RM, footY - 2);
-
-        doc.setFontSize(5);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(140, 140, 140);
-        doc.text('KEIM Australia  \u00b7  keim.com.au  \u00b7  Concretal-Lasur + Concretal-Fixativ', LM, footY);
-        doc.text('Pigment = Concretal-Lasur  \u00b7  Fixative = Concretal-Fixativ  \u00b7  All volumes are approximate', W - RM, footY, { align: 'right' });
-
-        doc.save('KEIM_Concretal-Lasur_Mixing_Chart.pdf');
-        } catch(e) {
-            alert('PDF error: ' + e.message);
-            console.error(e);
-        }
-    }
-
-    // ============ MIX SHEET PDF DOWNLOAD ============
-    function downloadMixPDF() {
-        if (!window.jspdf) {
-            const btn = document.getElementById('downloadPdfBtn');
-            btn.style.opacity = '0.5';
-            btn.style.pointerEvents = 'none';
-            document.getElementById('downloadPdfLabel').textContent = 'Loading...';
-            loadJsPDF(function(err) {
-                btn.style.opacity = '1';
-                btn.style.pointerEvents = 'auto';
-                document.getElementById('downloadPdfLabel').textContent = t('downloadPdf');
-                if (!err) generatePDF();
-            });
-            return;
-        }
-        generatePDF();
-    }
-
-    
-    // Arabic/Persian reshaper for jsPDF (converts logical to visual order)
-    function reshapeForPDF(text) {
-      // Map: base char codepoint -> [isolated, final] or [isolated, final, initial, medial]
-      var D = [
-        [0x627,0xFE8D,0xFE8E],[0x622,0xFE81,0xFE82],[0x623,0xFE83,0xFE84],
-        [0x625,0xFE87,0xFE88],[0x624,0xFE85,0xFE86],[0x629,0xFE93,0xFE94],
-        [0x62F,0xFEA9,0xFEAA],[0x630,0xFEAB,0xFEAC],
-        [0x631,0xFEAD,0xFEAE],[0x632,0xFEAF,0xFEB0],
-        [0x648,0xFEED,0xFEEE],[0x649,0xFEEF,0xFEF0],
-        [0x698,0xFB8A,0xFB8B],
-        [0x628,0xFE8F,0xFE90,0xFE91,0xFE92],[0x62A,0xFE95,0xFE96,0xFE97,0xFE98],
-        [0x62B,0xFE99,0xFE9A,0xFE9B,0xFE9C],[0x62C,0xFE9D,0xFE9E,0xFE9F,0xFEA0],
-        [0x62D,0xFEA1,0xFEA2,0xFEA3,0xFEA4],[0x62E,0xFEA5,0xFEA6,0xFEA7,0xFEA8],
-        [0x633,0xFEB1,0xFEB2,0xFEB3,0xFEB4],[0x634,0xFEB5,0xFEB6,0xFEB7,0xFEB8],
-        [0x635,0xFEB9,0xFEBA,0xFEBB,0xFEBC],[0x636,0xFEBD,0xFEBE,0xFEBF,0xFEC0],
-        [0x637,0xFEC1,0xFEC2,0xFEC3,0xFEC4],[0x638,0xFEC5,0xFEC6,0xFEC7,0xFEC8],
-        [0x639,0xFEC9,0xFECA,0xFECB,0xFECC],[0x63A,0xFECD,0xFECE,0xFECF,0xFED0],
-        [0x641,0xFED1,0xFED2,0xFED3,0xFED4],[0x642,0xFED5,0xFED6,0xFED7,0xFED8],
-        [0x643,0xFED9,0xFEDA,0xFEDB,0xFEDC],[0x644,0xFEDD,0xFEDE,0xFEDF,0xFEE0],
-        [0x645,0xFEE1,0xFEE2,0xFEE3,0xFEE4],[0x646,0xFEE5,0xFEE6,0xFEE7,0xFEE8],
-        [0x647,0xFEE9,0xFEEA,0xFEEB,0xFEEC],[0x64A,0xFEF1,0xFEF2,0xFEF3,0xFEF4],
-        [0x626,0xFE89,0xFE8A,0xFE8B,0xFE8C],
-        [0x67E,0xFB56,0xFB57,0xFB58,0xFB59],[0x686,0xFB7A,0xFB7B,0xFB7C,0xFB7D],
-        [0x6A9,0xFB8E,0xFB8F,0xFB90,0xFB91],[0x6AF,0xFB92,0xFB93,0xFB94,0xFB95],
-        [0x6CC,0xFBFC,0xFBFD,0xFBFE,0xFBFF]
-      ];
-      var F = {};
-      D.forEach(function(r) {
-        var k = String.fromCharCode(r[0]);
-        F[k] = r.length === 3 ?
-          [String.fromCharCode(r[1]),String.fromCharCode(r[2])] :
-          [String.fromCharCode(r[1]),String.fromCharCode(r[2]),String.fromCharCode(r[3]),String.fromCharCode(r[4])];
-      });
-      function isAr(c) { var n=c.charCodeAt(0); return n>=0x600&&n<=0x6FF; }
-      function joins(c) { return F[c] && F[c].length===4; }
-      // Split into bidi segments
-      var segs=[],cur='',ca=null;
-      for(var i=0;i<text.length;i++){
-        var c=text[i],a=isAr(c);
-        if(a!==ca&&cur){segs.push({t:cur,a:ca});cur='';}
-        cur+=c;ca=a;
-      }
-      if(cur)segs.push({t:cur,a:ca});
-      // Reshape Arabic segments
-      for(var s=0;s<segs.length;s++){
-        if(!segs[s].a)continue;
-        var ch=segs[s].t.split(''),out='';
-        for(var i=0;i<ch.length;i++){
-          var c=ch[i],f=F[c];
-          if(!f){out+=c;continue;}
-          var prev=i>0&&joins(ch[i-1]);
-          var next=i<ch.length-1&&F[ch[i+1]];
-          if(f.length===2){out+=f[prev?1:0];}
-          else{
-            if(prev&&next)out+=f[3];
-            else if(prev)out+=f[1];
-            else if(next)out+=f[2];
-            else out+=f[0];
-          }
-        }
-        segs[s].t=out;
-      }
-      // Reverse for visual LTR display
-      segs.reverse();
-      for(var s=0;s<segs.length;s++){
-        if(segs[s].a)segs[s].t=segs[s].t.split('').reverse().join('');
-      }
-      return segs.map(function(s){return s.t;}).join('');
-    }
-
-    async function generatePDF() {
-        try {
-        // --- RTL Font Support ---
-        const isRtl = T[curLang] && T[curLang].rtl;
-        const isCjk = curLang === 'zh';
-        if (isRtl && !window._vazirFont) {
-          try {
-            const resp = await fetch('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/ttf/Vazirmatn-Regular.ttf');
-            const buf = await resp.arrayBuffer();
-            const bytes = new Uint8Array(buf);
-            let bin = '';
-            for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
-            window._vazirFont = btoa(bin);
-            // Register font for canvas RTL rendering
-            var ff = new FontFace('VazirCanvas', buf);
-            await ff.load(); document.fonts.add(ff);
-          } catch(e) { console.warn('Font load failed:', e); }
-        }
-
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-        // Register Persian font for RTL
-        if (isRtl && window._vazirFont) {
-          doc.addFileToVFS('Vazirmatn-Regular.ttf', window._vazirFont);
-          doc.addFont('Vazirmatn-Regular.ttf', 'Vazirmatn', 'normal');
-          doc.addFont('Vazirmatn-Regular.ttf', 'Vazirmatn', 'bold');
-        }
-        const pdfFont = isRtl ? 'Vazirmatn' : 'helvetica';
-        const rtl = function(s) { return s; }; // identity - canvas handles RTL
-
-        // Monkey-patch doc.text for RTL: render Arabic text as canvas images
-        if ((isRtl && document.fonts.check('12px VazirCanvas')) || isCjk) {
-          var _curColor = [0,0,0];
-          var _origSTC = doc.setTextColor.bind(doc);
-          doc.setTextColor = function(r,g,b) { _curColor = [r,g,b]; return _origSTC(r,g,b); };
-          var _origText = doc.text.bind(doc);
-          doc.text = function(txt, x, y, opts) {
-            if (typeof txt === 'string' && /[\u0600-\u06FF\u4E00-\u9FFF\u3400-\u4DBF\u3000-\u303F\uFF00-\uFFEF]/.test(txt)) {
-              var fs = doc.getFontSize();
-              var fb = doc.getFont().fontStyle === 'bold';
-              var cv = document.createElement('canvas');
-              var cx = cv.getContext('2d');
-              var sc = 4, px = fs * 1.33 * sc;
-              cx.font = (fb?'bold ':'') + px + 'px ' + (isCjk ? '"PingFang SC","Microsoft YaHei","Noto Sans CJK SC","Hiragino Sans GB",sans-serif' : 'VazirCanvas');
-              var mw = cx.measureText(txt).width;
-              cv.width = Math.ceil(mw) + 20;
-              cv.height = Math.ceil(px * 1.6);
-              cx.font = (fb?'bold ':'') + px + 'px ' + (isCjk ? 'NotoSC' : 'VazirCanvas');
-              cx.fillStyle = 'rgb('+_curColor.join(',')+')';
-              cx.textBaseline = 'alphabetic';
-              cx.direction = isRtl ? 'rtl' : 'ltr';
-              cx.textAlign = isRtl ? 'right' : 'left';
-              cx.fillText(txt, isRtl ? cv.width - 5 : 5, px * 0.9);
-              var iD = cv.toDataURL('image/png');
-              var wP = cv.width / sc * 25.4 / 96;
-              var hP = cv.height / sc * 25.4 / 96;
-              var al = opts && opts.align;
-              var ix = al==='right' ? x-wP : al==='center' ? x-wP/2 : x;
-              doc.addImage(iD, 'PNG', ix, y - hP*0.7, wP, hP);
-            } else {
-              _origText(txt, x, y, opts);
-            }
-          };
-        }
-        // RTL layout helpers
-        const rtlX = (x) => isRtl ? W - x : x;
-        const rtlAlign = (opts, defaultAlign) => {
-          if (!isRtl) return opts || (defaultAlign ? { align: defaultAlign } : undefined);
-          const a = defaultAlign === 'right' ? 'left' : defaultAlign === 'left' ? 'right' : (opts && opts.align === 'right') ? 'left' : (opts && opts.align === 'left') ? 'right' : 'right';
-          return Object.assign({}, opts || {}, { align: a });
-        };
-
-
-        const W = 210, H = 297;
-        const margin = 20;
-        const useML = (adjPig + adjDil) < 2;
-        const u = useML ? 'ml' : 'L';
-        const pigVal = useML ? Math.round(adjPig * 1000) : adjPig.toFixed(2);
-        const dilVal = useML ? Math.round(adjDil * 1000) : adjDil.toFixed(2);
-        const totVal = useML ? Math.round((adjPig + adjDil) * 1000) + ' ml' : (adjPig + adjDil).toFixed(2) + ' L';
-        const ratioText = selR ? selR.label : '—';
-        const pigPct = selR ? selR.pct : 50;
-        const contentW = W - margin * 2;
-
-        // Emoji-to-ASCII map (jsPDF can't render emoji)
-        const emojiMap = {
-            '\uD83D\uDEAB': '[X]', '\uD83E\uDDEA': '[T]', '\uD83D\uDD04': '[~]',
-            '\uD83D\uDD29': '[D]', '\uD83D\uDD8C\uFE0F': '[B]', '\uD83D\uDCE6': '[!]',
-            '\uD83E\uDDF1': '[S]', '\u2702\uFE0F': '[+]', '\uD83C\uDF21\uFE0F': '[*]',
-            '\u231B': '[H]', '\uD83D\uDCA7': '[W]'
-        };
-
-        // Plain-text rule labels (no emoji)
-        const ruleIcons = ['X', 'TEST', 'STIR', 'DRILL', 'EDGE', 'DAY', 'SUBS', 'CROSS', 'TEMP', 'DRY', 'DAMP'];
-
-        // ---- WHITE BACKGROUND (clean for printing) ----
-        doc.setFillColor(255, 255, 255);
-        doc.rect(0, 0, W, H, 'F');
-
-        // Teal accent bar at top
-        doc.setFillColor(13, 148, 136);
-        doc.rect(0, 0, W, 5, 'F');
-
-        // ---- HEADER ----
-        let y = 16;
-        doc.setFontSize(24);
-        doc.setFont(pdfFont, 'bold');
-        doc.setTextColor(13, 148, 136);
-        doc.text('KEIM', margin, y);
-
-        doc.setFontSize(11);
-        doc.setFont(pdfFont, 'normal');
-        doc.setTextColor(40, 40, 40);
-        doc.text(isRtl ? rtl(t('headerSub')) + '  |  Concretal-Lasur' : 'Concretal-Lasur  |  ' + t('headerSub'), margin + 30, y);
-
-        // Date
-        const today = new Date();
-        const dateStr = today.toLocaleDateString(curLang === 'en' ? 'en-AU' : undefined, { day: '2-digit', month: 'short', year: 'numeric' });
-        doc.setFontSize(9);
-        doc.setTextColor(130, 130, 130);
-        doc.text(dateStr, W - margin, y, { align: 'right' });
-
-        // Divider
-        y += 5;
-        doc.setDrawColor(13, 148, 136);
-        doc.setLineWidth(0.8);
-        doc.line(margin, y, W - margin, y);
-
-        // ---- TITLE + RATIO BADGE ----
-        y += 12;
-        doc.setFontSize(22);
-        doc.setFont(pdfFont, 'bold');
-        doc.setTextColor(30, 30, 30);
-        doc.text('Mix Sheet', margin, y);
-
-        // Ratio badge
-        doc.setFillColor(13, 148, 136);
-        doc.roundedRect(W - margin - 40, y - 8, 40, 11, 3, 3, 'F');
-        doc.setFontSize(12);
-        doc.setFont(pdfFont, 'bold');
-        doc.setTextColor(255, 255, 255);
-        doc.text(ratioText, W - margin - 20, y, { align: 'center' });
-
-        // ---- RATIO BAR ----
-        y += 8;
-        const barH = 8;
-        const pigBarW = Math.max(contentW * (pigPct / 100), 2);
-        doc.setFillColor(13, 148, 136);
-        doc.roundedRect(margin, y, pigBarW, barH, 3, 3, 'F');
-        doc.setFillColor(180, 175, 170);
-        doc.roundedRect(margin + pigBarW, y, contentW - pigBarW, barH, 3, 3, 'F');
-
-        y += barH + 4;
-        doc.setFontSize(8);
-        doc.setFont(pdfFont, 'bold');
-        doc.setTextColor(13, 148, 136);
-        doc.text(rtl(t('colour')), margin, y);
-        doc.setTextColor(140, 135, 130);
-        doc.text(rtl(t('clear')), W - margin, y, { align: 'right' });
-        doc.setTextColor(100, 100, 100);
-        doc.text(ratioText, W / 2, y, { align: 'center' });
-
-        // ---- MAIN MIX CARD ----
-        y += 10;
-        const cardY = y;
-        const cardH = 72;
-        doc.setFillColor(248, 248, 248);
-        doc.roundedRect(margin, cardY, contentW, cardH, 5, 5, 'F');
-        doc.setDrawColor(220, 220, 220);
-        doc.setLineWidth(0.4);
-        doc.roundedRect(margin, cardY, contentW, cardH, 5, 5, 'S');
-
-        const colW = contentW / 3;
-        const cx1 = margin + colW * 0.5;
-        const cx2 = margin + colW * 1.5;
-        const cx3 = margin + colW * 2.5;
-
-        // Draw measuring cup (beaker style)
-        function drawCup(cx, cy, r, g, b, level, isBig) {
-            const bw = isBig ? 26 : 22, bh = isBig ? 34 : 30;
-            const bx = cx - bw / 2, by = cy - bh / 2;
-            const rad = 3;
-
-            // Glass body (light fill)
-            doc.setFillColor(245, 245, 245);
-            doc.roundedRect(bx, by, bw, bh, rad, rad, 'F');
-
-            // Liquid fill
-            const fh = bh * Math.min(level, 1);
-            if (fh > 1) {
-                const fy = by + bh - fh;
-                doc.setFillColor(r, g, b);
-                doc.rect(bx + 0.8, fy, bw - 1.6, fh - 0.5, 'F');
-            }
-
-            // Glass border
-            doc.setDrawColor(200, 200, 200);
-            doc.setLineWidth(0.6);
-            doc.roundedRect(bx, by, bw, bh, rad, rad, 'S');
-
-            // Spout (small lip at top-left)
-            doc.setDrawColor(190, 190, 190);
-            doc.setLineWidth(0.5);
-            doc.line(bx, by + 1, bx - 2, by + 3);
-
-            // Handle (smooth curved arc on right side, like SVG Q curves)
-            const hx = bx + bw;
-            const hy1 = by + bh * 0.25;
-            const hy2 = by + bh * 0.75;
-            const hBulge = isBig ? 8 : 6.5;
-            doc.setDrawColor(190, 190, 190);
-            doc.setLineWidth(0.7);
-            // Draw smooth D-shaped handle using many small segments
-            const steps = 20;
-            for (let i = 0; i < steps; i++) {
-                const t1 = i / steps;
-                const t2 = (i + 1) / steps;
-                // Parametric D-curve: x bulges out as sin, y goes from hy1 to hy2
-                const x1 = hx + Math.sin(t1 * Math.PI) * hBulge;
-                const y1 = hy1 + t1 * (hy2 - hy1);
-                const x2 = hx + Math.sin(t2 * Math.PI) * hBulge;
-                const y2 = hy1 + t2 * (hy2 - hy1);
-                doc.line(x1, y1, x2, y2);
-            }
-
-            // Tick marks (left side, 4 marks)
-            doc.setDrawColor(210, 210, 210);
-            doc.setLineWidth(0.3);
-            for (let i = 1; i <= 4; i++) {
-                const ty = by + (bh / 5) * i;
-                doc.line(bx + 1.5, ty, bx + 4.5, ty);
-            }
-        }
-
-        const bucketY = cardY + 22;
-        const totalVol = adjPig + adjDil || 1;
-        // Fill each cup proportional to the total — so all 3 cups are same "capacity"
-        drawCup(cx1, bucketY, 13, 180, 165, adjPig / totalVol, false);
-        drawCup(cx2, bucketY, 175, 170, 160, adjDil / totalVol, false);
-
-        // Mix colour: blend teal and grey based on pigment percentage
-        const pp = pigPct / 100;
-        const mixR = Math.round(13 * pp + 160 * (1 - pp));
-        const mixG = Math.round(180 * pp + 165 * (1 - pp));
-        const mixB = Math.round(165 * pp + 155 * (1 - pp));
-        drawCup(cx3, bucketY, mixR, mixG, mixB, 0.95, true);
-
-        // Plus and equals
-        doc.setFontSize(18);
-        doc.setFont(pdfFont, 'bold');
-        doc.setTextColor(180, 180, 180);
-        doc.text('+', margin + colW, bucketY + 2, { align: 'center' });
-        doc.text('=', margin + colW * 2, bucketY + 2, { align: 'center' });
-
-        // Values
-        const valY = cardY + 46;
-        doc.setFontSize(20);
-        doc.setFont(pdfFont, 'bold');
-        doc.setTextColor(13, 148, 136);
-        doc.text(String(pigVal), cx1, valY, { align: 'center' });
-        doc.setTextColor(100, 95, 90);
-        doc.text(String(dilVal), cx2, valY, { align: 'center' });
-        doc.setTextColor(30, 30, 30);
-        doc.text(totVal, cx3, valY, { align: 'center' });
-
-        // Units
-        const unitY = valY + 6;
-        doc.setFontSize(9);
-        doc.setFont(pdfFont, 'normal');
-        doc.setTextColor(13, 148, 136);
-        doc.text(u, cx1, unitY, { align: 'center' });
-        doc.setTextColor(140, 140, 140);
-        doc.text(u, cx2, unitY, { align: 'center' });
-
-        // Labels
-        const lblY = unitY + 6;
-        doc.setFontSize(8);
-        doc.setFont(pdfFont, 'bold');
-        doc.setTextColor(13, 148, 136);
-        doc.text(rtl(t('colour').toUpperCase()), cx1, lblY, { align: 'center' });
-        doc.setTextColor(120, 115, 110);
-        doc.text(rtl(t('clear').toUpperCase()), cx2, lblY, { align: 'center' });
-        doc.setTextColor(60, 60, 60);
-        doc.text(rtl(t('mixed')), cx3, lblY, { align: 'center' });
-
-        doc.setFontSize(6);
-        doc.setFont(pdfFont, 'normal');
-        doc.setTextColor(160, 160, 160);
-        doc.text('Concretal-Lasur', cx1, lblY + 4, { align: 'center' });
-        doc.text('Concretal-Fixativ', cx2, lblY + 4, { align: 'center' });
-        doc.text(rtl(t('ready')), cx3, lblY + 4, { align: 'center' });
-
-        // ---- RULES SECTION ----
-        y = cardY + cardH + 12;
-        const rulesData = t('rules');
-
-        // Strip emoji and HTML from rules, use plain labels
-        const cleanRules = rulesData.map(function(rule, idx) {
-            const text = rule.t.replace(/<[^>]+>/g, '').replace(/\u2014/g, '-').replace(/\u2013/g, '-');
-            const label = ruleIcons[idx] || '*';
-            return { label: label, text: text };
-        });
-
-        // Pre-calculate height
-        doc.setFontSize(7.5);
-        doc.setFont(pdfFont, 'normal');
-        let totalRulesH = 12;
-        const ruleTextW = contentW - 20;
-        cleanRules.forEach(function(r) {
-            const lines = doc.splitTextToSize(r.text, ruleTextW);
-            totalRulesH += lines.length * 3.8 + 2;
-        });
-
-        // Rules box
-        doc.setFillColor(255, 250, 240);
-        doc.roundedRect(margin, y, contentW, totalRulesH, 4, 4, 'F');
-        doc.setDrawColor(245, 200, 100);
-        doc.setLineWidth(0.4);
-        doc.roundedRect(margin, y, contentW, totalRulesH, 4, 4, 'S');
-
-        // Warning icon header
-        y += 7;
-        doc.setFontSize(9);
-        doc.setFont(pdfFont, 'bold');
-        doc.setTextColor(180, 120, 0);
-        doc.text(isRtl ? rtl(t('beforeStart')) + '   !' : '!   ' + rtl(t('beforeStart').toUpperCase()), isRtl ? W - margin - 5 : margin + 5, y, isRtl ? { align: 'right' } : undefined);
-
-        y += 5;
-        doc.setFont(pdfFont, 'normal');
-        doc.setFontSize(7.5);
-        cleanRules.forEach(function(r) {
-            // Teal bullet
-            doc.setFillColor(13, 148, 136);
-            doc.circle(isRtl ? W - margin - 6.5 : margin + 6.5, y - 0.8, 1, 'F');
-            // Text
-            doc.setTextColor(60, 60, 60);
-            const lines = doc.splitTextToSize(r.text, ruleTextW);
-            lines.forEach(function(line, li) {
-                doc.text(rtl(line), isRtl ? W - margin - 10 : margin + 10, y, isRtl ? { align: 'right' } : undefined);
-                y += 3.8;
-            });
-            y += 1.2;
-        });
-
-        // ---- FOOTER ----
-        const footerY = H - 14;
-        doc.setDrawColor(200, 200, 200);
-        doc.setLineWidth(0.3);
-        doc.line(margin, footerY - 4, W - margin, footerY - 4);
-
-        doc.setFontSize(7);
-        doc.setFont(pdfFont, 'normal');
-        doc.setTextColor(150, 150, 150);
-        doc.text('KEIM Australia  |  keim.com.au  |  For full TDS visit keim.com.au/concretal-lasur', margin, footerY);
-        doc.text('Generated by KEIM Lasur Mix Guide', W - margin, footerY, { align: 'right' });
-
-        // ---- SAVE ----
-        const filename = 'KEIM_Mix_' + ratioText.replace(/\s*:\s*/g, '-') + '_' + totVal.replace(/\s/g, '').replace('.', '_') + '.pdf';
-        doc.save(filename);
-        } catch(e) {
-            alert('PDF error: ' + e.message);
-            console.error('PDF generation error:', e);
-        }
-    }
-
-    // ============ INIT ============
-    setLang(curLang);
-    buildR(); buildV();
-
-    // Register service worker for offline / PWA
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
-    }
-    </script>
+    h += '</tr>';
+  });
+  $('chart').innerHTML = h + '</tbody>';
+}
+
+function applyLang(){
+  const isRtl = !!T[lang].rtl;
+  document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
+  document.documentElement.lang = lang==='slang' ? 'en-AU' : lang;
+  $('tSub').textContent = t('headerSub');
+  $('tStep1').textContent = t('step1');
+  $('tStep2').textContent = t('step2');
+  $('tStep3').textContent = t('step3');
+  $('tHint').textContent = t('hint');
+  $('tSolid').textContent = '◀ ' + t('solid');
+  $('tTrans').textContent = t('transparent') + ' ▶';
+  $('tCustomRatio').textContent = t('customRatio');
+  $('cV').placeholder = t('customVol');
+  $('mTotal').textContent = t('modeTotal');
+  $('mHave').textContent = t('modeHave');
+  $('tRoleL').textContent = t('roleLasur');
+  $('tRoleF').textContent = t('roleFix');
+  $('tEasy').textContent = t('easyPour');
+  $('tPrint').textContent = t('print');
+  $('tBefore').textContent = t('beforeStart');
+  $('tChart').textContent = t('chart');
+  $('tFooter').textContent = t('footer');
+  $('rules').innerHTML = t('rules').map(r=>`<div class="rule"><span class="ic">${r.i}</span><span>${r.t}</span></div>`).join('');
+  $('langFlag').innerHTML = `<span class="fi fi-${T[lang].flag}"></span>`;
+  $('langName').textContent = T[lang].name;
+  $('langDd').innerHTML = LANGS.filter(k=>T[k]).map(k=>`<button role="menuitem" data-l="${k}" class="${k===lang?'on':''}"><span class="fi fi-${T[k].flag}"></span>${T[k].name}</button>`).join('');
+  render(false);
+}
+
+// ===== Events =====
+$('langBtn').onclick = e => { e.stopPropagation(); const o = $('langDd').classList.toggle('open'); $('langBtn').setAttribute('aria-expanded', o); };
+$('langDd').onclick = e => { const b = e.target.closest('button[data-l]'); if(!b) return; lang = b.dataset.l; try{localStorage.setItem('lasur-lang',lang)}catch(_){} $('langDd').classList.remove('open'); applyLang(); };
+document.addEventListener('click', () => $('langDd').classList.remove('open'));
+
+function onCustomRatio(){
+  const p = parseFloat($('cP').value), d = parseFloat($('cD').value);
+  if (p > 0 && d >= 0 && isFinite(p) && isFinite(d)) { S.r=[p,d]; S.custom=true; }
+  else if (S.custom) { S.r=null; }
+  render(false);
+}
+$('cP').oninput = onCustomRatio; $('cD').oninput = onCustomRatio;
+
+function onCustomVol(){
+  const v = parseFloat($('cV').value);
+  S.v = v > 0 ? (S.unit==='ml' ? v/1000 : v) : null;
+  render(false);
+}
+$('cV').oninput = onCustomVol;
+function setUnit(u){ S.unit=u; $('uL').classList.toggle('on',u==='L'); $('uML').classList.toggle('on',u==='ml'); if($('cV').value!=='') onCustomVol(); }
+$('uL').onclick = () => setUnit('L'); $('uML').onclick = () => setUnit('ml');
+
+$('mTotal').onclick = () => { S.mode='total'; render(false); };
+$('mHave').onclick  = () => { S.mode='have'; render(false); };
+$('easyBtn').onclick = () => { S.easy=!S.easy; render(false); };
+$('printBtn').onclick = () => window.print();
+
+applyLang();
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
 </body>
 </html>
