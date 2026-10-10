@@ -4,8 +4,8 @@
   "description": "Quick mixing calculator for KEIM Concretal-Lasur and Concretal-Fixativ ratios",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f6f4f0",
-  "theme_color": "#ffffff",
+  "background_color": "#f3f0eb",
+  "theme_color": "#f3f0eb",
   "orientation": "portrait",
   "categories": ["utilities", "productivity"],
   "icons": [
