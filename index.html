@@ -556,6 +556,24 @@
         html[data-mode="dark"] .full-chart .fc-look { color: rgba(255,255,255,0.68); }
         html[data-mode="dark"] .full-chart .left-sticky { background: #141414; }
         html[data-mode="dark"] .footer { color: rgba(255,255,255,0.6); }
+
+        /* ===== Links between the mixing calculator and the colour visualiser ===== */
+        .vis-row { display: flex; justify-content: center; margin-top: 14px; }
+        .vis-link { display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 20px 0 8px; border-radius: 999px;
+            background: #d51f24; color: #fff; font-weight: 800; font-size: 17px; text-decoration: none;
+            box-shadow: 0 6px 18px rgba(213,31,36,0.32); transition: transform .15s, background .15s; }
+        .vis-link:hover { background: #b3151a; } .vis-link:active { transform: scale(.97); }
+        .vis-dot { width: 34px; height: 34px; border-radius: 50%; border: 3px solid #fff; position: relative; flex-shrink: 0;
+            background: #8f8a82; box-shadow: 0 0 0 2px rgba(213,31,36,.45); }
+        .vis-dot::after { content: ''; position: absolute; inset: -8px; border-radius: 50%; border: 2px solid rgba(255,255,255,.75); animation: visPulse 2s ease-out infinite; }
+        @keyframes visPulse { 0% { transform: scale(.8); opacity: .9 } 100% { transform: scale(1.35); opacity: 0 } }
+        @media (prefers-reduced-motion: reduce) { .vis-dot::after { animation: none; opacity: 0; } }
+        .from-vis { display: none; align-items: center; gap: 12px; margin: 14px 0 0; padding: 12px 14px; border-radius: 14px;
+            background: rgba(213,31,36,0.08); border: 1.5px solid rgba(213,31,36,0.35); font-size: 16px; font-weight: 700; }
+        .from-vis.show { display: flex; }
+        .from-vis .fv-dot { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.15); flex-shrink: 0; }
+        .from-vis small { display: block; font-weight: 600; font-size: 13px; opacity: .75; }
+        html[data-mode="dark"] .from-vis { background: rgba(213,31,36,0.15); border-color: rgba(248,113,113,0.5); color: #fff; }
         .cup-handle { fill: none; stroke: rgba(28,27,25,0.24); stroke-width: 2; }
     </style>
 <script>
@@ -605,7 +623,8 @@
                 <div class="step-badge">1</div>
                 <p class="step-title" id="step1Title">Pick your ratio</p>
             </div>
-            <div class="spectrum-label"><span id="specSolid">SOLID COLOUR</span><span id="specTrans">TRANSPARENT</span></div>
+            <div class="from-vis" id="fromVis"><span class="fv-dot" id="fvDot"></span><span><span id="fvName"></span><small id="fvSub"></small></span></div>
+            <div class="spectrum-label" style="margin-top:12px"><span id="specSolid">SOLID COLOUR</span><span id="specTrans">TRANSPARENT</span></div>
             <div id="ratioList" class="ratio-list"></div>
             <div class="glass-card">
                 <p class="glass-card-label" id="customRatioLabel">Or enter your own ratio</p>
@@ -621,6 +640,7 @@
                     </div>
                 </div>
             </div>
+            <div class="vis-row"><a class="vis-link" id="visLink" href="https://hoodad-lab.github.io/lasur_visualiser/" target="_blank" rel="noopener"><span class="vis-dot" id="visDot"></span><span id="visLabel">See this ratio on concrete</span></a></div>
         </div>
 
         <!-- STEP 2 -->
@@ -1404,6 +1424,7 @@
     customVolInput.addEventListener('focus', () => { selV = null; refresh(); });
 
     function buildR() {
+        if (typeof updateVisLink === 'function') setTimeout(updateVisLink, 0);
         const el = document.getElementById('ratioList'); el.innerHTML = '';
         ratios.forEach((r, idx) => {
             const on = selR && selR.label === r.label && selR.desc !== 'Custom';
@@ -2369,6 +2390,64 @@
             console.error('PDF generation error:', e);
         }
     }
+
+
+    // ============ LINK TO / FROM THE COLOUR VISUALISER ============
+    const VIS_URL = 'https://hoodad-lab.github.io/lasur_visualiser/';
+    const LINK_TXT = {
+        en: ['See this ratio on concrete', 'Picked in the colour visualiser'],
+        slang: ['See it on concrete', 'Picked in the colour visualiser'],
+        zh: ['在混凝土上查看效果', '来自颜色可视化工具'],
+        fa: ['این نسبت را روی بتن ببینید', 'انتخاب‌شده در نمایشگر رنگ'],
+        da: ['این نسبت را روی کانکریت ببینید', 'انتخاب‌شده در نمایشگر رنگ'],
+        hr: ['Pogledajte na betonu', 'Odabrano u vizualizatoru boja'],
+        ar: ['شاهد هذه النسبة على الخرسانة', 'تم اختيارها في أداة عرض الألوان'],
+        pl: ['Zobacz na betonie', 'Wybrane w wizualizatorze kolorów'],
+        de: ['Auf Beton ansehen', 'Im Farbvisualisierer gewählt'],
+        fr: ['Voir sur béton', 'Choisi dans le visualiseur de couleurs'],
+        it: ['Vedi sul calcestruzzo', 'Scelto nel visualizzatore colori'],
+        es: ['Ver en hormigón', 'Elegido en el visualizador de colores'],
+    };
+    const linkTxt = i => (LINK_TXT[curLang] || LINK_TXT.en)[i];
+    let visColour = null, visName = '';
+
+    function mixedDot(hex, pct) {            // colour of the mix over grey concrete
+        const sub = [195, 188, 175];
+        const c = hex ? [1,3,5].map(i => parseInt(hex.substr(i,2),16)) : [62,72,82];
+        const s = Math.max(0, Math.min(1, pct / 100));
+        return 'rgb(' + c.map((v, i) => Math.round((255 + (v - 255) * s) * sub[i] / 255)).join(',') + ')';
+    }
+    function updateVisLink() {
+        const a = document.getElementById('visLink'); if (!a) return;
+        document.getElementById('visLabel').textContent = linkTxt(0);
+        const pct = selR ? selR.pct : 50;
+        document.getElementById('visDot').style.background = mixedDot(visColour, pct);
+        let q = '';
+        if (selR) q = 'ratio=' + encodeURIComponent(selR.p + ':' + selR.d);
+        if (visColour) q += (q ? '&' : '') + 'colour=' + visColour.slice(1);
+        a.href = VIS_URL + (q ? '?' + q : '');
+        const fv = document.getElementById('fromVis');
+        if (visColour) {
+            fv.classList.add('show');
+            document.getElementById('fvDot').style.background = visColour;
+            document.getElementById('fvName').textContent = (visName || visColour.toUpperCase()) + (selR ? ' · ' + localNum(selR.label) : '');
+            document.getElementById('fvSub').textContent = linkTxt(1);
+        }
+    }
+    // Incoming link from the visualiser: ?ratio=P:D&colour=hex&name=...
+    (function applyUrlParams() {
+        try {
+            const q = new URLSearchParams(location.search);
+            const c = (q.get('colour') || q.get('color') || '').replace('#', '');
+            if (/^[0-9a-fA-F]{6}$/.test(c)) { visColour = '#' + c.toLowerCase(); visName = q.get('name') || ''; }
+            const r = (q.get('ratio') || '').split(':'), p = parseFloat(r[0]), d = parseFloat(r[1]);
+            if (p > 0 && d >= 0) {
+                const preset = ratios.find(x => x.p === p && x.d === d);
+                selR = preset || { p, d, label: p + ' : ' + d, desc: 'Custom', pct: Math.round(p / (p + d) * 100) };
+                if (!preset) { customP.value = p; customD.value = d; }
+            }
+        } catch (e) {}
+    })();
 
     // ============ INIT ============
     setLang(curLang);
