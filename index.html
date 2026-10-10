@@ -468,6 +468,14 @@
         .adj-delta.up { color: #0f766e; background: rgba(20,184,166,0.12); }
         .adj-delta.dn { color: #b91c1c; background: rgba(248,113,113,0.14); }
         .lang-chevron { color: rgba(28,27,25,0.5); }
+        @media (max-width: 400px) {
+            .ratio-btn { gap: 9px; padding: 13px 12px; }
+            .ratio-bar-track { width: 34px; }
+            .ratio-pct { width: 42px; font-size: 13px; }
+            .ratio-label { width: 64px; font-size: 20px; }
+            .ratio-desc { font-size: 15px; }
+        }
+        @media (min-width: 900px) { .header-inner, .main { max-width: 680px; } }
         .cup-handle { fill: none; stroke: rgba(28,27,25,0.24); stroke-width: 2; }
     </style>
 </head>
