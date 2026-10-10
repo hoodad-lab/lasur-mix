@@ -12,7 +12,7 @@
         /* Lion and Sun flag (pre-1979 Iranian flag) for Farsi */
         .fi-ir { background-image: url("./flag-ir.svg") !important; background-size: cover !important; background-position: center !important; }
     </style>
-    <meta name="theme-color" content="#f6f4f0">
+    <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Lasur Mix">
@@ -559,8 +559,9 @@
         .cup-handle { fill: none; stroke: rgba(28,27,25,0.24); stroke-width: 2; }
     </style>
 <script>
-    (function(){ var m='light'; try { m = localStorage.getItem('lasur-mode') || 'light'; } catch(e){}
-      document.documentElement.setAttribute('data-mode', m); })();
+    (function(){ var m='dark'; try { m = localStorage.getItem('lasur-mode') || 'dark'; } catch(e){}
+      document.documentElement.setAttribute('data-mode', m);
+      var tc = document.querySelector('meta[name="theme-color"]'); if (tc) tc.setAttribute('content', m === 'dark' ? '#0a0a0a' : '#f6f4f0'); })();
     function toggleMode(){
       var d = document.documentElement, m = d.getAttribute('data-mode') === 'dark' ? 'light' : 'dark';
       d.setAttribute('data-mode', m);
