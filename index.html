@@ -667,6 +667,13 @@
         html[data-mode="dark"] .day-copy p { color: rgba(255,255,255,0.75); }
         html[data-mode="dark"] .day-copy textarea { background: #1c1c1c; color: #fff; border-color: rgba(255,255,255,0.18); }
 
+        /* ===== "Open full screen" bar: only inside the website on a phone ===== */
+        .fs-bar { display: none; align-items: center; justify-content: center; gap: 8px; margin: 0 10px 10px; min-height: 44px; border-radius: 12px;
+            border: 1.5px solid rgba(15,118,110,0.45); background: rgba(20,184,166,0.08); color: #0f766e; font-size: 16px; font-weight: 800; text-decoration: none; }
+        .fs-bar.show { display: flex; }
+        .fs-bar svg { width: 18px; height: 18px; flex-shrink: 0; }
+        html[data-mode="dark"] .fs-bar { color: #5eead4; border-color: rgba(94,234,212,0.45); background: rgba(20,184,166,0.14); }
+
         /* ===== Desktop (keim.com.au on a PC): three columns, so the whole guide fits inside the website box without its own scrollbar ===== */
         .cols, .col { display: block; }
         @media (min-width: 1000px) {
@@ -732,6 +739,7 @@
                 <a href="https://keim.com.au/products/concretal-lasur/" target="_blank" class="header-link">keim.com.au</a>
             </div>
         </div>
+        <a class="fs-bar" id="fsBar" href="https://hoodad-lab.github.io/lasur-mix/" target="_blank" rel="noopener"><span id="fsLabel">Open full screen</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-8 8M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
     </div>
 
     <div class="main">
@@ -1345,6 +1353,8 @@
       es: { dayBatch:'tanda', dayTitle:'Mezclas de hoy', dayFrom:'Lista del', dayAdd:'Añadir a las mezclas de hoy', dayAdded:'Añadido ✓', dayEmpty:'¿Necesitas más de una mezcla hoy? Añade cada proporción y cantidad y aquí verás el total que hay que llevar.', dayTotal:'Total a llevar', dayMixedTotal:'Mezclado', dayBatches:'tandas', dayEach:'por tanda', dayShare:'Compartir lista', dayCopied:'Copiado ✓', dayClear:'Vaciar lista', dayClearConfirm:'Toca otra vez para vaciar', dayCustom:'Proporción propia', dayCopyHint:'Copia esta lista:' }
     };
     Object.keys(DAY_T).forEach(function (k) { if (T[k]) Object.assign(T[k], DAY_T[k]); });
+    const FS_T = { en:'Open full screen', slang:'Open full screen', zh:'\u5168\u5c4f\u6253\u5f00', fa:'\u0628\u0627\u0632 \u06a9\u0631\u062f\u0646 \u062f\u0631 \u062a\u0645\u0627\u0645 \u0635\u0641\u062d\u0647', da:'\u0628\u0627\u0632 \u06a9\u0631\u062f\u0646 \u062f\u0631 \u062a\u0645\u0627\u0645 \u0635\u0641\u062d\u0647', hr:'Otvori preko cijelog zaslona', ar:'\u0641\u062a\u062d \u0628\u0645\u0644\u0621 \u0627\u0644\u0634\u0627\u0634\u0629', pl:'Otw\u00f3rz na pe\u0142nym ekranie', de:'Im Vollbild \u00f6ffnen', fr:'Ouvrir en plein \u00e9cran', it:'Apri a schermo intero', es:'Abrir a pantalla completa' };
+    Object.keys(FS_T).forEach(function (k) { if (T[k]) T[k].fsOpen = FS_T[k]; });
 
     // ============ LANGUAGE SYSTEM ============
     let curLang = localStorage.getItem('lasur-lang') || 'en';
@@ -1414,6 +1424,7 @@
         document.getElementById('downloadChartLabel').textContent = t('downloadChart');
         document.getElementById('dayTitle').textContent = t('dayTitle');
         document.getElementById('addDayLabel').textContent = t('dayAdd');
+        document.getElementById('fsLabel').textContent = t('fsOpen');
         if (typeof renderDay === 'function') renderDay();
     }
 
@@ -1883,6 +1894,34 @@
         box.innerHTML = html;
     }
     loadDay();
+
+    // Inside the keim.com.au box on a phone the guide scrolls inside the box. Offer it on its own page instead,
+    // carrying the chosen ratio and today's list (the website's copy and the standalone page keep separate storage).
+    function importDayFromHash() {
+        try {
+            const m = location.hash.match(/(?:^#|&)day=([^&]+)/); if (!m) return;
+            const items = JSON.parse(decodeURIComponent(m[1]));
+            if (Array.isArray(items) && items.length) {
+                dayList = { d: todayStr(), items: items.filter(it => it && it.id && it.pig >= 0 && it.dil >= 0 && it.n >= 1) };
+                saveDay();
+            }
+            history.replaceState(null, '', location.pathname + location.search);
+        } catch (e) {}
+    }
+    importDayFromHash();
+    (function setupFullScreenBar() {
+        let framed = false; try { framed = window.self !== window.top; } catch (e) { framed = true; }
+        const bar = document.getElementById('fsBar'); if (!bar || !framed) return;
+        const narrow = () => window.innerWidth <= 700;
+        const sync = () => bar.classList.toggle('show', narrow());
+        sync(); window.addEventListener('resize', sync);
+        bar.addEventListener('click', function () {
+            let url = 'https://hoodad-lab.github.io/lasur-mix/';
+            if (selR && selR.p > 0) url += '?ratio=' + selR.p + ':' + selR.d;
+            if (dayList.items.length) url += '#day=' + encodeURIComponent(JSON.stringify(dayList.items));
+            bar.href = url;
+        });
+    })();
 
     // ============ LOAD jsPDF (CDN first, local fallback) ============
     function loadJsPDF(callback) {
