@@ -1,7 +1,7 @@
 {
-  "name": "KEIM Concretal-Lasur Mixing Guide",
-  "short_name": "Lasur Mix",
-  "description": "Quick mixing calculator for KEIM Concretal-Lasur and Concretal-Fixativ ratios",
+  "name": "KEIM Lasur Site Mixer",
+  "short_name": "Site Mixer",
+  "description": "Pick a KEIM Concretal-Lasur ratio and batch size, see what to pour, and plan the day's mixes",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#0a0a0a",
