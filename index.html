@@ -588,6 +588,112 @@
             .ratio-btn { padding: 13px 10px; }
         }
         .cup-handle { fill: none; stroke: rgba(28,27,25,0.24); stroke-width: 2; }
+
+        /* ===== Today's mixes (several ratios and sizes for one day) ===== */
+        .add-day-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin-top: 18px; min-height: 56px; padding: 12px 18px;
+            border: none; border-radius: 14px; background: linear-gradient(135deg, #14b8a6, #0d9488); color: #fff; font-family: inherit;
+            font-size: 18px; font-weight: 800; cursor: pointer; box-shadow: 0 6px 18px rgba(13,148,136,0.28); transition: transform .15s, filter .15s; }
+        .add-day-btn:hover { filter: brightness(1.06); } .add-day-btn:active { transform: scale(.98); }
+        .add-day-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
+        .add-day-btn.done { background: #0f766e; }
+        .day-card { margin-top: 28px; }
+        .day-box { border-radius: 20px; overflow: hidden; background: #fff; border: 1px solid rgba(28,27,25,0.11); }
+        .day-empty { padding: 16px 18px; font-size: 15px; line-height: 1.5; color: rgba(28,27,25,0.68); }
+        .day-item { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; grid-template-areas: "r s q x" "r a a a";
+            align-items: center; column-gap: 10px; row-gap: 4px; padding: 12px 12px 12px 14px; border-bottom: 1px solid rgba(28,27,25,0.08); }
+        html[dir="rtl"] .day-item { padding: 12px 14px 12px 12px; }
+        .day-ratio { grid-area: r; align-self: start; padding-top: 2px; }
+        .day-size { grid-area: s; }
+        .day-sub { grid-area: a; }
+        .day-qty { grid-area: q; }
+        .day-del { grid-area: x; }
+        .day-item.flash { animation: dayFlash 1.2s ease; }
+        @keyframes dayFlash { 0% { background: rgba(20,184,166,0.28); } 100% { background: transparent; } }
+        .day-ratio { flex-shrink: 0; min-width: 62px; font-size: 20px; font-weight: 900; line-height: 1.1; color: #0f766e; font-variant-numeric: tabular-nums; }
+        .day-ratio small { display: block; font-size: 12px; font-weight: 800; color: rgba(28,27,25,0.55); }
+        .day-main { flex: 1; min-width: 0; }
+        .day-size { font-size: 20px; font-weight: 900; color: #1c1b19; font-variant-numeric: tabular-nums; }
+        .day-desc { font-size: 13px; font-weight: 600; color: rgba(28,27,25,0.6); }
+        .day-amts { font-size: 15px; font-weight: 600; color: rgba(28,27,25,0.75); margin-top: 1px; line-height: 1.35; }
+        .day-amts .c { color: #0f766e; font-weight: 800; }
+        .day-qty { display: flex; align-items: center; flex-shrink: 0; border: 1.5px solid rgba(28,27,25,0.14); border-radius: 12px; overflow: hidden; }
+        .day-qty button { width: 34px; height: 36px; border: none; background: transparent; color: inherit; font-size: 20px; font-weight: 800; cursor: pointer; font-family: inherit; }
+        .day-qty button:hover { background: rgba(28,27,25,0.06); }
+        .day-qty b { min-width: 30px; text-align: center; font-size: 16px; font-weight: 900; font-variant-numeric: tabular-nums; }
+        .day-del { flex-shrink: 0; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(28,27,25,0.14); background: transparent; color: rgba(28,27,25,0.55); font-size: 18px; line-height: 1; cursor: pointer; }
+        .day-del:hover { color: #b91c1c; border-color: rgba(185,28,28,0.4); }
+        .day-totals { padding: 14px 16px 16px; background: rgba(20,184,166,0.08); }
+        .day-totals-title { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(28,27,25,0.62); margin-bottom: 10px; }
+        .day-tot-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 4px 0; }
+        .day-tot-row .lbl { font-size: 15px; font-weight: 700; color: rgba(28,27,25,0.8); }
+        .day-tot-row .lbl small { display: block; font-size: 12px; font-weight: 600; color: rgba(28,27,25,0.55); }
+        .day-tot-row .val { font-size: 26px; font-weight: 900; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .day-tot-row.c .val { color: #0f766e; }
+        .day-tot-row.m { border-top: 1px solid rgba(28,27,25,0.1); margin-top: 6px; padding-top: 10px; }
+        .day-tot-row.m .val { font-size: 20px; }
+        .day-actions { display: flex; gap: 8px; padding: 0 16px 16px; background: rgba(20,184,166,0.08); }
+        .day-actions button { flex: 1; min-height: 46px; border-radius: 12px; font-family: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
+        .day-share { border: 1.5px solid rgba(15,118,110,0.45); background: #fff; color: #0f766e; }
+        .day-clear { border: 1.5px solid rgba(28,27,25,0.16); background: transparent; color: rgba(28,27,25,0.7); }
+        .day-clear.arm { border-color: #b91c1c; color: #b91c1c; }
+        .day-copy { display: none; padding: 0 16px 16px; background: rgba(20,184,166,0.08); }
+        .day-copy.show { display: block; }
+        .day-copy p { font-size: 13px; font-weight: 700; margin-bottom: 6px; color: rgba(28,27,25,0.7); }
+        .day-copy textarea { width: 100%; min-height: 130px; border-radius: 10px; border: 1px solid rgba(28,27,25,0.18); padding: 10px; font-family: inherit; font-size: 13px; resize: vertical; }
+        html[data-mode="dark"] .day-box { background: #141414; border-color: rgba(255,255,255,0.1); }
+        html[data-mode="dark"] .day-empty { color: rgba(255,255,255,0.75); }
+        html[data-mode="dark"] .day-item { border-bottom-color: rgba(255,255,255,0.07); }
+        html[data-mode="dark"] .day-ratio { color: #5eead4; }
+        html[data-mode="dark"] .day-ratio small, html[data-mode="dark"] .day-desc { color: rgba(255,255,255,0.62); }
+        html[data-mode="dark"] .day-size { color: #fff; }
+        html[data-mode="dark"] .day-amts { color: rgba(255,255,255,0.75); }
+        html[data-mode="dark"] .day-amts .c { color: #5eead4; }
+        html[data-mode="dark"] .day-qty { border-color: rgba(255,255,255,0.18); }
+        html[data-mode="dark"] .day-qty button { color: #fff; }
+        html[data-mode="dark"] .day-qty button:hover { background: rgba(255,255,255,0.08); }
+        html[data-mode="dark"] .day-qty b { color: #fff; }
+        html[data-mode="dark"] .day-del { border-color: rgba(255,255,255,0.18); color: rgba(255,255,255,0.65); }
+        html[data-mode="dark"] .day-del:hover { color: #fca5a5; border-color: rgba(252,165,165,0.5); }
+        html[data-mode="dark"] .day-totals, html[data-mode="dark"] .day-actions, html[data-mode="dark"] .day-copy { background: rgba(20,184,166,0.12); }
+        html[data-mode="dark"] .day-totals-title { color: rgba(255,255,255,0.72); }
+        html[data-mode="dark"] .day-tot-row .lbl { color: rgba(255,255,255,0.88); }
+        html[data-mode="dark"] .day-tot-row .lbl small { color: rgba(255,255,255,0.6); }
+        html[data-mode="dark"] .day-tot-row .val { color: #fff; }
+        html[data-mode="dark"] .day-tot-row.c .val { color: #5eead4; }
+        html[data-mode="dark"] .day-tot-row.m { border-top-color: rgba(255,255,255,0.12); }
+        html[data-mode="dark"] .day-share { background: #141414; color: #5eead4; border-color: rgba(94,234,212,0.45); }
+        html[data-mode="dark"] .day-clear { color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.2); }
+        html[data-mode="dark"] .day-clear.arm { color: #fca5a5; border-color: #f87171; }
+        html[data-mode="dark"] .day-copy p { color: rgba(255,255,255,0.75); }
+        html[data-mode="dark"] .day-copy textarea { background: #1c1c1c; color: #fff; border-color: rgba(255,255,255,0.18); }
+
+        /* ===== Desktop (keim.com.au on a PC): three columns, so the whole guide fits inside the website box without its own scrollbar ===== */
+        .cols, .col { display: block; }
+        @media (min-width: 1000px) {
+            .header-inner, .main { max-width: 1160px; }
+            .cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; align-items: start; }
+            .col > div:first-child, .col > .day-card:first-child { margin-top: 20px !important; }
+            .col-c .rules-card { margin-top: 24px; }
+            .ratio-btn { gap: 9px; padding: 12px 12px; }
+            .ratio-bar-track { width: 34px; }
+            .ratio-pct { width: 42px; font-size: 13px; }
+            .ratio-label { width: 64px; font-size: 20px; }
+            .ratio-desc { font-size: 15px; }
+            .cup-amount { font-size: 40px; }
+            .mix-cup-col { max-width: 150px; }
+            .rule { font-size: 14px; padding: 6px 0; line-height: 1.45; }
+            .rules-body { padding: 14px 16px; }
+            .cup-col { max-width: 128px; }
+            .cup-plus { padding-bottom: 70px; }
+            .mix-cup-col { max-width: 128px; }
+            .result-card { padding: 22px 18px 18px; }
+            .mix-arrow { margin-top: 8px; }
+            .day-item { padding-top: 9px; padding-bottom: 9px; row-gap: 2px; }
+            .ref-card { margin-top: 24px; padding: 14px 16px; }
+            .full-chart td { padding: 5px 5px; }
+            .main { padding-bottom: 24px; }
+            .footer { margin-top: 16px; }
+        }
     </style>
 <script>
     (function(){ var m='dark'; try { m = localStorage.getItem('lasur-mode') || 'dark'; } catch(e){}
@@ -630,6 +736,8 @@
 
     <div class="main">
 
+        <div class="cols">
+        <div class="col col-a">
         <!-- STEP 1 -->
         <div style="margin-top:20px">
             <div class="step-row">
@@ -656,6 +764,8 @@
             <div class="vis-row"><a class="vis-link" id="visLink" href="https://hoodad-lab.github.io/lasur_visualiser/" target="_blank" rel="noopener"><span class="vis-dot" id="visDot"></span><span id="visLabel">See this ratio on concrete</span></a></div>
         </div>
 
+        </div>
+        <div class="col col-b">
         <!-- STEP 2 -->
         <div style="margin-top:28px">
             <div class="step-row">
@@ -805,6 +915,12 @@
                     </div>
                 </div>
 
+                <!-- Add this mix to today's list -->
+                <button id="addDayBtn" class="add-day-btn" onclick="addToDay()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                    <span id="addDayLabel">Add to today's mixes</span>
+                </button>
+
                 <!-- Download PDF button -->
                 <button id="downloadPdfBtn" class="download-pdf-btn" onclick="downloadMixPDF()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -813,8 +929,21 @@
             </div>
         </div>
 
+        </div>
+        <div class="col col-c">
+        <!-- TODAY'S MIXES -->
+        <div class="day-card" id="dayCard">
+            <div class="step-row">
+                <div class="step-badge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.5" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="3.5" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="3.5" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg></div>
+                <p class="step-title" id="dayTitle">Today's mixes</p>
+            </div>
+            <div class="day-box" id="dayBox"></div>
+        </div>
+
         <!-- RULES -->
         <div class="rules-card" id="rulesCard">
+        </div>
+        </div>
         </div>
 
         <!-- REFERENCE TABLE -->
@@ -1199,6 +1328,24 @@
         descs: ['Full colour','Near enough solid','Heaps of colour','Solid as','Strong stuff','Good coverage','Grain peekin\u2019 through','Colour + grain','Bit more colour','Half and half','More clear','Light wash','Gentle tint','Soft veil','Real light','Just a hint','Barely there','Ghost coat']
     });
 
+
+    // Today's mixes: strings for every language
+    const DAY_T = {
+      en: { dayBatch:'batch', dayTitle:"Today's mixes", dayFrom:'Saved list from', dayAdd:"Add to today's mixes", dayAdded:'Added ✓', dayEmpty:'Need more than one mix today? Add each ratio and size, and the totals to bring show up here.', dayTotal:'Total to bring', dayMixedTotal:'Mixed', dayBatches:'batches', dayEach:'each', dayShare:'Share list', dayCopied:'Copied ✓', dayClear:'Clear list', dayClearConfirm:'Tap again to clear', dayCustom:'Custom ratio', dayCopyHint:'Copy this list:' },
+      slang: { dayBatch:'batch', dayTitle:"Today's mixes", dayFrom:'List from', dayAdd:"Chuck it on today's list", dayAdded:'On the list ✓', dayEmpty:'Got more than one mix on today? Add each ratio and size and the totals to bring show up here.', dayTotal:'All up, bring', dayMixedTotal:'Mixed', dayBatches:'batches', dayEach:'each', dayShare:'Send the list', dayCopied:'Copied ✓', dayClear:'Clear the list', dayClearConfirm:'Tap again to clear', dayCustom:'Yer own ratio', dayCopyHint:'Copy this list:' },
+      zh: { dayBatch:'\u6279', dayTitle:'今日配料', dayFrom:'保存的清单：', dayAdd:'加入今日清单', dayAdded:'已加入 ✓', dayEmpty:'今天需要不止一种配比？逐个添加比例和用量，这里会显示需要带的总量。', dayTotal:'需要带的总量', dayMixedTotal:'混合后', dayBatches:'批', dayEach:'每批', dayShare:'分享清单', dayCopied:'已复制 ✓', dayClear:'清空清单', dayClearConfirm:'再点一次清空', dayCustom:'自定义比例', dayCopyHint:'复制此清单：' },
+      fa: { dayBatch:'\u0646\u0648\u0628\u062a', dayTitle:'ترکیب‌های امروز', dayFrom:'فهرست ذخیره‌شده از', dayAdd:'افزودن به ترکیب‌های امروز', dayAdded:'افزوده شد ✓', dayEmpty:'امروز بیش از یک ترکیب لازم دارید؟ هر نسبت و مقدار را اضافه کنید تا مجموع مواد لازم اینجا نمایش داده شود.', dayTotal:'مجموع مورد نیاز', dayMixedTotal:'ترکیب‌شده', dayBatches:'نوبت', dayEach:'هر نوبت', dayShare:'اشتراک‌گذاری فهرست', dayCopied:'کپی شد ✓', dayClear:'پاک کردن فهرست', dayClearConfirm:'برای پاک کردن دوباره بزنید', dayCustom:'نسبت دلخواه', dayCopyHint:'این فهرست را کپی کنید:' },
+      da: { dayBatch:'\u0646\u0648\u0628\u062a', dayTitle:'مخلوط‌های امروز', dayFrom:'فهرست ذخیره‌شده از', dayAdd:'اضافه کردن به مخلوط‌های امروز', dayAdded:'اضافه شد ✓', dayEmpty:'امروز به بیش از یک مخلوط ضرورت دارید؟ هر نسبت و مقدار را اضافه کنید تا مجموع مواد لازم اینجا نشان داده شود.', dayTotal:'مجموع مورد ضرورت', dayMixedTotal:'مخلوط‌شده', dayBatches:'نوبت', dayEach:'هر نوبت', dayShare:'شریک ساختن فهرست', dayCopied:'کاپی شد ✓', dayClear:'پاک کردن فهرست', dayClearConfirm:'برای پاک کردن دوباره بزنید', dayCustom:'نسبت دلخواه', dayCopyHint:'این فهرست را کاپی کنید:' },
+      hr: { dayBatch:'serija', dayTitle:'Današnje mješavine', dayFrom:'Popis od', dayAdd:'Dodaj u današnje mješavine', dayAdded:'Dodano ✓', dayEmpty:'Trebate više mješavina danas? Dodajte svaki omjer i količinu, a ovdje se prikazuje ukupno što treba ponijeti.', dayTotal:'Ukupno ponijeti', dayMixedTotal:'Mješavina', dayBatches:'serija', dayEach:'po seriji', dayShare:'Podijeli popis', dayCopied:'Kopirano ✓', dayClear:'Očisti popis', dayClearConfirm:'Dodirnite ponovno za brisanje', dayCustom:'Vlastiti omjer', dayCopyHint:'Kopirajte ovaj popis:' },
+      ar: { dayBatch:'\u062f\u0641\u0639\u0629', dayTitle:'خلطات اليوم', dayFrom:'قائمة محفوظة من', dayAdd:'أضف إلى خلطات اليوم', dayAdded:'تمت الإضافة ✓', dayEmpty:'تحتاج أكثر من خلطة اليوم؟ أضف كل نسبة وكمية، وستظهر هنا الكميات الإجمالية التي يجب إحضارها.', dayTotal:'الإجمالي المطلوب', dayMixedTotal:'الخليط', dayBatches:'دفعات', dayEach:'لكل دفعة', dayShare:'مشاركة القائمة', dayCopied:'تم النسخ ✓', dayClear:'مسح القائمة', dayClearConfirm:'اضغط مرة أخرى للمسح', dayCustom:'نسبة مخصصة', dayCopyHint:'انسخ هذه القائمة:' },
+      pl: { dayBatch:'partia', dayTitle:'Dzisiejsze mieszanki', dayFrom:'Lista z', dayAdd:'Dodaj do dzisiejszych mieszanek', dayAdded:'Dodano ✓', dayEmpty:'Potrzebujesz dziś kilku mieszanek? Dodaj każdą proporcję i ilość, a tutaj pojawi się suma do zabrania.', dayTotal:'Razem do zabrania', dayMixedTotal:'Mieszanka', dayBatches:'partii', dayEach:'na partię', dayShare:'Udostępnij listę', dayCopied:'Skopiowano ✓', dayClear:'Wyczyść listę', dayClearConfirm:'Dotknij ponownie, aby wyczyścić', dayCustom:'Własna proporcja', dayCopyHint:'Skopiuj tę listę:' },
+      de: { dayBatch:'Ansatz', dayTitle:'Heutige Mischungen', dayFrom:'Liste vom', dayAdd:'Zu heutigen Mischungen hinzufügen', dayAdded:'Hinzugefügt ✓', dayEmpty:'Heute mehr als eine Mischung? Jedes Verhältnis und jede Menge hinzufügen – hier stehen dann die Gesamtmengen zum Mitnehmen.', dayTotal:'Gesamt mitnehmen', dayMixedTotal:'Gemischt', dayBatches:'Ansätze', dayEach:'je Ansatz', dayShare:'Liste teilen', dayCopied:'Kopiert ✓', dayClear:'Liste leeren', dayClearConfirm:'Zum Leeren erneut tippen', dayCustom:'Eigenes Verhältnis', dayCopyHint:'Diese Liste kopieren:' },
+      fr: { dayBatch:'lot', dayTitle:'Mélanges du jour', dayFrom:'Liste du', dayAdd:'Ajouter aux mélanges du jour', dayAdded:'Ajouté ✓', dayEmpty:'Plusieurs mélanges aujourd’hui ? Ajoutez chaque ratio et quantité : le total à prévoir s’affiche ici.', dayTotal:'Total à prévoir', dayMixedTotal:'Mélangé', dayBatches:'lots', dayEach:'par lot', dayShare:'Partager la liste', dayCopied:'Copié ✓', dayClear:'Vider la liste', dayClearConfirm:'Touchez encore pour vider', dayCustom:'Ratio personnalisé', dayCopyHint:'Copiez cette liste :' },
+      it: { dayBatch:'lotto', dayTitle:'Miscele di oggi', dayFrom:'Lista del', dayAdd:'Aggiungi alle miscele di oggi', dayAdded:'Aggiunto ✓', dayEmpty:'Serve più di una miscela oggi? Aggiungi ogni rapporto e quantità: qui compare il totale da portare.', dayTotal:'Totale da portare', dayMixedTotal:'Miscelato', dayBatches:'lotti', dayEach:'per lotto', dayShare:'Condividi lista', dayCopied:'Copiato ✓', dayClear:'Svuota lista', dayClearConfirm:'Tocca di nuovo per svuotare', dayCustom:'Rapporto personalizzato', dayCopyHint:'Copia questa lista:' },
+      es: { dayBatch:'tanda', dayTitle:'Mezclas de hoy', dayFrom:'Lista del', dayAdd:'Añadir a las mezclas de hoy', dayAdded:'Añadido ✓', dayEmpty:'¿Necesitas más de una mezcla hoy? Añade cada proporción y cantidad y aquí verás el total que hay que llevar.', dayTotal:'Total a llevar', dayMixedTotal:'Mezclado', dayBatches:'tandas', dayEach:'por tanda', dayShare:'Compartir lista', dayCopied:'Copiado ✓', dayClear:'Vaciar lista', dayClearConfirm:'Toca otra vez para vaciar', dayCustom:'Proporción propia', dayCopyHint:'Copia esta lista:' }
+    };
+    Object.keys(DAY_T).forEach(function (k) { if (T[k]) Object.assign(T[k], DAY_T[k]); });
+
     // ============ LANGUAGE SYSTEM ============
     let curLang = localStorage.getItem('lasur-lang') || 'en';
     const langOrder = ['en','slang','zh','fa','da','hr','ar','pl','de','fr','it','es'];
@@ -1265,6 +1412,9 @@
         buildRules();
         buildRefTable();
         document.getElementById('downloadChartLabel').textContent = t('downloadChart');
+        document.getElementById('dayTitle').textContent = t('dayTitle');
+        document.getElementById('addDayLabel').textContent = t('dayAdd');
+        if (typeof renderDay === 'function') renderDay();
     }
 
     function buildRules() {
@@ -1634,6 +1784,105 @@
         document.getElementById('sldD').value = useML ? Math.round(baseDil*1000) : baseDil.toFixed(2);
         updSliderUI(useML); showResult(basePig, baseDil, basePig + baseDil, useML);
     }
+
+
+    // ============ TODAY'S MIXES ============
+    // A painter can add several ratio + size combinations for one day and see what to bring.
+    // Saved on this device only (localStorage), so the list survives closing the page.
+    const DAY_KEY = 'lasur-day';
+    let dayList = { d: '', items: [] }, dayClearArmed = false;
+    function todayStr() { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0') + '-' + String(n.getDate()).padStart(2, '0'); }
+    function loadDay() {
+        try { const s = JSON.parse(localStorage.getItem(DAY_KEY) || 'null'); if (s && Array.isArray(s.items)) dayList = s; } catch (e) {}
+    }
+    function saveDay() { try { localStorage.setItem(DAY_KEY, JSON.stringify(dayList)); } catch (e) {} }
+    function fmtL(x) {
+        if (x < 1) return localNum(Math.round(x * 1000) + ' ml');
+        const v = Math.round(x * 100) / 100;
+        return localNum(String(v)) + ' L';
+    }
+    function fmtLh(x) { return '<bdi>' + fmtL(x) + '</bdi>'; }   // keeps "15 L" together in right-to-left languages
+    function escH(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+    function itemDesc(it) { return it.idx >= 0 ? desc(it.idx) : t('dayCustom'); }
+
+    function addToDay() {
+        if (!selR || !selV) return;
+        const pig = adjPig, dil = adjDil;
+        if (!(pig + dil > 0)) return;
+        if (!dayList.items.length) dayList.d = todayStr();
+        const idx = ratios.indexOf(selR);
+        const same = dayList.items.find(it => it.p === selR.p && it.d === selR.d && Math.abs(it.pig - pig) < 0.0005 && Math.abs(it.dil - dil) < 0.0005);
+        let id;
+        if (same) { same.n += 1; id = same.id; }
+        else {
+            id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+            dayList.items.push({ id, p: selR.p, d: selR.d, label: selR.label, pct: selR.pct, idx, pig, dil, n: 1 });
+        }
+        saveDay(); renderDay(id);
+        const b = document.getElementById('addDayBtn'), l = document.getElementById('addDayLabel');
+        b.classList.add('done'); l.textContent = t('dayAdded');
+        clearTimeout(addToDay._t); addToDay._t = setTimeout(() => { b.classList.remove('done'); l.textContent = t('dayAdd'); }, 1600);
+    }
+    function dayQty(id, step) {
+        const it = dayList.items.find(x => x.id === id); if (!it) return;
+        it.n = Math.max(1, Math.min(99, it.n + step)); saveDay(); renderDay();
+    }
+    function dayRemove(id) {
+        dayList.items = dayList.items.filter(x => x.id !== id); saveDay(); renderDay();
+    }
+    function dayClear() {
+        if (!dayClearArmed) { dayClearArmed = true; renderDay(); setTimeout(() => { dayClearArmed = false; renderDay(); }, 3000); return; }
+        dayClearArmed = false; dayList = { d: '', items: [] }; saveDay(); renderDay();
+    }
+    function dayText() {
+        const lines = ['KEIM Concretal-Lasur — ' + t('dayTitle')];
+        dayList.items.forEach((it, i) => {
+            lines.push(localNum((i + 1) + '. ' + it.label) + ' · ' + fmtL(it.pig + it.dil) + (it.n > 1 ? ' × ' + localNum(it.n) : '') +
+                '  (' + t('colour') + ' ' + fmtL(it.pig) + ' + ' + t('clear') + ' ' + fmtL(it.dil) + (it.n > 1 ? ' ' + t('dayEach') : '') + ')');
+        });
+        const tp = dayList.items.reduce((s, it) => s + it.pig * it.n, 0), td = dayList.items.reduce((s, it) => s + it.dil * it.n, 0);
+        lines.push('');
+        lines.push(t('dayTotal') + ': Concretal-Lasur ' + fmtL(tp) + ' · Concretal-Fixativ ' + fmtL(td) + ' · ' + t('dayMixedTotal') + ' ' + fmtL(tp + td));
+        return lines.join('\n');
+    }
+    async function dayShare() {
+        const text = dayText();
+        try { if (navigator.share) { await navigator.share({ title: 'KEIM Concretal-Lasur', text }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+        try { await navigator.clipboard.writeText(text); const b = document.getElementById('dayShareBtn'); if (b) { b.textContent = t('dayCopied'); setTimeout(() => renderDay(), 1600); } return; } catch (e) {}
+        const box = document.getElementById('dayCopy'); if (box) { box.classList.add('show'); const ta = box.querySelector('textarea'); ta.value = text; ta.focus(); ta.select(); }
+    }
+    function renderDay(flashId) {
+        const box = document.getElementById('dayBox'); if (!box) return;
+        const items = dayList.items;
+        const title = document.getElementById('dayTitle');
+        if (items.length && dayList.d && dayList.d !== todayStr()) {
+            const parts = dayList.d.split('-');
+            title.textContent = t('dayFrom') + ' ' + localNum(parseInt(parts[2], 10) + '/' + parseInt(parts[1], 10));
+        } else { title.textContent = t('dayTitle'); }
+        if (!items.length) { box.innerHTML = '<p class="day-empty">' + escH(t('dayEmpty')) + '</p>'; return; }
+        let html = '';
+        items.forEach(it => {
+            html += '<div class="day-item' + (it.id === flashId ? ' flash' : '') + '">' +
+                '<div class="day-ratio">' + escH(localNum(it.label)) + '<small>' + escH(localNum(it.pct + '%')) + '</small></div>' +
+                '<div class="day-size">' + fmtLh(it.pig + it.dil) + '</div>' +
+                '<div class="day-qty"><button type="button" aria-label="-" onclick="dayQty(\'' + it.id + '\',-1)">\u2212</button><b>' + localNum('\u00d7' + it.n) + '</b><button type="button" aria-label="+" onclick="dayQty(\'' + it.id + '\',1)">+</button></div>' +
+                '<button type="button" class="day-del" aria-label="Remove" onclick="dayRemove(\'' + it.id + '\')">\u00d7</button>' +
+                '<div class="day-sub"><div class="day-desc">' + escH(itemDesc(it)) + (it.n > 1 ? ' \u00b7 ' + escH(t('dayEach')) : '') + '</div>' +
+                '<div class="day-amts"><span class="c">' + fmtLh(it.pig) + '</span> ' + escH(t('colour')) + ' + ' + fmtLh(it.dil) + ' ' + escH(t('clear')) + '</div></div>' +
+                '</div>';
+        });
+        const tp = items.reduce((s, it) => s + it.pig * it.n, 0), td = items.reduce((s, it) => s + it.dil * it.n, 0);
+        const nb = items.reduce((s, it) => s + it.n, 0);
+        html += '<div class="day-totals"><p class="day-totals-title">' + escH(t('dayTotal')) + '</p>' +
+            '<div class="day-tot-row c"><span class="lbl">Concretal-Lasur<small>' + escH(t('colour')) + '</small></span><span class="val">' + fmtLh(tp) + '</span></div>' +
+            '<div class="day-tot-row"><span class="lbl">Concretal-Fixativ<small>' + escH(t('clear')) + '</small></span><span class="val">' + fmtLh(td) + '</span></div>' +
+            '<div class="day-tot-row m"><span class="lbl">' + escH(t('dayMixedTotal')) + '<small>' + localNum(nb) + ' ' + escH(t(nb === 1 ? 'dayBatch' : 'dayBatches')) + '</small></span><span class="val">' + fmtLh(tp + td) + '</span></div></div>' +
+            '<div class="day-actions"><button type="button" class="day-share" id="dayShareBtn" onclick="dayShare()">' + escH(t('dayShare')) + '</button>' +
+            '<button type="button" class="day-clear' + (dayClearArmed ? ' arm' : '') + '" onclick="dayClear()">' + escH(dayClearArmed ? t('dayClearConfirm') : t('dayClear')) + '</button></div>' +
+            '<div class="day-copy" id="dayCopy"><p>' + escH(t('dayCopyHint')) + '</p><textarea readonly></textarea></div>';
+        box.innerHTML = html;
+    }
+    loadDay();
 
     // ============ LOAD jsPDF (CDN first, local fallback) ============
     function loadJsPDF(callback) {
