@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lasur-mix-v10';
+const CACHE_NAME = 'lasur-mix-v11';
 const ASSETS = [
   './',
   './index.html',

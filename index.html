@@ -704,6 +704,10 @@
             .main { padding-bottom: 24px; }
             .footer { margin-top: 16px; }
         }
+        .site-test { margin: 18px 0 4px; padding: 12px 14px; border-radius: 12px; font-size: 14px; line-height: 1.45; background: #fef3c7; border: 1px solid #f5d27a; color: #78350f; }
+        .site-test strong { color: #92400e; }
+        html[data-mode="dark"] .site-test { background: rgba(250,204,21,0.10); border-color: rgba(250,204,21,0.35); color: #fde68a; }
+        html[data-mode="dark"] .site-test strong { color: #fcd34d; }
     </style>
 <script>
     (function(){ var m='dark'; try { m = localStorage.getItem('lasur-mode') || 'dark'; } catch(e){}
@@ -926,6 +930,7 @@
                     </div>
                 </div>
 
+                <p class="site-test" id="siteTest"></p>
                 <!-- Add this mix to today's list -->
                 <button id="addDayBtn" class="add-day-btn" onclick="addToDay()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
@@ -1386,6 +1391,24 @@
         if (T[k].rules && T[k].rules[10]) T[k].rules = T[k].rules.map(function (r, i) { return i === 10 ? { i: '💧', t: n.water } : r; });
     });
 
+
+    // Calculators give a starting point only: always a test patch and absorption test on site
+    const SITE_T = {
+      en:'<strong>A starting point, not a final answer.</strong> Always do a test patch and an absorption test on site first \u2014 the concrete decides the final ratio and how much you need.',
+      slang:'<strong>Just a starting point.</strong> Always do a test patch and an absorption test on site first \u2014 the concrete has the final say on the ratio and how much ya need.',
+      zh:'<strong>仅供参考，并非最终答案。</strong>施工前务必在现场做样板和吸水性测试——最终比例和用量取决于混凝土本身。',
+      fa:'<strong>این فقط نقطهٔ شروع است، نه جواب قطعی.</strong> همیشه پیش از کار، در محل یک نمونهٔ آزمایشی و تست جذب انجام دهید \u2014 نسبت نهایی و مقدار لازم را خود بتن تعیین می‌کند.',
+      da:'<strong>این فقط نقطهٔ شروع است، نه جواب قطعی.</strong> همیشه پیش از کار، در محل یک نمونهٔ آزمایشی و تست جذب انجام بدهید \u2014 نسبت نهایی و مقدار لازم را خود کانکریت تعیین می‌کند.',
+      hr:'<strong>Ovo je polazna točka, ne konačan odgovor.</strong> Uvijek prvo na gradilištu napravite probnu površinu i test upojnosti \u2014 beton određuje konačni omjer i potrebnu količinu.',
+      ar:'<strong>هذه نقطة بداية وليست إجابة نهائية.</strong> قم دائماً بعمل عينة تجريبية واختبار امتصاص في الموقع أولاً \u2014 الخرسانة هي التي تحدد النسبة النهائية والكمية المطلوبة.',
+      pl:'<strong>To punkt wyjścia, a nie ostateczna odpowiedź.</strong> Zawsze najpierw wykonaj na budowie próbę i test chłonności \u2014 to beton decyduje o ostatecznej proporcji i ilości.',
+      de:'<strong>Nur ein Richtwert, keine verbindliche Angabe.</strong> Vor Ort immer zuerst eine Musterfläche und eine Saugprobe machen \u2014 der Beton bestimmt das endgültige Verhältnis und die Menge.',
+      fr:'<strong>Un point de départ, pas une réponse définitive.</strong> Faites toujours d’abord un essai et un test d’absorption sur site \u2014 c’est le béton qui décide du ratio final et de la quantité.',
+      it:'<strong>Un punto di partenza, non una risposta definitiva.</strong> Esegui sempre prima in cantiere una campionatura e un test di assorbimento \u2014 è il calcestruzzo a decidere il rapporto finale e la quantità.',
+      es:'<strong>Un punto de partida, no una respuesta definitiva.</strong> Haz siempre primero en obra una muestra y una prueba de absorción \u2014 el hormigón decide la proporción final y la cantidad.'
+    };
+    Object.keys(SITE_T).forEach(function (k) { if (T[k]) T[k].siteTest = SITE_T[k]; });
+
     // ============ LANGUAGE SYSTEM ============
     let curLang = localStorage.getItem('lasur-lang') || 'en';
     const langOrder = ['en','slang','zh','fa','da','hr','ar','pl','de','fr','it','es'];
@@ -1456,6 +1479,7 @@
         document.getElementById('addDayLabel').textContent = t('dayAdd');
         document.getElementById('fsLabel').textContent = t('fsOpen');
         document.getElementById('ratioHint').innerHTML = t('ratioHint');
+        document.getElementById('siteTest').innerHTML = t('siteTest');
         document.getElementById('adjOpenBtn').textContent = t('roundOpen');
         document.getElementById('chartToggle').textContent = chartOpen ? t('hideChart') : t('showChart');
         if (typeof renderDay === 'function') renderDay();
@@ -2774,6 +2798,9 @@
         doc.setFontSize(7);
         doc.setFont(pdfFont, 'normal');
         doc.setTextColor(150, 150, 150);
+        doc.setFontSize(7.5); doc.setTextColor(146, 64, 14);
+        doc.text('Starting point only: always do a test patch and an absorption test on site before applying. The concrete decides the final ratio and quantity.', margin, footerY - 7);
+        doc.setFontSize(7); doc.setTextColor(150, 150, 150);
         doc.text('KEIM Australia  |  keim.com.au  |  For full TDS visit keim.com.au/concretal-lasur', margin, footerY);
         doc.text('Generated by KEIM Lasur Site Mixer', W - margin, footerY, { align: 'right' });
 
