@@ -11,7 +11,27 @@
     <style>
         /* Lion and Sun flag (pre-1979 Iranian flag) for Farsi */
         .fi-ir { background-image: url("./flag-ir.svg") !important; background-size: cover !important; background-position: center !important; }
-    </style>
+    
+        /* 2026-10 usability additions */
+        .ratio-hint { margin: 8px 2px 10px; font-size: 14px; line-height: 1.45; color: rgba(28,27,25,0.72); }
+        .ratio-hint b { color: #0f766e; font-weight: 800; white-space: nowrap; }
+        html[data-mode="dark"] .ratio-hint { color: rgba(255,255,255,0.72); }
+        html[data-mode="dark"] .ratio-hint b { color: #5eead4; }
+        .adj-open { display: block; margin: 16px auto 4px; background: none; border: none; font: inherit; font-size: 14px; font-weight: 700; color: #0f766e; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+        html[data-mode="dark"] .adj-open { color: #5eead4; }
+        .chart-toggle { display: block; width: 100%; margin-top: 4px; padding: 12px; border-radius: 12px; font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; background: rgba(13,148,136,0.08); color: #0f766e; border: 1px solid rgba(13,148,136,0.3); }
+        html[data-mode="dark"] .chart-toggle { background: rgba(45,212,191,0.08); color: #5eead4; border-color: rgba(45,212,191,0.35); }
+        .full-chart tr.sel td { background: rgba(45,212,191,0.16) !important; }
+        .full-chart tr.sel td.fc-ratio { box-shadow: inset 3px 0 0 #14b8a6; }
+        .pour-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: none; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: #0f766e; color: #fff; font-size: 16px; font-weight: 700; text-align: center; border: none; width: 100%; font-family: inherit; box-shadow: 0 -6px 20px rgba(0,0,0,0.25); cursor: pointer; }
+        .pour-bar b { font-weight: 900; font-size: 18px; white-space: nowrap; }
+        .pour-bar.wait { background: #1f2937; color: rgba(255,255,255,0.85); font-weight: 600; }
+        html[data-mode="dark"] .pour-bar { background: #14b8a6; color: #04201d; }
+        html[data-mode="dark"] .pour-bar.wait { background: #262626; color: rgba(255,255,255,0.85); }
+        .pour-bar.show { display: flex; }
+        body.has-pour-bar { padding-bottom: 64px; }
+        @media (min-width: 1000px) { .pour-bar, .pour-bar.show { display: none; } body.has-pour-bar { padding-bottom: 0; } }
+</style>
     <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -736,6 +756,7 @@
                 <p class="step-title" id="step1Title">Pick your ratio</p>
             </div>
             <div class="spectrum-label" style="margin-top:12px"><span id="specSolid">SOLID COLOUR</span><span id="specTrans">TRANSPARENT</span></div>
+            <p class="ratio-hint" id="ratioHint"></p>
             <div id="ratioList" class="ratio-list"></div>
             <div class="glass-card">
                 <p class="glass-card-label" id="customRatioLabel">Or enter your own ratio</p>
@@ -875,6 +896,7 @@
                     <span id="barLblClear">Clear</span>
                 </div>
 
+                <button type="button" id="adjOpenBtn" class="adj-open" onclick="openAdj()" style="display:none">Round to easy numbers</button>
                 <!-- Adjustment sliders -->
                 <div id="adjustWrap" class="adjust-section" style="display:none">
                     <div class="adjust-header">
@@ -944,10 +966,12 @@
                     <span id="downloadChartLabel">Download Chart</span>
                 </button>
             </div>
-            <div class="chart-scroll" id="fullChartWrap">
+            <button type="button" class="chart-toggle" id="chartToggle" onclick="toggleChart()">Show full chart</button>
+            <div class="chart-scroll" id="fullChartWrap" style="display:none;margin-top:12px">
                 <table class="full-chart" id="fullChart"></table>
             </div>
         </div>
+        <button type="button" class="pour-bar" id="pourBar" onclick="goToAnswer()"></button>
         <p class="footer" id="footerText">KEIM Australia &middot; For full TDS visit keim.com.au</p>
     </div>
 
@@ -1337,6 +1361,31 @@
     const FS_T = { en:'Open full screen', slang:'Open full screen', zh:'\u5168\u5c4f\u6253\u5f00', fa:'\u0628\u0627\u0632 \u06a9\u0631\u062f\u0646 \u062f\u0631 \u062a\u0645\u0627\u0645 \u0635\u0641\u062d\u0647', da:'\u0628\u0627\u0632 \u06a9\u0631\u062f\u0646 \u062f\u0631 \u062a\u0645\u0627\u0645 \u0635\u0641\u062d\u0647', hr:'Otvori preko cijelog zaslona', ar:'\u0641\u062a\u062d \u0628\u0645\u0644\u0621 \u0627\u0644\u0634\u0627\u0634\u0629', pl:'Otw\u00f3rz na pe\u0142nym ekranie', de:'Im Vollbild \u00f6ffnen', fr:'Ouvrir en plein \u00e9cran', it:'Apri a schermo intero', es:'Abrir a pantalla completa' };
     Object.keys(FS_T).forEach(function (k) { if (T[k]) T[k].fsOpen = FS_T[k]; });
 
+
+    // Usability strings (Oct 2026): names, ratio explainer, pour bar, rounding link, chart toggle, water rule
+    const NEW_T = {
+      en: { colourWord:'Colour', clearWord:'Clear', ratioHint:'<b>3 : 1</b> means 3 parts Lasur (colour) to 1 part Fixativ (clear). More Lasur = stronger colour.', barPour:'Pour', barPick:'Pick a ratio and an amount', barPickR:'Now pick a ratio', barPickV:'Now pick an amount', roundOpen:'Round to easy numbers', showChart:'Show full chart', hideChart:'Hide chart', water:'<strong>Never add water to the mix</strong> \u2014 on very absorbent concrete you can lightly mist the surface (not the bucket) before you start' },
+      slang: { colourWord:'Colour', clearWord:'Clear', ratioHint:'<b>3 : 1</b> = 3 parts Lasur (colour) to 1 part Fixativ (clear). More Lasur, more colour.', barPour:'Tip in', barPick:'Pick a ratio and how much', barPickR:'Now pick a ratio', barPickV:'Now pick how much', roundOpen:'Round to easy numbers', showChart:'Show the full cheat sheet', hideChart:'Hide it', water:'<strong>Thirsty concrete?</strong> Mist the wall, never the bucket \u2014 no water in the mix' },
+      zh: { colourWord:'颜色', clearWord:'透明', ratioHint:'<b>3 : 1</b> = 3 份 Lasur（颜色）加 1 份 Fixativ（透明）。Lasur 越多，颜色越浓。', barPour:'倒入', barPick:'请选择比例和用量', barPickR:'请选择比例', barPickV:'请选择用量', roundOpen:'取整为方便的数字', showChart:'显示完整表格', hideChart:'隐藏表格', water:'<strong>切勿往混合料中加水</strong> \u2014 对于吸水性很强的混凝土，可在施工前轻轻喷湿表面（不是桶里）' },
+      fa: { colourWord:'رنگ', clearWord:'شفاف', ratioHint:'<b>۳ : ۱</b> یعنی ۳ قسمت Lasur (رنگ) و ۱ قسمت Fixativ (شفاف). Lasur بیشتر = رنگ پررنگ‌تر.', barPour:'بریزید', barPick:'یک نسبت و یک مقدار انتخاب کنید', barPickR:'حالا نسبت را انتخاب کنید', barPickV:'حالا مقدار را انتخاب کنید', roundOpen:'گرد کردن به اعداد ساده', showChart:'نمایش جدول کامل', hideChart:'بستن جدول', water:'<strong>هرگز به مخلوط آب اضافه نکنید</strong> \u2014 روی بتن خیلی جاذب می‌توانید پیش از شروع، سطح را (نه سطل را) کمی با آب اسپری کنید' },
+      da: { colourWord:'رنگ', clearWord:'شفاف', ratioHint:'<b>۳ : ۱</b> یعنی ۳ حصه Lasur (رنگ) و ۱ حصه Fixativ (شفاف). Lasur بیشتر = رنگ تیزتر.', barPour:'بریزید', barPick:'یک نسبت و یک مقدار را انتخاب کنید', barPickR:'حالا نسبت را انتخاب کنید', barPickV:'حالا مقدار را انتخاب کنید', roundOpen:'گرد کردن به اعداد ساده', showChart:'نشان دادن جدول کامل', hideChart:'بستن جدول', water:'<strong>هرگز به مخلوط آب علاوه نکنید</strong> \u2014 بالای کانکریت بسیار جاذب می‌توانید پیش از شروع، سطح را (نه سطل را) کمی آب‌پاشی کنید' },
+      hr: { colourWord:'Boja', clearWord:'Prozirno', ratioHint:'<b>3 : 1</b> znači 3 dijela Lasura (boja) na 1 dio Fixativa (prozirno). Više Lasura = jača boja.', barPour:'Ulijte', barPick:'Odaberite omjer i količinu', barPickR:'Sada odaberite omjer', barPickV:'Sada odaberite količinu', roundOpen:'Zaokruži na lake brojeve', showChart:'Prikaži cijelu tablicu', hideChart:'Sakrij tablicu', water:'<strong>Nikad ne dodajite vodu u mješavinu</strong> \u2014 na vrlo upojnom betonu prije početka lagano navlažite površinu (ne kantu)' },
+      ar: { colourWord:'لون', clearWord:'شفاف', ratioHint:'<b>٣ : ١</b> تعني ٣ أجزاء Lasur (لون) إلى جزء واحد Fixativ (شفاف). كلما زاد Lasur زادت قوة اللون.', barPour:'اسكب', barPick:'اختر نسبة وكمية', barPickR:'اختر النسبة الآن', barPickV:'اختر الكمية الآن', roundOpen:'التقريب إلى أرقام سهلة', showChart:'عرض الجدول كاملاً', hideChart:'إخفاء الجدول', water:'<strong>لا تضف الماء إلى الخليط أبداً</strong> \u2014 على الخرسانة شديدة الامتصاص يمكنك رش السطح (وليس الدلو) برذاذ خفيف قبل البدء' },
+      pl: { colourWord:'Kolor', clearWord:'Bezbarwny', ratioHint:'<b>3 : 1</b> oznacza 3 części Lasur (kolor) na 1 część Fixativ (bezbarwny). Więcej Lasur = mocniejszy kolor.', barPour:'Wlej', barPick:'Wybierz proporcję i ilość', barPickR:'Teraz wybierz proporcję', barPickV:'Teraz wybierz ilość', roundOpen:'Zaokrąglij do prostych liczb', showChart:'Pokaż pełną tabelę', hideChart:'Ukryj tabelę', water:'<strong>Nigdy nie dodawaj wody do mieszanki</strong> \u2014 bardzo chłonny beton możesz przed rozpoczęciem lekko zwilżyć (powierzchnię, nie wiadro)' },
+      de: { colourWord:'Farbe', clearWord:'Klar', ratioHint:'<b>3 : 1</b> bedeutet 3 Teile Lasur (Farbe) auf 1 Teil Fixativ (klar). Mehr Lasur = kräftigere Farbe.', barPour:'Einfüllen', barPick:'Verhältnis und Menge wählen', barPickR:'Jetzt Verhältnis wählen', barPickV:'Jetzt Menge wählen', roundOpen:'Auf runde Werte bringen', showChart:'Ganze Tabelle zeigen', hideChart:'Tabelle ausblenden', water:'<strong>Niemals Wasser in die Mischung geben</strong> \u2014 stark saugenden Beton vor Beginn leicht annebeln (die Fläche, nicht den Eimer)' },
+      fr: { colourWord:'Couleur', clearWord:'Incolore', ratioHint:'<b>3 : 1</b> = 3 parts de Lasur (couleur) pour 1 part de Fixativ (incolore). Plus de Lasur = couleur plus intense.', barPour:'Versez', barPick:'Choisissez un ratio et une quantité', barPickR:'Choisissez maintenant un ratio', barPickV:'Choisissez maintenant une quantité', roundOpen:'Arrondir à des chiffres simples', showChart:'Afficher le tableau complet', hideChart:'Masquer le tableau', water:'<strong>Jamais d’eau dans le mélange</strong> \u2014 sur un béton très absorbant, brumisez légèrement la surface (pas le seau) avant de commencer' },
+      it: { colourWord:'Colore', clearWord:'Trasparente', ratioHint:'<b>3 : 1</b> = 3 parti di Lasur (colore) e 1 parte di Fixativ (trasparente). Più Lasur = colore più intenso.', barPour:'Versa', barPick:'Scegli un rapporto e una quantità', barPickR:'Ora scegli un rapporto', barPickV:'Ora scegli una quantità', roundOpen:'Arrotonda a numeri semplici', showChart:'Mostra tabella completa', hideChart:'Nascondi tabella', water:'<strong>Mai aggiungere acqua alla miscela</strong> \u2014 sul calcestruzzo molto assorbente nebulizza leggermente la superficie (non il secchio) prima di iniziare' },
+      es: { colourWord:'Color', clearWord:'Transparente', ratioHint:'<b>3 : 1</b> = 3 partes de Lasur (color) por 1 parte de Fixativ (transparente). Más Lasur = color más intenso.', barPour:'Vierte', barPick:'Elige una proporción y una cantidad', barPickR:'Ahora elige una proporción', barPickV:'Ahora elige una cantidad', roundOpen:'Redondear a números fáciles', showChart:'Ver tabla completa', hideChart:'Ocultar tabla', water:'<strong>Nunca añadas agua a la mezcla</strong> \u2014 en hormigón muy absorbente humedece ligeramente la superficie (no el cubo) antes de empezar' }
+    };
+    Object.keys(NEW_T).forEach(function (k) {
+        if (!T[k]) return;
+        const n = NEW_T[k];
+        Object.assign(T[k], n);
+        // one name for each product everywhere: Lasur (colour) and Fixativ (clear)
+        T[k].colour = 'Lasur'; T[k].clear = 'Fixativ'; T[k].thPct = 'Lasur %';
+        if (T[k].rules && T[k].rules[10]) T[k].rules = T[k].rules.map(function (r, i) { return i === 10 ? { i: '💧', t: n.water } : r; });
+    });
+
     // ============ LANGUAGE SYSTEM ============
     let curLang = localStorage.getItem('lasur-lang') || 'en';
     const langOrder = ['en','slang','zh','fa','da','hr','ar','pl','de','fr','it','es'];
@@ -1383,8 +1432,8 @@
         document.getElementById('lblClear').textContent = t('clear');
         document.getElementById('lblSamples').textContent = t('samples');
         document.getElementById('lblBuckets').textContent = t('buckets');
-        document.getElementById('tagColour').textContent = t('colour').toUpperCase();
-        document.getElementById('tagClear').textContent = t('clear').toUpperCase();
+        document.getElementById('tagColour').textContent = t('colourWord').toUpperCase();
+        document.getElementById('tagClear').textContent = t('clearWord').toUpperCase();
         document.getElementById('tagMixed').textContent = t('mixed');
         document.getElementById('tagReady').textContent = t('ready');
         document.getElementById('mixArrow').textContent = t('mixInto');
@@ -1406,7 +1455,11 @@
         document.getElementById('dayTitle').textContent = t('dayTitle');
         document.getElementById('addDayLabel').textContent = t('dayAdd');
         document.getElementById('fsLabel').textContent = t('fsOpen');
+        document.getElementById('ratioHint').innerHTML = t('ratioHint');
+        document.getElementById('adjOpenBtn').textContent = t('roundOpen');
+        document.getElementById('chartToggle').textContent = chartOpen ? t('hideChart') : t('showChart');
         if (typeof renderDay === 'function') renderDay();
+        if (typeof updPourBar === 'function') updPourBar();
     }
 
     function buildRules() {
@@ -1471,7 +1524,7 @@
         var body = '';
         fullChartRows.forEach(function(r) {
             var pp = r[0], dp = r[1], pct = r[2], label = r[3], lookIdx = r[4];
-            body += '<tr>';
+            body += '<tr data-r="' + pp + ':' + dp + '">';
             body += '<td class="fc-ratio left-sticky">' + localNum(label) + '</td>';
             body += '<td class="fc-bar-cell left-sticky" style="left:44px"><div class="fc-bar" style="width:' + Math.max(pct * 0.32, 2) + 'px"></div></td>';
             body += '<td class="fc-pct">' + localNum(pct + '%') + '</td>';
@@ -1486,6 +1539,54 @@
         });
 
         fc.innerHTML = '<thead>' + h1 + h2 + '</thead><tbody>' + body + '</tbody>';
+        if (typeof markChartRow === 'function') markChartRow();
+    }
+
+    // ---- Quick reference: closed by default, picked ratio highlighted ----
+    let chartOpen = false;
+    function toggleChart() {
+        chartOpen = !chartOpen;
+        document.getElementById('fullChartWrap').style.display = chartOpen ? 'block' : 'none';
+        document.getElementById('chartToggle').textContent = chartOpen ? t('hideChart') : t('showChart');
+        if (chartOpen) markChartRow(true);
+    }
+    function markChartRow(scroll) {
+        const key = selR ? selR.p + ':' + selR.d : '';
+        let hit = null;
+        document.querySelectorAll('#fullChart tbody tr').forEach(function (tr) {
+            const on = tr.getAttribute('data-r') === key; tr.classList.toggle('sel', on); if (on) hit = tr;
+        });
+        if (scroll && hit) hit.scrollIntoView({ block: 'nearest' });
+    }
+
+    // ---- Pour bar: the answer always at the bottom of a phone screen ----
+    const inFrame = (function () { try { return window.self !== window.top; } catch (e) { return true; } })();
+    let answerVisible = false;
+    function updPourBar() {
+        const bar = document.getElementById('pourBar');
+        if (!bar) return;
+        if (inFrame) { bar.classList.remove('show'); return; }
+        document.body.classList.add('has-pour-bar');
+        const u = v => lastRes.useML ? localNum(Math.round(v * 1000)) + ' ml' : localNum(nice(v)) + ' L';
+        if (lastRes && selR && selV) {
+            bar.classList.remove('wait');
+            let h = t('barPour') + ' <b><bdi>' + u(lastRes.pig) + '</bdi></b> Lasur';
+            if (lastRes.dil > 0) h += ' + <b><bdi>' + u(lastRes.dil) + '</bdi></b> Fixativ';
+            bar.innerHTML = h;
+            bar.classList.toggle('show', !answerVisible);
+        } else {
+            bar.classList.add('wait');
+            bar.textContent = !selR && !selV ? t('barPick') : !selR ? t('barPickR') : t('barPickV');
+            bar.classList.add('show');
+        }
+    }
+    function goToAnswer() {
+        if (lastRes && selR && selV) document.getElementById('answer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        else document.getElementById(selR ? 'step2Title' : 'step1Title').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) { answerVisible = es[0].isIntersecting; updPourBar(); }, { threshold: 0.35 })
+            .observe(document.getElementById('resultCard'));
     }
 
     function buildLangDropdown() {
@@ -1626,16 +1727,20 @@
         document.getElementById('cupShineM').setAttribute('y', y);
     }
 
+    // 15 not 15.00, 6.67 not 6.6667
+    function nice(v) { return String(parseFloat((Math.round(v * 100) / 100).toFixed(2))); }
+    let lastRes = null;
     function showResult(pig, dil, tot, useML) {
+        lastRes = { pig, dil, tot, useML }; if (typeof updPourBar === 'function') updPourBar();
         const litresWord = t('litres');
-        document.getElementById('resPig').textContent = localNum(useML ? Math.round(pig * 1000) : pig.toFixed(2));
-        document.getElementById('resDil').textContent = localNum(useML ? Math.round(dil * 1000) : dil.toFixed(2));
+        document.getElementById('resPig').textContent = localNum(useML ? Math.round(pig * 1000) : nice(pig));
+        document.getElementById('resDil').textContent = localNum(useML ? Math.round(dil * 1000) : nice(dil));
         const u = useML ? localNum('ml') : litresWord;
         document.getElementById('unitPig').textContent = u;
         document.getElementById('unitDil').textContent = u;
-        const totStr = localNum(useML ? Math.round(tot * 1000) + 'ml' : tot.toFixed(2) + 'L');
+        const totStr = localNum(useML ? Math.round(tot * 1000) + ' ml' : nice(tot) + ' L');
         document.getElementById('resTot').textContent = totStr;
-        document.getElementById('resTotAmount').textContent = localNum(useML ? Math.round(tot * 1000) : tot.toFixed(2));
+        document.getElementById('resTotAmount').textContent = localNum(useML ? Math.round(tot * 1000) : nice(tot));
         document.getElementById('resTotUnit').textContent = u;
 
         const mx = Math.max(pig, dil, 0.001);
@@ -1657,7 +1762,8 @@
     function refresh() {
         buildR(); buildV();
         const a = document.getElementById('answer');
-        if (!selR || !selV) { a.style.display = 'none'; return; }
+        markChartRow();
+        if (!selR || !selV) { a.style.display = 'none'; lastRes = null; updPourBar(); return; }
         a.style.display = 'block';
 
         const parts = selR.p + selR.d;
@@ -1679,11 +1785,19 @@
     }
 
     // ============ ADJUSTMENT SLIDERS ============
+    let adjOpen = false;
+    function openAdj() {
+        adjOpen = true;
+        document.getElementById('adjustWrap').style.display = 'block';
+        document.getElementById('adjOpenBtn').style.display = 'none';
+    }
     function setupSliders(pig, dil, useML) {
         basePig = pig; baseDil = dil; adjPig = pig; adjDil = dil;
         const wrap = document.getElementById('adjustWrap');
-        if ((pig + dil) < 0.5) { wrap.style.display = 'none'; return; }
-        wrap.style.display = 'block';
+        const openBtn = document.getElementById('adjOpenBtn');
+        if ((pig + dil) < 0.5) { wrap.style.display = 'none'; openBtn.style.display = 'none'; return; }
+        wrap.style.display = adjOpen ? 'block' : 'none';
+        openBtn.style.display = adjOpen ? 'none' : 'block';
 
         const sP = document.getElementById('sldP'), sD = document.getElementById('sldD');
         const pMin = Math.max(0, pig * 0.5), pMax = Math.min(pig + dil, pig * 1.5);
@@ -1722,11 +1836,11 @@
 
     function updSliderUI(useML) {
         const u = useML ? 'ml' : 'L';
-        document.getElementById('avP').textContent = localNum(useML ? Math.round(adjPig*1000) : adjPig.toFixed(2));
-        document.getElementById('avD').textContent = localNum(useML ? Math.round(adjDil*1000) : adjDil.toFixed(2));
+        document.getElementById('avP').textContent = localNum(useML ? Math.round(adjPig*1000) : nice(adjPig));
+        document.getElementById('avD').textContent = localNum(useML ? Math.round(adjDil*1000) : nice(adjDil));
         document.getElementById('auP').textContent = u;
         document.getElementById('auD').textContent = u;
-        document.getElementById('adjTot').textContent = localNum(useML ? Math.round((adjPig+adjDil)*1000)+'ml' : (adjPig+adjDil).toFixed(2)+'L');
+        document.getElementById('adjTot').textContent = localNum(useML ? Math.round((adjPig+adjDil)*1000)+' ml' : nice(adjPig+adjDil)+' L');
         delta('adP', adjPig - basePig, useML);
         delta('adD', adjDil - baseDil, useML);
         document.getElementById('resetBtn').classList.toggle('vis', Math.abs(adjPig-basePig) > 0.001 || Math.abs(adjDil-baseDil) > 0.001);
@@ -1736,7 +1850,7 @@
         const el = document.getElementById(id);
         if (Math.abs(diff) < 0.001) { el.classList.remove('vis'); return; }
         el.classList.add('vis');
-        const v = useML ? Math.round(diff*1000) : diff.toFixed(2);
+        const v = useML ? Math.round(diff*1000) : nice(diff);
         el.textContent = localNum((diff > 0 ? '+' : '') + v + (useML ? 'ml' : 'L'));
         el.classList.toggle('up', diff > 0); el.classList.toggle('dn', diff < 0);
     }
@@ -1865,8 +1979,8 @@
         const tp = items.reduce((s, it) => s + it.pig * it.n, 0), td = items.reduce((s, it) => s + it.dil * it.n, 0);
         const nb = items.reduce((s, it) => s + it.n, 0);
         html += '<div class="day-totals"><p class="day-totals-title">' + escH(t('dayTotal')) + '</p>' +
-            '<div class="day-tot-row c"><span class="lbl">Concretal-Lasur<small>' + escH(t('colour')) + '</small></span><span class="val">' + fmtLh(tp) + '</span></div>' +
-            '<div class="day-tot-row"><span class="lbl">Concretal-Fixativ<small>' + escH(t('clear')) + '</small></span><span class="val">' + fmtLh(td) + '</span></div>' +
+            '<div class="day-tot-row c"><span class="lbl">Concretal-Lasur<small>' + escH(t('colourWord')) + '</small></span><span class="val">' + fmtLh(tp) + '</span></div>' +
+            '<div class="day-tot-row"><span class="lbl">Concretal-Fixativ<small>' + escH(t('clearWord')) + '</small></span><span class="val">' + fmtLh(td) + '</span></div>' +
             '<div class="day-tot-row m"><span class="lbl">' + escH(t('dayMixedTotal')) + '<small>' + localNum(nb) + ' ' + escH(t(nb === 1 ? 'dayBatch' : 'dayBatches')) + '</small></span><span class="val">' + fmtLh(tp + td) + '</span></div></div>' +
             '<div class="day-actions"><button type="button" class="day-share" id="dayShareBtn" onclick="dayShare()">' + escH(t('dayShare')) + '</button>' +
             '<button type="button" class="day-clear' + (dayClearArmed ? ' arm' : '') + '" onclick="dayClear()">' + escH(dayClearArmed ? t('dayClearConfirm') : t('dayClear')) + '</button></div>' +
